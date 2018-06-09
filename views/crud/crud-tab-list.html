@@ -1,0 +1,21 @@
+<div>
+    <div class="row btn-tab">
+      <div class="col-md-4 col-lg-4 col-xs-4 pull-right">
+        <a class="btn btn-primary btn-block button-new" origin="tabs" ng-click="$parent.openTabModal(type)">
+          <span class="fa fa-plus"></span> Novo {{headers['tabs'][type].label_row}}</a>
+      </div>
+    </div>
+    <section class="widget" crud-list crud-list-settings="{
+          url: headers['tabs'][type].tab_route + (headers['tabs'][type].data_path != undefined ? data[headers['tabs'][type].data_path].id : data.id) + '/' + headers['tabs'][type].label_stem,
+          mainRoute: headers['tabs'][type].tab_route,
+          fields: headers['tabs'][type].fields,
+          tab: true,
+          settings: headers['tabs'][type].settings,
+          type: headers['tabs'][type].custom ? headers['tabs'][type].label_stem : type
+      }">
+      <div class="widget-body">
+        <div class="table-container"></div>
+      </div>
+    </section>
+</div>
+  

@@ -1,0 +1,23 @@
+<section class="widget">
+    <header class="row">
+      <h4>
+        Relatório de <span class="fw-semi-bold">{{key}}</span>
+      </h4>
+      <!--<div class="widget-controls">-->
+        <!--<a href="#" data-widgster="close"><i class="glyphicon glyphicon-remove"></i></a>-->
+      <!--</div>-->
+    </header>
+    <div data-name="filter" style="margin-top: .5em;">
+        <div class="col-sm-6 col-lg-6" style="padding: 0;">
+            <input type="text" ng-model="$parent.d3chartStartDate" my-datepicker="true" my-datepicker-ng-model-parent="true" data-date-format="DD/MM/YYYY" disabled="true" >
+        </div>
+        <div class="col-sm-6 col-lg-6" style="padding: 0;">
+            <input type="text" ng-model="$parent.d3chartEndDate" my-datepicker="true" my-datepicker-ng-model-parent="true" data-date-format="DD/MM/YYYY" disabled="true" >
+        </div>
+    </div>
+    <div class="widget-body">
+      <div data-nvd3-chart data-chart="d3chartConfig" data-datum="d3chartData">
+        <svg class=></svg>
+      </div>
+  </section>
+  

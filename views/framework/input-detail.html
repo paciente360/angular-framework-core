@@ -1,0 +1,26 @@
+<div>
+    <input ng-if="field.type != 'boolean'""
+      class="main-input form-control"
+      fw-dynamic
+      ng-required="field.notnull"
+      ng-show="field.autocomplete === false"
+      type="text"
+  
+      ng-model="detail_data[field.name]">
+  
+  
+      <input
+        ng-if="field.type == 'boolean'"
+        ng-required="field.notnull"
+        type="checkbox" id="{{field.name}}" data-ui-switch="{size: 'small'}" data-ng-model="detail_data[field.name]">
+  
+  
+    <input typeahead-on-select="autocompleteDetailSelect(detail_key, $item, $model, $label)"
+           aria-autocomplete="none" autocomplete="false"
+           typeahead-min-length="3" typeahead="row as row.label for row in $parent.autocompleteDetail(detail_key, field, $viewValue)"
+           ng-if="field.autocomplete !== false"
+           ng-required="field.notnull"
+           type="text" class="form-control"
+           ng-model="detail_data[field.name + '.label']" placeholder="{{field.label}}" />
+  </div>
+  
