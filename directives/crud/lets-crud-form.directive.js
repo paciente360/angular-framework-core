@@ -87,7 +87,7 @@
                     fwModalService.createCRUDModal(headers, parentModel, null, autocompleteDetail)
                         .then(function (response) {
                             response.new = true;
-                            response.readonly = true;
+                            response.disabled = true;
                             scope.data[detail].push(response);
                         });
 

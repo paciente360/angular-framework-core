@@ -36,7 +36,7 @@
         $scope.resource = Restangular.all(parentModel);
 
         $scope.cancel = function () {
-            if ($scope.data.readonly !== undefined) data.readonly = true;
+            if ($scope.data.disabled !== undefined) data.disabled = true;
             $modalInstance.dismiss('cancel');
         }
         $scope.submit = function () {

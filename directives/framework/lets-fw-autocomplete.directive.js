@@ -3,7 +3,7 @@
 /*!
 * Angular Lets Core - Framework Auto Complete Directive
 *
-* File:        directives/framework/lets-fw-autocomplete.directive.js
+* File:        directives/framework/lets-fw-auto-complete.directive.js
 * Version:     1.0.0
 *
 * Author:      Lets Comunica

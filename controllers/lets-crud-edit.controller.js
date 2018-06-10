@@ -67,7 +67,7 @@
                         var label = list[i].label_stem;
                         if (data[label] !== undefined && data[label].length > 0) {
                             for (var j in data[label]) {
-                                data[label][j].readonly = true;
+                                data[label][j].disabled = true;
                             }
                         }
                     }
@@ -660,14 +660,14 @@
             var headers = $scope.headers[origin][detail_key];
             var parentModel = $scope.headers.route.toLowerCase();
 
-            detail_data.readonly = false;
+            detail_data.disabled = false;
 
             function processResponse(response) {
                 headers.fields.forEach(function(x) {
                     detail_data[x.name] = response[x.name];
                 });
 
-                detail_data.readonly = true;
+                detail_data.disabled = true;
             }
 
             fwModalService.createCRUDModal(headers, parentModel, detail_data, true)

@@ -119,7 +119,7 @@
 
                     scope.datepickerOptions = options;
 
-                    // if (scope.data.readonly) jQuery('.input-group-btn').remove();
+                    // if (scope.data.disabled) jQuery('.input-group-btn').remove();
 
                     $compile(element)(scope);
                 };

@@ -9,10 +9,12 @@
     </header>
     <div data-name="filter" style="margin-top: .5em;">
         <div class="col-sm-6 col-lg-6" style="padding: 0;">
-            <input type="text" ng-model="$parent.d3chartStartDate" my-datepicker="true" my-datepicker-ng-model-parent="true" data-date-format="DD/MM/YYYY" disabled="true" >
+            <label for="">Data de Início</label>
+            <input type="text" ng-model="$parent.d3chartStartDate" fw-date-picker="true" fw-date-picker-ng-model-parent="true" data-date-format="DD/MM/YYYY" disabled="true" >
         </div>
         <div class="col-sm-6 col-lg-6" style="padding: 0;">
-            <input type="text" ng-model="$parent.d3chartEndDate" my-datepicker="true" my-datepicker-ng-model-parent="true" data-date-format="DD/MM/YYYY" disabled="true" >
+            <label for="">Data de Fim</label>
+            <input type="text" ng-model="$parent.d3chartEndDate" fw-date-picker="true" fw-date-picker-ng-model-parent="true" data-date-format="DD/MM/YYYY" disabled="true" >
         </div>
     </div>
     <div class="widget-body">
