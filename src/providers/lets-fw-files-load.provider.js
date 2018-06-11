@@ -37,15 +37,15 @@
         var self = this;
 
         self.getCrudBaseTemplate = function () {
-            return $templateRequest('../../views/crud/crud.html');
+            return $templateRequest('src/views/crud/crud.html');
         };
 
         self.getCrudListTemplate = function () {
-            return $templateRequest('../../views/crud/crud-list.html');
+            return $templateRequest('src/views/crud/crud-list.html');
         };
         
         self.getCrudEditTemplate = function () {
-            return $templateRequest('../../views/crud/crud-edit.html');
+            return $templateRequest('src/views/crud/crud-edit.html');
         };
     
         return {

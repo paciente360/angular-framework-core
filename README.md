@@ -7,7 +7,7 @@ Author: Lets Comunica
 
 E-mail: fabio@letscomunica.com.br
 
-**LAST VERSION: 0.0.2**
+**LAST VERSION: 0.0.4**
 
 Installation
 =====
@@ -15,7 +15,7 @@ Installation
 Install in you angular project:
 
 ```bash
-  npm install --save git+ssh://git@bitbucket.org/letscomunicadev/angular-framework-core.git#v0.0.3
+  npm install --save git+ssh://git@bitbucket.org/letscomunicadev/angular-framework-core.git#v0.0.4
 ```
 
 Updates
@@ -43,9 +43,19 @@ $ git push origin vX.X.X  # Version needs to be the same from commit
   npm install --save git+ssh://git@bitbucket.org/letscomunicadev/angular-framework-core.git#vX.X.X
 ```
 
+Todo
+----------
+1\. Convert ng-includes from URL images to directives (in order to access templates from inside this module)
+
+2\. Start gulp automation to render all src files to single lets-angular-framework-core.module.js in a minified version
+
+3\. Separate input types in different directives
+
+4\. Isolate scope to vm and change all scope parents and childs access
+
 History
 ----------
 
-**v0.0.2**
+**v0.0.4**
 
 [09/06/18] Started repository

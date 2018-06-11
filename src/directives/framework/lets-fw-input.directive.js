@@ -30,7 +30,7 @@
         return {
             restrict: 'E',
             scope: true,
-            templateUrl: 'views/framework/input.html',
+            templateUrl: 'src/views/framework/input.html',
             replace: true,
             // priority: 99,
             link: {

@@ -37,7 +37,7 @@
         self.createCRUDModal = function (headers, parentModel, data, autocompleteDetail, ctrl, template) {
             return self._createModal({
             animation: true,
-            templateUrl: template || 'views/crud/crud-modal.html',
+            templateUrl: template || 'src/views/crud/crud-modal.html',
             controller: ctrl || 'CRUDFormModalController',
             resolve: {
                 headers: function() { return headers; },

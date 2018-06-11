@@ -30,7 +30,7 @@
         return {
             restrict: 'E',
             scope: true,
-            templateUrl: 'views/framework/input-detail.html',
+            templateUrl: 'src/views/framework/input-detail.html',
             replace: true,
             // controller: function($scope) {
             //   $scope.data = $scope.detail_data;
