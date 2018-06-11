@@ -21,7 +21,7 @@
 (function () {
     'use strict';
 
-    angular.module('letsAngular.crud')
+    angular.module('letsAngular')
         .directive('crudList', crudList);
 
     crudList.$inject = ['$window', 'jQuery', 'Backbone', 'Backgrid', 'appSettings', 'fwObjectService'];

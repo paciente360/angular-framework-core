@@ -21,7 +21,7 @@
 (function () {
     'use strict';
     angular
-        .module('letsAngular.core')
+        .module('letsAngular')
         .service('fwChartService', fwChartService);
   
     fwChartService.inject = [];

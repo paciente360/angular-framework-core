@@ -21,7 +21,7 @@
 (function () {
     'use strict';
 
-    angular.module('letsAngular.core')
+    angular.module('letsAngular')
         .directive('fwTags', fwTags);
 
     fwTags.$inject = [];

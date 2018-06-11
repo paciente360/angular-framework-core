@@ -21,7 +21,7 @@
 (function () {
     'use strict';
 
-    angular.module('letsAngular.crud')
+    angular.module('letsAngular')
         .factory('Backgrid', BackgridFactory);
 
     BackgridFactory.$inject = ['$window'];

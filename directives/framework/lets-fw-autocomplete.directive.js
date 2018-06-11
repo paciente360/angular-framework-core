@@ -21,7 +21,7 @@
 (function () {
     'use strict';
 
-    angular.module('letsAngular.core')
+    angular.module('letsAngular')
         .directive('fwAutoComplete', fwAutoComplete);
 
     fwAutoComplete.$inject = ['$compile'];

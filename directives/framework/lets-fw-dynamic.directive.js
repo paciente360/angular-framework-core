@@ -21,7 +21,7 @@
 (function () {
     'use strict';
 
-    angular.module('letsAngular.core')
+    angular.module('letsAngular')
         .directive('fwDynamic', fwDynamic);
 
     fwDynamic.$inject = ['viaCEP', '$timeout', '$compile', 'jQuery', '$filter'];

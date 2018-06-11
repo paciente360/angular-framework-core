@@ -21,7 +21,7 @@
 (function () {
     'use strict';
     angular
-        .module('letsAngular.core')
+        .module('letsAngular')
         .service('fwModalService', fwModalService);
   
     fwModalService.inject = ['$modal', 'jQuery', '$rootScope'];

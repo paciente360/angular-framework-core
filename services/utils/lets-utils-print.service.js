@@ -21,7 +21,7 @@
 (function () {
     'use strict';
     angular
-        .module('letsAngular.core')
+        .module('letsAngular')
         .service('utilsPrintService', utilsPrintService);
 
     utilsPrintService.inject = ['$templateRequest', '$rootScope', '$compile', '$timeout'];

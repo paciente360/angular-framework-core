@@ -21,7 +21,7 @@
 (function () {
     'use strict';
 
-    var module = angular.module('letsAngular.crud');
+    var module = angular.module('letsAngular');
 
     module.controller('CRUDFormModalController', function ($controller, $scope, $modalInstance, ngToast, headers, Restangular, $stateParams, $timeout, $state, $rootScope, $q, $http, Upload, $modal, parentModel, autocompleteDetail, data, fwStringService, auth, fwObjectService, fwErrorService) {
         $controller('CRUDEditController', { $scope: $scope, Restangular: Restangular, $stateParams: $stateParams, $timeout: $timeout, $modal: $modal, module: module, $state: $state, $rootScope: $rootScope, $q: $q, ngToast: ngToast, $http: $http, Upload: Upload });

@@ -36,9 +36,7 @@
         'ui.toggle',
         'ui.select',
         'ngSanitize',
-        'colorpicker-dr',
-        'letsAngular.crud',
-        'letsAngular.core'
+        'colorpicker-dr'
     ]);
 
     module.config(appConfig);

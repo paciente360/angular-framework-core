@@ -1,7 +1,7 @@
 (function () {
     'use strict';
     angular
-        .module('letsAngular.core')
+        .module('letsAngular')
         .service('fwAuthService', fwAuthService);
   
     fwAuthService.inject = ['$window', 'LoopBackAuth', 'Usuario', '$state', '$auth', 'appSettings', '$http'];

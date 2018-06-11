@@ -21,7 +21,7 @@
 (function () {
     'use strict';
 
-    var module = angular.module('letsAngular.crud');
+    var module = angular.module('letsAngular');
 
     module.controller('CRUDController', function ($scope, Restangular, module, $state, $window, $stateParams, $rootScope, headers) {
         $scope.headersReady = false;

@@ -21,7 +21,7 @@
 (function () {
     'use strict';
 
-    var module = angular.module('letsAngular.crud');
+    var module = angular.module('letsAngular');
 
     module.controller('CRUDEditDetailController', function ($scope, Restangular, $stateParams, $timeout, headers, $rootScope, $modalInstance, $q, ngToast) {
 

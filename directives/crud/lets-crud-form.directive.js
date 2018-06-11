@@ -21,7 +21,7 @@
 (function () {
     'use strict';
 
-    angular.module('letsAngular.crud')
+    angular.module('letsAngular')
         .directive('crudForm', crudForm);
 
     crudForm.$inject = ['jQuery', '$timeout', 'fwModalService'];

@@ -21,7 +21,7 @@
 (function () {
     'use strict';
     angular
-        .module('letsAngular.core')
+        .module('letsAngular')
         .service('fwErrorService', fwErrorService);
 
     fwErrorService.inject = ['ngToast'];

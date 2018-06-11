@@ -1,9 +1,9 @@
 /*global angular*/
 /*jslint plusplus: true*/
 /*!
-* Angular Lets Core - Template Load Service
+* Angular Lets Core - File Load Provider
 *
-* File:        services/framework/lets-fw-template-load.service.js
+* File:        providers/framework/lets-fw-file-load.provider.js
 * Version:     1.0.0
 *
 * Author:      Lets Comunica
@@ -22,11 +22,17 @@
     'use strict';
     angular
         .module('letsAngular')
-        .service('fwTemplateLoadService', fwTemplateLoadService);
-  
-    fwTemplateLoadService.inject = ['$templateRequest'];
-  
-    function fwTemplateLoadService($templateRequest) {
+        .provider('fwFileLoad', fwFileLoadProvider);
+
+    function fwFileLoadProvider () {
+
+        this.$get = ['$templateRequest', function($templateRequest) {
+            return new FwFileLoadService($templateRequest);
+        }];
+
+    }
+
+    function FwFileLoadService ($templateRequest) {
   
         var self = this;
 
@@ -49,6 +55,5 @@
         };
   
     }
-  
 })();
   
