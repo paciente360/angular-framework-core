@@ -15,7 +15,7 @@ Installation
 Install in you angular project:
 
 ```bash
-  npm install --save git+ssh://git@bitbucket.org/letscomunicadev/angular-framework-core.git#v0.0.2
+  npm install --save git+ssh://git@bitbucket.org/letscomunicadev/angular-framework-core.git#v0.0.3
 ```
 
 Updates
