@@ -58,4 +58,4 @@
         // $authProvider.loginUrl = '/auth/login';
         // $authProvider.baseUrl = 'http://192.168.1.112/';
     };
-});
+})();
