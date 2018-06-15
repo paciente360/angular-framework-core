@@ -33,13 +33,12 @@ module.exports = function(options) {
 
   gulp.task('scripts', function () {
 
-    var jsFilter = $.filter('**/*.js', {restore: true});
+    // var jsFilter = $.filter('**/*.js', {restore: true});
 
-    var injectScripts = gulp.src([
-        options.src + '/src/**/*.js',
-        '!' + options.src + '/src/**/*.spec.js',
-        '!' + options.src + '/src/**/*.mock.js'
+    return gulp.src([
+        options.src + '/src/**/*.js'
       ])
+      .pipe($.size({ title: options.src + '/', showFiles: true }))
       .pipe($.angularFilesort())
       
       .pipe($.ngAnnotate())
@@ -54,7 +53,7 @@ module.exports = function(options) {
       
   });
 
-  gulp.task('full', function() {
+  gulp.task('full', ['scripts', 'partials'], function() {
     return gulp.src([
         options.dist + '/lets-core.js',
         options.dist + '/lets-tpls.js',
@@ -75,5 +74,5 @@ module.exports = function(options) {
     $.del([options.dist + '/', options.tmp + '/'], done);
   });
 
-  gulp.task('build', ['scripts', 'partials', 'full']);
+  gulp.task('build', ['full']);
 };
