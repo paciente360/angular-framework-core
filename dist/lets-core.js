@@ -1,3 +1,64 @@
+(function () {
+    'use strict';
+
+    var module = angular.module('letsAngular', [
+        'ui.router',
+        'ngAnimate',
+        'ui.bootstrap',
+        'angular.viacep',
+        'ngCpfCnpj',
+        'ui.mask',
+        'ui.jq',
+        'ui.event',
+        'ngFileUpload',
+        'moment-filter',
+        'checklist-model',
+        'ui.toggle',
+        'ui.select',
+        'ngSanitize',
+        'colorpicker-dr'
+    ]);
+
+    // ----------------------------
+    // Module App Config
+    // ----------------------------
+
+    module.config(appConfig);
+    module.provider('headers', headersProvider);
+    function headersProvider() {
+        this.headers = {};
+
+        var provider = {};
+
+        this.set = function (name, headers) {
+            this.headers[name] = headers;
+        }
+
+        this.get = function (name) {
+
+            this.headers[name].findLabel = function (name) {
+                for (var _x in this.fields) {
+                    var field = this.fields[_x];
+
+                    if (field.name == name) {
+                        return field.label;
+                    }
+                }
+            }
+
+            return this.headers[name];
+        }
+
+        this.$get = function () {
+            return this;
+        };
+    }
+    appConfig.$inject = ['$stateProvider', '$httpProvider'];
+    function appConfig($stateProvider, $httpProvider) {
+        // $authProvider.loginUrl = '/auth/login';
+        // $authProvider.baseUrl = 'http://192.168.1.112/';
+    };
+});
 /*global angular*/
 /*jslint plusplus: true*/
 /*!
@@ -3013,68 +3074,6 @@
 /*global angular*/
 /*jslint plusplus: true*/
 /*!
-* Angular Lets Core - Framework Age Month Filter
-*
-* File:        filters/lets-fw-age-month.filter.js
-* Version:     1.0.0
-*
-* Author:      Lets Comunica
-* Info:        https://bitbucket.org/letscomunicadev/angular-framework-crud/src
-* Contact:     fabio@letscomunica.com.br
-*
-* Copyright 2018 Lets Comunica, all rights reserved.
-* Copyright 2018 Released under the MIT License
-*
-* This source file is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-* or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
-*/
-
-(function () {
-    'use strict';
-
-    fwAgeMonth.$inject = ["birthday"];
-    angular.module('letsAngular')
-        .filter('fwAgeMonth', fwAgeMonth);
-
-    /**
-     * Calculate age from birthday
-     * @param {String of Date} birthday 
-     */
-    function fwAgeMonth (birthday) {
-        if (birthday != null) {
-
-            if (typeof birthday == 'string') {
-                birthday = new Date(birthday);
-            }
-
-            var _birthType = ' meses';
-            var _birthMoment = moment(birthday);
-            var _age = moment().diff(_birthMoment, 'months');
-            if (!_age) {
-                _birthType = ' dias';
-                _age = moment().diff(_birthMoment, 'days');
-            }
-            else if (_age > 12) {
-                _birthType = ' anos';
-                _age = moment().diff(_birthMoment, 'years');
-            }
-
-            return _age + _birthType;
-            // var ageDifMs = Date.now() - birthday.getTime();
-            //
-            //
-            // var ageDate = new Date(ageDifMs); // miliseconds from epoch
-            // var meses = ageDate.getUTCMonth();
-            //
-            // return Math.abs(ageDate.getUTCFullYear() - 1970) + ' anos ' + (meses > 0 ? ('e ' + meses + (meses > 1 ? ' meses' : ' mês')) : '');
-        }
-    }
-})();
-
-/*global angular*/
-/*jslint plusplus: true*/
-/*!
 * Angular Lets Core - Backgrid Factory
 *
 * File:        factories/backgrid.directive.js
@@ -3138,6 +3137,68 @@
         return $window.Backbone;
     }
 
+})();
+
+/*global angular*/
+/*jslint plusplus: true*/
+/*!
+* Angular Lets Core - Framework Age Month Filter
+*
+* File:        filters/lets-fw-age-month.filter.js
+* Version:     1.0.0
+*
+* Author:      Lets Comunica
+* Info:        https://bitbucket.org/letscomunicadev/angular-framework-crud/src
+* Contact:     fabio@letscomunica.com.br
+*
+* Copyright 2018 Lets Comunica, all rights reserved.
+* Copyright 2018 Released under the MIT License
+*
+* This source file is distributed in the hope that it will be useful, but
+* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+* or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
+*/
+
+(function () {
+    'use strict';
+
+    fwAgeMonth.$inject = ["birthday"];
+    angular.module('letsAngular')
+        .filter('fwAgeMonth', fwAgeMonth);
+
+    /**
+     * Calculate age from birthday
+     * @param {String of Date} birthday 
+     */
+    function fwAgeMonth (birthday) {
+        if (birthday != null) {
+
+            if (typeof birthday == 'string') {
+                birthday = new Date(birthday);
+            }
+
+            var _birthType = ' meses';
+            var _birthMoment = moment(birthday);
+            var _age = moment().diff(_birthMoment, 'months');
+            if (!_age) {
+                _birthType = ' dias';
+                _age = moment().diff(_birthMoment, 'days');
+            }
+            else if (_age > 12) {
+                _birthType = ' anos';
+                _age = moment().diff(_birthMoment, 'years');
+            }
+
+            return _age + _birthType;
+            // var ageDifMs = Date.now() - birthday.getTime();
+            //
+            //
+            // var ageDate = new Date(ageDifMs); // miliseconds from epoch
+            // var meses = ageDate.getUTCMonth();
+            //
+            // return Math.abs(ageDate.getUTCFullYear() - 1970) + ' anos ' + (meses > 0 ? ('e ' + meses + (meses > 1 ? ' meses' : ' mês')) : '');
+        }
+    }
 })();
 
 /*global angular*/
