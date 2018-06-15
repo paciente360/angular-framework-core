@@ -36,7 +36,7 @@
                 crudTabListSettings: '&',
                 parentData: '='
             },
-            templateUrl: 'src/views/crud/crud-tab-list.html',
+            templateUrl: 'lets/views/crud/crud-tab-list.html',
             link: function (scope, $el) {
                 // scope.type = $el.attr('type');
                 // scope.data = scope.parentData;

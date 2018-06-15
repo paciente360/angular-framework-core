@@ -7,7 +7,7 @@ Author: Lets Comunica
 
 E-mail: fabio@letscomunica.com.br
 
-**LAST VERSION: 0.0.4**
+**LAST VERSION: 0.0.8**
 
 Installation
 =====
@@ -15,7 +15,7 @@ Installation
 Install in you angular project:
 
 ```bash
-  npm install --save git+ssh://git@bitbucket.org/letscomunicadev/angular-framework-core.git#v0.0.4
+  npm install --save git+ssh://git@bitbucket.org/letscomunicadev/angular-framework-core.git#v0.0.8
 ```
 
 Updates
@@ -56,6 +56,6 @@ Todo
 History
 ----------
 
-**v0.0.4**
+**v0.0.8**
 
 [09/06/18] Started repository

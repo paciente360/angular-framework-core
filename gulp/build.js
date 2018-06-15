@@ -25,7 +25,7 @@ module.exports = function(options) {
       }))
       .pipe($.angularTemplatecache('lets-tpls.js', {
         module: 'letsAngular',
-        root: 'app'
+        root: 'lets'
       }))
       .pipe(gulp.dest(options.dist))
       .pipe($.size({ title: options.dist + '/', showFiles: true }));

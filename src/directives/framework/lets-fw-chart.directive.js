@@ -34,7 +34,7 @@
                 crudChartSettings: '&',
                 crudChartData: '&'
             },
-            templateUrl: 'src/views/framework/chart.html',
+            templateUrl: 'lets/views/framework/chart.html',
             // compile: function (el, attr) {
             //     return {
             //         pre: function (scope, el, attr, controller, transcludeFn) {

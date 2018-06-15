@@ -1,9 +1,9 @@
 /*global angular*/
 /*jslint plusplus: true*/
 /*!
-* Angular Lets Core - Framework Input Detail Directive
+* Angular Lets Core - Crud Form Directive
 *
-* File:        directives/framework/lets-fw-input-detail.directive.js
+* File:        directives/crud/lets-crud-form.directive.js
 * Version:     1.0.0
 *
 * Author:      Lets Comunica
@@ -22,24 +22,17 @@
     'use strict';
 
     angular.module('letsAngular')
-        .directive('fwInputDetail', fwInputDetail);
+        .directive('crudBreadcrumb', crudBreadcrumb);
 
-    fwInputDetail.$inject = ['viaCEP', '$timeout', '$compile', 'jQuery'];
+    crudBreadcrumb.$inject = [];
 
-    function fwInputDetail(viaCEP, $timeout, $compile, jQuery) {
+    function crudBreadcrumb() {
         return {
             restrict: 'E',
-            scope: true,
-            templateUrl: 'lets/views/framework/input-detail.html',
+            templateUrl: 'lets/views/framework/breadcrumb.html',
             replace: true,
-            // controller: function($scope) {
-            //   $scope.data = $scope.detail_data;
-            // }
-            link: {
-                post: function preLink(scope, $el, attrs, controller) {
+            link: function (scope, $el) {
 
-
-                },
             }
         }
     }
