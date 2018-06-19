@@ -5,7 +5,6 @@
         .provider('fwState', fwStateProvider);
 
     function fwStateProvider ($stateProvider) {
-        // this = $stateProvider;
 
         this.$get = $stateProvider.$get;
         this.state = $stateProvider.state;

@@ -58,19 +58,18 @@
     <div fw-upload ng-if="field.type == 'string' && field.customOptions.file != undefined" class="fw-input-group">
       <div class="progress">
         <div class="progress-bar" role="progressbar" aria-valuenow="{{f.progress || defaultProgress}}" aria-valuemin="0" aria-valuemax="100"
-          style="min-width: 2em;" ng-style="{'width': '{{f.progress || defaultProgress}}%'}" ng-if="(f.progress != undefined && f.progress != 0) || defaultProgress != 0">
+          style="text-align: left; min-width: 2em;" ng-style="{'width': '{{f.progress || defaultProgress}}%'}" ng-if="(f.progress != undefined && f.progress != 0) || defaultProgress != 0">
           <span ng-if="f.progress != undefined && f.progress != 0">
-                      {{f.progress + '%'}}
-                      <span ng-if="f.progress == 100">{{f.name}}</span>
+            {{f.progress + '%'}}
+            <span style="display: inline-block; width: 89%;" ng-if="f.progress == 100 && !f.newName">{{f.name}}</span>
+            <span style="display: inline-block; width: 89%;" ng-if="f.progress == 100 && f.newName">{{f.newName}}</span>
           </span>
-          <span ng-if="f.progress == undefined" ng-bind="$parent.data[field.name]"></span>
+          <span ng-if="f == undefined || f.progress == undefined" ng-bind="$parent.data[field.name]"></span>
         </div>
   
       </div>
-      <input type="hidden" class="form-control" disabled="disabled" name="temp_filename" ng-model="$parent.data[field.name]"
+      <input ng-model-options="{fieldInfo: field}" type="hidden" class="form-control" disabled="disabled" name="temp_filename" ng-model="$parent.data[field.name]"
         id="{{field.name}}" ng-required="field.notnull" autocomplete="off" />
-        <!--{{alreadySent}}-->
-        <!--{{field.customOptions}}-->
       <span class="input-group-btn">
               <button ng-if="alreadySent == false || field.customOptions.only_upload == true" type="file" ngf-select="upload($file, $invalidFiles)" class="btn btn-default btn-upload">
                   <i class="glyphicon glyphicon-upload"></i>
@@ -79,13 +78,15 @@
                   <i class="glyphicon glyphicon-download"></i>
               </button>
           </span>
-  
     </div>
   
     <textarea ng-model-options="{fieldInfo: field}" ng-if="field.type == 'text'" id="{{field.name}}" fw-dynamic ng-required="field.notnull"
       ng-model="data[field.name]" ng-disabled="field.disabled != undefined && field.disabled || data.disabled != undefined && data.disabled"
       placeholder="{{field.customOptions.placeholder ? field.customOptions.placeholder : ''}}" class="main-input form-control" rows="{{field.customOptions.rows}}"></textarea>
   
+    <textarea ckeditor="{'language':'pt-br'}" ng-model-options="{fieldInfo: field}" ng-if="field.type == 'text' && field.customOptions.rich" id="{{field.name}}" fw-dynamic ng-required="field.notnull"
+    ng-model="data[field.name]" class="main-input form-control"></textarea>
+
     <div class="row" ng-if="field.customOptions.enum != undefined">
       <div class="col-sm-6">
         <div ng-class="{checkbox: (field.customOptions.multiple != undefined && field.customOptions.multiple == true),
@@ -135,7 +136,10 @@
       <input id="{{field.name}}" ng-model-options="{fieldInfo: field}" fw-auto-complete typeahead-on-select="autocompleteSelect($item, $model, $label)"
         aria-autocomplete="none" autocomplete="off" typeahead-min-length="0" typeahead="row as row.label for row in autocomplete(field, $viewValue)"
         type="text" class="form-control" name="{{field.name}}" ng-required="field.notnull" ng-model="$parent.data[field.name + '.label']"
-        size="{{field.length}}" placeholder="{{field.label}}" ng-disabled="(data.disabled != undefined && data.disabled) || field.disabled" />
+        size="{{field.length}}" placeholder="{{field.label}}" ng-disabled="(data.disabled != undefined && data.disabled) || field.disabled"
+        ng-readonly="field.customOptions.select == true"
+        ng-class="{'fieldSelect': field.customOptions.select == true}"
+        />
       <span class="input-group-btn" ng-if="data.disabled == undefined">
         <button type="button" class="btn btn-default" disabled="true">
           <i class="glyphicon" ng-class="{'glyphicon-search': field.customOptions.select == undefined, 'glyphicon-menu-down': field.customOptions.select == true}"></i>

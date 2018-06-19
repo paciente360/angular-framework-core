@@ -46,6 +46,16 @@
                 }
             }
 
+            this.headers[name].get = function (name) {
+                for (var _x in this.fields) {
+                    var field = this.fields[_x];
+
+                    if (field.name == name) {
+                        return field;
+                    }
+                }
+            }
+
             return this.headers[name];
         }
 
@@ -53,9 +63,9 @@
             return this;
         };
     }
+
     appConfig.$inject = ['$stateProvider', '$httpProvider'];
     function appConfig($stateProvider, $httpProvider) {
-        // $authProvider.loginUrl = '/auth/login';
-        // $authProvider.baseUrl = 'http://192.168.1.112/';
+
     };
 })();

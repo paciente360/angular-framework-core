@@ -1,23 +1,3 @@
-/*global angular*/
-/*jslint plusplus: true*/
-/*!
-* Angular Lets Core - Crud List Directive
-*
-* File:        directives/crud/lets-crud-list.directive.js
-* Version:     1.0.0
-*
-* Author:      Lets Comunica
-* Info:        https://bitbucket.org/letscomunicadev/angular-framework-crud/src
-* Contact:     fabio@letscomunica.com.br
-*
-* Copyright 2018 Lets Comunica, all rights reserved.
-* Copyright 2018 Released under the MIT License
-*
-* This source file is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-* or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
-*/
-
 (function () {
     'use strict';
 
@@ -37,7 +17,6 @@
                 $scope.route = null;
 
                 $scope.$on('refreshGRID', function () {
-                    console.log('Refreshing grid...')
                     $scope.pageableCRUDModel.fetch();
                 });
             },
@@ -46,43 +25,43 @@
                 scope.$el = $el;
 
                 function render() {
-                    // console.log(attrs);
-                    // var settings = scope.crudListSettings;
                     var settings = scope.crudListSettings();
                     settings.route = appSettings.API_URL + settings.url;
-                    // if (settings.pagerGeneral && settings.type) {
-                    //     var _t = settings.type[0].toUpperCase() + settings.type.slice(1);
-                    //     settings.route = appSettings.API_URL + settings.mainRoute + _t + '/pagerGeneral';
-                    // }
                     scope.route = settings.route;
 
                     Backgrid.InputCellEditor.prototype.attributes.class = 'form-control input-sm';
 
                     var CRUDModel = Backbone.Model.extend({});
 
-                    var PageableCRUDModel = Backbone.PageableCollection.extend({
+                    var paramsPageable = {
                         model: CRUDModel,
-                        //            url: './assets/json/pageable-territories.json',
-                        // url: settings.route + '/pager', //'http://192.168.1.104/' + scope.headers.route,
-                        url: settings.route + (!settings.pagerGeneral ? '/pager' : '/pagerGeneral'), //'http://192.168.1.104/' + scope.headers.route,
+                        url: settings.route + (!settings.pagerGeneral ? '/pager' : '/pagerGeneral'),
                         state: {
                             pageSize: 20
                         },
-                        mode: 'server', // page entirely on the client side
-                        // get the actual records
+                        mode: 'server',
                         parseRecords: function (resp, options) {
-                            // if (settings.pagerGeneral) {
-                            //     var extraData = scope.$parent.extraData;
-                            //     console.log('atualizado extraData from parent: ', extraData)
-                            //     var resultado = fwObjectService.convertCrudTabListExtraData(settings.type.toLowerCase(), extraData.structure, extraData.values);
-                            //     if (resultado) resp.data = resultado;
-                            // }
                             return resp.data;
                         },
                         parseState: function (resp, queryParams, state, options) {
                             return { totalRecords: resp.total_count };
                         },
-                    });
+                    };
+                    
+                    if (settings.filterScope){
+                        paramsPageable.queryParams = {
+                            scope: settings.filterScope
+                        };
+                    }
+
+                    if (settings.sort){
+                        paramsPageable.state.sortKey = settings.sort.sortKey;
+                        if (settings.sort.order && settings.sort.order=="desc"){
+                            paramsPageable.state.order = 1;
+                        }
+                    }
+
+                    var PageableCRUDModel = Backbone.PageableCollection.extend(paramsPageable);
 
                     var pageableCRUDModel = new PageableCRUDModel(),
                         initialCRUDModel = pageableCRUDModel;
@@ -91,33 +70,23 @@
 
                     var serverSideFilter = new Backgrid.Extension.ServerSideFilter({
                         collection: pageableCRUDModel,
-                        // the name of the URL query parameter
                         name: "q",
-                        placeholder: "Buscar por..." // HTML5 placeholder for the search box
+                        placeholder: "Buscar por..."
                     });
 
                     function createBackgrid(collection) {
                         var columns = [];
 
-                        var StringFormatter = function () { };
+                        var StringFormatter = function () {};
                         StringFormatter.prototype = new Backgrid.StringFormatter();
 
                         _.extend(StringFormatter.prototype, {
                             fromRaw: function (rawValue, b, c, d, e) {
-                                // var args = [].slice.call(arguments, 1);
-                                // args.unshift(rawValue * this.multiplier);
-                                // return NumberFormatter.prototype.fromRaw.apply(this, args) || "0" + this.symbol;
-
-                                // console.log(rawValue);
                                 return rawValue;
                             }
                         });
 
-                        // for (var idx in settings.fields) {
                         _.each(settings.fields, function (field, idx) {
-
-
-                            // var field = settings.fields[idx];
 
                             if (field.viewable) {
                                 var cellOptions = {
@@ -128,16 +97,10 @@
                                     headers: field
                                 };
 
-
                                 if (field.type == 'boolean') {
-                                    // cellOptions.cell = 'boolean';
                                     cellOptions.sortable = false;
                                     cellOptions.cell = Backgrid.Cell.extend({
-
-                                        // Cell default class names are the lower-cased and dasherized
-                                        // form of the the cell class names by convention.
                                         className: "custom-situation-cell",
-
                                         formatter: {
                                             fromRaw: function (rawData, model) {
                                                 return rawData ? field.customOptions.statusTrueText : field.customOptions.statusFalseText;
@@ -149,99 +112,53 @@
 
                                     });
                                 }
-                                if (field.type == 'simplecolor') {
-                                    // cellOptions.cell = 'boolean';
+                                else if (field.type == 'simplecolor') {
                                     cellOptions.sortable = false;
-
-                                    // var customFormatter = {
-                                    //     fromRaw: function (rawData, model) {
-                                    //         debugger;
-                                    //         return angular.element('<cp-color class="color-picker" color="'+rawData+'"></cp-color>');
-                                    //     },
-                                    //     toRaw: function (formattedData, model) {
-                                    //         return 'down';
-                                    //     }
-                                    // };
-
                                     cellOptions.cell = Backgrid.Cell.extend({
-
-                                        // Cell default class names are the lower-cased and dasherized
-                                        // form of the the cell class names by convention.
                                         className: "custom-situation-cell",
-
-                                        // formatter: customFormatter,
-
                                         initialize: function () {
                                             Backgrid.Cell.prototype.initialize.apply(this, arguments);
                                         },
                                         render: function () {
                                             this.$el.empty();
-                                            // var formattedValue = customFormatter.fromRaw();
                                             var formattedValue = '<cp-color class="color-picker" style="background-color: ' + this.model.attributes.cor + '"></cp-color>';
-
                                             this.$el.append(formattedValue);
                                             this.delegateEvents();
                                             return this;
                                         }
-
                                     });
                                 }
                                 else if (field.type == 'custom') {
-                                    // console.log('uopiuiopasfd');
                                     var customFormatter = {
-                                        // function (*, Backbone.Model): string
                                         fromRaw: field.toString,
-                                        // fromRaw: function (rawData, model) {
-                                        //   // return (rawData, model);
-                                        // },
-                                        // function (string, Backbone.Model): *|undefined
                                         toRaw: function (formattedData, model) {
                                             return 'down';
                                         }
                                     };
 
                                     cellOptions.sortable = false;
-                                    var _backgridCellExtend = {
-                                        // Cell default class names are the lower-cased and dasherized
-                                        // form of the the cell class names by convention.
+                                    var _backgridCellExtend = Backgrid.Cell.extend({
                                         className: "custom-cell",
                                         formatter: customFormatter
+                                    });
+
+                                    _backgridCellExtend.initialize = function () {
+                                        Backgrid.Cell.prototype.initialize.apply(this, arguments);
+                                    };
+                                    _backgridCellExtend.render = function () {
+                                        this.$el.empty();
+                                        this.$el.data('model', this.model);
+                                        var formattedValue = customFormatter.fromRaw();
+                                        this.$el.append(formattedValue);
+                                        this.delegateEvents();
+                                        return this;
                                     };
 
-                                    if (field.name === 'download' || field.name === 'print') {
-                                        _backgridCellExtend.initialize = function () {
-                                            Backgrid.Cell.prototype.initialize.apply(this, arguments);
-                                        };
-                                        _backgridCellExtend.render = function () {
-                                            this.$el.empty();
-                                            var formattedValue = customFormatter.fromRaw();
-                                            this.$el.append(formattedValue);
-                                            this.delegateEvents();
-                                            return this;
-                                        };
-                                    }
                                     cellOptions.cell = Backgrid.Cell.extend(_backgridCellExtend);
-                                } else if (field.type == 'address') {
-
+                                }
+                                else if (field.type == 'address') {
                                     var addressFormatter = {
-                                        // function (*, Backbone.Model): string
                                         fromRaw: function (rawData, model) {
-                                            //     "address" : {
-                                            //     "state" : "PR",
-                                            //     "city" : "Londrina",
-                                            //     "country" : "Brasil",
-                                            //     "street_number" : "3",
-                                            //     "neighborhood" : "Boa Vista",
-                                            //     "zipcode" : "86020200",
-                                            //     "geo_location" : {
-                                            //         "lat" : -23.3021531,
-                                            //         "lng" : -51.1731098
-                                            //     },
-                                            //     "location" : "",
-                                            //     "number" : "",
-                                            //     "complement" : "",
-                                            //     "street" : "Rua Maceió"
-                                            // }
                                             try {
                                                 return rawData.city + ' - ' + rawData.state;
                                             } catch (err) {
@@ -249,31 +166,27 @@
                                             }
 
                                         },
-                                        // function (string, Backbone.Model): *|undefined
                                         toRaw: function (formattedData, model) {
                                             return 'down';
                                         }
                                     };
 
                                     var AddressCell = Backgrid.Cell.extend({
-
-                                        // Cell default class names are the lower-cased and dasherized
-                                        // form of the the cell class names by convention.
                                         className: "address-cell",
-
                                         formatter: addressFormatter
 
                                     });
 
                                     cellOptions.cell = AddressCell;
 
-                                } else if (field.type == 'float') {
+                                }
+                                else if (field.type == 'float') {
                                     cellOptions.cell = Backgrid.NumberCell.extend({
                                         decimalSeparator: ',',
                                         orderSeparator: '.'
                                     });
-                                } else if (field.type == 'date') {
-                                    // console.log('tango');
+                                }
+                                else if (field.type == 'date') {
                                     var format = "DD/MM/YYYY";
                                     if (field.customOptions.monthpicker !== undefined) {
                                         format = "MM/YYYY";
@@ -281,11 +194,11 @@
 
                                     cellOptions.cell = Backgrid.Extension.MomentCell.extend({
                                         modelFormat: "YYYY/M/D",
-                                        // You can specify the locales of the model and display formats too
                                         displayLang: "pt-br",
                                         displayFormat: format
                                     });
-                                } else if (field.customOptions.enum != undefined) {
+                                }
+                                else if (field.customOptions.enum != undefined) {
 
                                     var enumOptions = [];
                                     for (var _idx in field.customOptions.enum) {
@@ -297,49 +210,14 @@
                                         optionValues: enumOptions
                                     });
 
-                                } else if (field.autocomplete == true) {
-                                    // if (field.customOptions.list != undefined) {
-                                    //     var customFormatter = {
-                                    //         // function (*, Backbone.Model): string
-                                    //         fromRaw: function(rawData, model) {
-                                    //             console.log('hehe');
-                                    //             var _list = field.customOptions.list;
-                                    //             console.log(field, rawData, model);
-                                    //             for (var _x in _list) {
-                                    //                 if (_list[_x].id == rawData) {
-                                    //                     return _list[_x].label;
-                                    //                 }
-                                    //             }
-                                    //         },
-                                    //         // fromRaw: function (rawData, model) {
-                                    //         //   // return (rawData, model);
-                                    //         // },
-                                    //         // function (string, Backbone.Model): *|undefined
-                                    //         toRaw: function(formattedData, model) {
-                                    //             return 'not implemented';
-                                    //         }
-                                    //     };
-
-                                    //     var customCell = Backgrid.Cell.extend({
-
-                                    //         formatter: customFormatter
-
-                                    //     });
-
-                                    //     cellOptions.cell = customCell;
-                                    //     console.log('entrou aqui');
-
-                                    // } else {
+                                }
+                                else if (field.autocomplete == true) {
                                     cellOptions.name = cellOptions.name + '.label';
-                                    // }
-
                                 }
 
                                 columns.push(cellOptions);
                             }
                         });
-                        // }
-
 
                         var ActionCell = Backgrid.Cell.extend({
                             className: 'text-right btn-column' + (settings.tab == true ? ' detail' : ''),
@@ -355,7 +233,7 @@
                                 } else {
                                     if (settings.settings) {
                                         if (settings.settings.edit) {
-                                            var _btnEditDetail = jQuery('<button type="button" class="btn btn-default btn-edit-detail-data"><span class="glyphicon glyphicon-pencil"></span></button>');
+                                            var _btnEditDetail = jQuery('<button type="button" class="btn btn-default btn-edit-detail"><span class="glyphicon glyphicon-pencil"></span></button>');
                                             _btnEditDetail.attr('data-route', settings.url);
                                             _buttons.push(_btnEditDetail);
                                         }
@@ -366,7 +244,6 @@
                                         }
                                     } else {
                                         var _btnDeleteDetail = jQuery('<button type="button" class="btn btn-default btn-delete-detail"><span class="glyphicon glyphicon-remove"></span></button>');
-                                        // _btnDeleteDetail.data('settings', settings);
                                         _btnDeleteDetail.attr('data-route', settings.url);
                                         _buttons.push(_btnDeleteDetail);
                                     }
@@ -376,20 +253,15 @@
                                 _group.append(_buttons);
 
                                 return _group;
-                            }, //_.template(_buttons),
+                            },
                             events: {
-                                // "click": "editRow"
+                               
                             },
                             editRow: function (e) {
                                 e.preventDefault();
-                                //Enable the occupation cell for editing
-                                //Save the changes
-                                //Render the changes.
-                                // console.log('tango')
                             },
                             render: function () {
                                 var _html = this.template(this.model.toJSON());
-                                // var _model = this.model;
                                 this.$el.html(_html);
                                 this.$el.data('model', this.model);
                                 this.$el.find('button.btn-edit').click(function (e) {
@@ -406,7 +278,7 @@
                                 });
 
                                 this.$el.find('button.btn-delete').click(function (e) {
-                                    // e.stopPropagation();
+                                    e.stopPropagation();
 
                                     var _confirm = window.confirm('Deseja realmente excluir esse registro?');
 
@@ -419,47 +291,38 @@
                                         }
                                     }
 
-
-
-                                    // response.then(function(data) {
-                                    //   console.log('asjkdlfç');
-                                    // });
-
-
                                 });
 
                                 this.$el.find('button.btn-delete-detail').click(function (e) {
                                     e.stopPropagation();
 
-                                    var $scope = angular.element(this).scope();
-                                    // var settings = this.$el.data('settings');
-                                    // console.log(settings.route);
-                                    var route = jQuery(this).attr('data-route');
+                                    var _confirm = window.confirm('Deseja realmente excluir esse registro?');
 
-                                    if (settings.tab) {
-                                        $scope.$parent.deleteDetail(route, $(this).closest('td').data('model').attributes);
-                                    } else {
-                                        $scope.deleteDetail(route, $(this).closest('td').data('model').attributes);
+                                    if (_confirm) {
+                                        var $scope = angular.element(this).scope();
+                                        var route = jQuery(this).attr('data-route');
+
+                                        if (settings.tab) {
+                                            $scope.$parent.deleteDetail(route, $(this).closest('td').data('model').attributes);
+                                        } else {
+                                            $scope.deleteDetail(route, $(this).closest('td').data('model').attributes);
+                                        }
                                     }
+                                    
                                 });
 
-                                this.$el.find('button.btn-edit-detail-data').click(function (e) {
+                                this.$el.find('button.btn-edit-detail').click(function (e) {
                                     e.stopPropagation();
-
+                  
                                     var $scope = angular.element(this).scope();
-                                    // var settings = this.$el.data('settings');
-                                    // console.log(settings.route);
-                                    var route = jQuery(this).attr('data-route');
-
-                                    if (settings.tab) {
-                                        $scope.$parent.editDetail(route, $(this).closest('td').data('model').attributes, $scope.type);
-                                    } else {
-                                        $scope.editDetail(route, $(this).closest('td').data('model').attributes, $scope.type);
-                                    }
+                                    var tab = $.parseJSON($(this).closest('.table-container').attr('tab-config'));
+                                    var row = $(this).closest('td').data('model').attributes;
+                                    var route = $(this).attr('data-route');
+                  
+                                    $scope.newDetail(tab, $scope.data, row.id, route);
                                 });
-
+                               
                                 this.delegateEvents();
-                                // console.log(_html);
                                 return this;
                             }
                         });
@@ -486,22 +349,7 @@
 
                         var ClickableRow = Backgrid.Row.extend({
                             className: rowClasses.join(' '),
-                            // events: {
-                            //   "click": "onClick"
-                            // },
-                            // onClick: function () {
-                            //   // Backbone.trigger("rowclicked", this.model);
-                            //   if (!this.$el.is('.detail') && !this.$el.is('.cant-edit')) {
-                            //     this.$el.scope().$parent.edit(this.model);
-                            //   }
-
-                            // }
                         });
-
-                        // Backbone.on("rowclicked", function (model) {
-                        //   console.log('clicou', model);
-                        //   // $scope.$parent.edit(model.id);
-                        // });
 
                         var pageableGrid = new Backgrid.Grid({
                             row: ClickableRow,
@@ -539,15 +387,6 @@
                             }
                         });
 
-                        // var serverSideFilter = new Backgrid.Extension.ServerSideFilter({
-                        //   collection: pageableCRUDModel,
-                        //   // the name of the URL query parameter
-                        //   name: "q",
-                        //   placeholder: "Busca..."
-                        // });
-                        //
-                        // jQuery('#table-dynamic').before(serverSideFilter.render().el);
-
                         var _filter = serverSideFilter.render().$el;
 
                         angular.element('.crud-list-header h4').css({
@@ -580,13 +419,11 @@
                         });
 
                         _filter.find('.clear').css({
-                            // 'display': 'block',
                             'height': '34px',
                             'line-height': '35px',
                             'top': 0,
                             'bottom': 0,
                             'margin-top': '0px',
-                            // 'margin-right': '-5px'
                         });
 
                         _filter.find('input[type="search"]').css({
@@ -621,33 +458,15 @@
 
                     createBackgrid(pageableCRUDModel);
 
-                    /*
-                    jQuery('#search-countries').keyup(function(){
-
-                      var $that = jQuery(this),
-                        filteredCollection = initialCRUDModel.fullCollection.filter(function(el){
-                          return ~el.get('name').toUpperCase().indexOf($that.val().toUpperCase());
-                        });
-                      createBackgrid(new PageableCRUDModel(filteredCollection, {
-                        state: {
-                          firstPage: 1,
-                          currentPage: 1
-                        }
-                      }));
-                    });
-                    */
-
                     pageableCRUDModel.fetch();
                 }
 
                 var listener = scope.$parent.$watch('headers', function (newValue, oldValue) {
-                    // console.log('tango', newValue);
                     if (newValue != null) {
                         var settings = scope.crudListSettings();
                         if (settings.tab == true) {
                             var listenerData = scope.$parent.$watch('data', function (newValue, oldValue) {
                                   if (newValue.id != undefined) {
-                                      // console.log('tango', newValue);
                                       render();
                                       listenerData();
                                       listener();

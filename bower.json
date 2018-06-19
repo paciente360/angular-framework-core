@@ -104,14 +104,14 @@
     "resolutions": {
     },
     "main": [
-		  "./dist/lets.min.js"
-	],
-	"ignore": [],
-	"keywords": [
-		"angular",
-		"directive",
-		"module"
-	],
-	"license": "MIT"
+      "./dist/lets.min.js"
+    ],
+    "ignore": [],
+    "keywords": [
+      "angular",
+      "directive",
+      "module"
+    ],
+    "license": "MIT"
   }
   

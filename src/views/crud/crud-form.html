@@ -48,7 +48,7 @@
             </table>
             <div class="pull-right">
                 <button type="button" class="btn btn-big btn-primary button-new" origin="masterdetails" detail="{{detail_key}}">
-                    <span class="icon fa fa-plus"></span>Novo {{detail.label_row}}</button>
+                    <span class="icon fa fa-plus"></span>Novo Registro</button>
             </div>
         </fieldset>
     </div>
@@ -68,6 +68,7 @@
                         <fw-input fw-data="data"></fw-input>
                     </div>
                 </div>
+                <div after-form></div>
             </fieldset>
 
             <fieldset ng-repeat="(detail_key, detail) in headers.masterdetails" ng-if="detail.visible == undefined || detail.visible == true">
@@ -109,7 +110,7 @@
                 </table>
                 <div class="pull-right">
                     <button type="button" class="btn btn-big btn-primary button-new" origin="masterdetails" detail="{{detail_key}}">
-                        <span class="icon fa fa-plus"></span>Novo {{detail.label_row}}</button>
+                        <span class="icon fa fa-plus"></span>Novo Registro</button>
                 </div>
             </fieldset>
             <ng-include ng-if="customFooter != undefined" src="customFooter"></ng-include>
@@ -160,37 +161,30 @@
                             </td>
                         </tr>
                     </tbody>
-
-
                 </table>
                 <div class="pull-right">
                     <button type="button" class="btn btn-big btn-primary button-new" origin="tabs_session" detail="{{detail_key}}">
-                        <span class="icon fa fa-plus"></span>Novo {{detail.label_row}}</button>
+                        <span class="icon fa fa-plus"></span>Novo Registro</button>
                 </div>
             </fieldset>
-            <!--<div class="row">
-                        <div class="col-md-2 col-lg-2 col-xs-2 pull-right">
-                            <a class="btn btn-primary btn-block btn-new" ng-click="newDetail(tab, data)"><span class="fa fa-plus"></span> Novo {{tab.label_row}}</a>
-                        </div>
-                    </div>
-                    <section class="widget" crud-list crud-list-settings="{url: headers.route + '/details/' + data.id + '/' + tab_name, fields: tab.fields, tab: true, settings: headers.settings}">
-                        <div class="widget-body">
-                            <div class="table-container"></div>
-                        </div>
-                    </section>-->
         </tab>
-        <tab ng-if="data.id != null" ng-repeat="(tab_name, tab) in headers.tabs" heading="{{tab.label}}">
-            <div class="row">
-                <div class="col-md-2 col-lg-2 col-xs-2 pull-right">
-                    <a class="btn btn-primary btn-block btn-new" ng-click="newDetail(tab, data)">
-                        <span class="fa fa-plus"></span> Novo {{tab.label_row}}</a>
+        <tab ng-if="data.id != null" ng-repeat="(tab_name, tab) in headers.tabs" heading="{{tab.label}}" ng-hide="tab.hide">
+            <div ng-if="tab.fields && !tab.templateUrl">
+                <div class="row">
+                    <div class="pull-right">
+                        <a class="btn btn-primary btn-block btn-new" ng-click="newDetail(tab, data)">
+                            <span class="fa fa-plus"></span> Novo Registro</a>
+                    </div>
                 </div>
+                <section class="widget" crud-list crud-list-settings="{url: headers.route + '/details/' + data.id + '/' + tab_name, fields: tab.fields, tab: true, settings: headers.settings, filterScope: tab.filterScope, sort:tab.sort}">
+                    <div class="widget-body">
+                        <div class="table-container" tab-config="{{tab}}"></div>
+                    </div>
+                </section>
             </div>
-            <section class="widget" crud-list crud-list-settings="{url: headers.route + '/details/' + data.id + '/' + tab_name, fields: tab.fields, tab: true, settings: headers.settings}">
-                <div class="widget-body">
-                    <div class="table-container"></div>
-                </div>
-            </section>
+            <div ng-if="tab.templateUrl">
+                <ng-include src="tab.templateUrl"></ng-include>
+            </div>
         </tab>
     </tabset>
     <div class="form-actions">

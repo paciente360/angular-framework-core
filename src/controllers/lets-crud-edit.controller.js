@@ -1,34 +1,15 @@
-/*global angular*/
-/*jslint plusplus: true*/
-/*!
-* Angular Lets Core - Crud Edit Controller
-*
-* File:        controllers/lets-crud-edit.controller.js
-* Version:     1.0.0
-*
-* Author:      Lets Comunica
-* Info:        https://bitbucket.org/letscomunicadev/angular-framework-crud/src
-* Contact:     fabio@letscomunica.com.br
-*
-* Copyright 2018 Lets Comunica, all rights reserved.
-* Copyright 2018 Released under the MIT License
-*
-* This source file is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-* or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
-*/
-
 (function () {
     'use strict';
 
     var module = angular.module('letsAngular');
 
     module.controller('CRUDEditController', function ($scope, Restangular, $stateParams, $timeout, $modal, module, $state, $rootScope, $q, ngToast, $http, Upload, fwModalService) {
-
         $scope.data = {};
         $scope.dataLoaded = false;
         $scope.module = module;
         $scope.$http = $http;
+
+        $scope.$emit('refresh-headers');
 
         $scope.datepickers = {};
         $scope.datepickerToggle = function (name) {
@@ -41,19 +22,13 @@
         $scope.fetchData = function () {
             if ($stateParams.id) {
                 $scope.$parent.resource.customGET('crudGET/' + $stateParams.id).then(function (data) {
-                    // console.log(data);
-                    // @todo finish parsing detail data
                     for (var y in $scope.headers.fields) {
-                        // console.log(data[$scope.headers.fields[y].name]);
                         var field = $scope.headers.fields[y];
                         if (field.type == 'date' && (data[field.name] != undefined && data[field.name] != null)) {
                             data[field.name] = new Date(data[field.name]);
                         }
-
-                        if (field.customOptions.f) {
-
-                        }
                     }
+
                     // Establish read-only on tab-sessions or masterdetails fields that are filled with data
                     var list = $scope.headers.tabs_session;
                     if (list === undefined) {
@@ -73,12 +48,22 @@
                     }
                     $scope.data = data;
                     $scope.dataLoaded = true;
+
+                    if (typeof(window.setProgressFile)=="function"){
+                        $timeout(function(){
+                            window.setProgressFile();
+                        });
+                    }
+
                     $scope.$emit('data-loaded');
                 });
             } else {
 
+                $timeout(function () {
+                    $scope.$emit('data-new');
+                }, 50);
+
                 for (var y in $scope.headers.fields) {
-                    // console.log(data[$scope.headers.fields[y].name]);
                     var field = $scope.headers.fields[y];
                     if (field.type == 'boolean') {
                         $scope.data[field.name] = field.customOptions.default ? field.customOptions.default : false;
@@ -96,7 +81,7 @@
 
         $scope.$on('headers-set', function () {
             $scope.fetchData();
-        })
+        });
 
         $scope._upload = function (field, file) {
             var _url = $rootScope.appSettings.API_URL + 'upload';
@@ -118,17 +103,20 @@
                 var url = ($rootScope.appSettings.API_URL + $scope.module + '/download/' + field.name + '/' + id);
             }
 
-            $scope._download(url, field);
+            $scope._download(url, field, $scope.data);
         }
 
-        $scope.downloadDetail = function (detail, field, id) {
-            // window.open($rootScope.appSettings.API_URL + $scope.module + '/details/' + detail + '/download/' + field.name + '/' + id);
-            var url = $rootScope.appSettings.API_URL + $scope.module + '/details/' + detail + '/download/' + field.name + '/' + id;
+        $scope.downloadDetail = function (detail, field, id, data) {
+            if (field.customOptions.file.container != undefined) {
+                var url = $rootScope.appSettings.API_URL + 'upload/' + field.customOptions.file.container + '/download/' + data[field.name];
+            } else {
+                var url = $rootScope.appSettings.API_URL + $scope.module + '/details/' + detail + '/download/' + field.name + '/' + id;
+            }
 
-            $scope._download(url, field);
+            $scope._download(url, field, data);
         }
 
-        $scope._download = function (url, field) {
+        $scope._download = function (url, field, scopeData) {
             this.$http({
                 method: 'GET',
                 url: url,
@@ -136,7 +124,7 @@
             }).success(function (data, status, headers) {
                 headers = headers();
                 if (field.customOptions.file.container != undefined) {
-                    var filename = $scope.data[field.name];
+                    var filename = scopeData[field.name];
                 } else {
                     var filename = headers['content-disposition'].split(';')[1].split('=')[1].split('"')[1];
                 }
@@ -164,15 +152,14 @@
                 });
                 linkElement.dispatchEvent(clickEvent);
             } catch (e) {
-                // console.log(e);
             }
         }
 
         $scope.submit = function () {
             var $_scope = this;
-            // console.log(this.crudForm.$valid);
             var err = {};
             var _data = $_scope.data;
+
             _.each($_scope.headers.fields, function (field, key) {
                 if (field.type == 'password' && field.name.indexOf('confirm') != 0) {
                     if (_data['confirm_' + field.name] != _data[field.name]) {
@@ -180,6 +167,7 @@
                     }
                 }
             });
+
             _.each($_scope.data, function (dataValue, key) {
                 if (key.indexOf('.label') !== -1 && _data.id === undefined) {
                     if (typeof dataValue !== 'object' && dataValue !== '') {
@@ -192,6 +180,7 @@
                     }
                 }
             });
+
             if (Object.keys(err).length > 0) {
                 var _messages = new Array();
                 _.each(err, function (value, key) {
@@ -200,23 +189,24 @@
                 ngToast.warning(_messages.join("<br />"));
             }
             else if (this.crudForm.$valid) {
-                // if (true) { //this.crudForm.$valid) {
-                // console.log('jajajajaj');
 
                 if (!$stateParams.id) {
                     var response = $scope.$parent.resource.post($scope.data);
+                    var typeSave = "new";
                 } else {
                     var response = $scope.data.put();
+                    var typeSave = "edit";
                 }
 
-                response.then(function () {
+                response.then(function (resp) {
                     if ($scope.doAfterSave != undefined && typeof $scope.doAfterSave == 'function') {
-                        $scope.doAfterSave();
+                        $scope.doAfterSave(resp, typeSave);
                     } else {
                         $state.go($state.current.name.replace('.edit', '.list').replace('.new', '.list'));
                     }
                 }, function errorCallback(error) {
                     var messages = [];
+
                     function findLabel(name) {
                         for (var _x in $_scope.headers.fields) {
                             var field = $_scope.headers.fields[_x];
@@ -282,10 +272,6 @@
                     for (var _x in type) {
                         var label = type[_x].$options.fieldInfo.label;
                         if (errorTypes[t] == 'required') {
-                            // console.log(type[_x].$name);
-                            // debugger;
-                            // var label = $scope.headers.findLabel(type[_x].$name);
-
                             messages.push('O campo ' + label + ' é obrigatório');
                         } else if (errorTypes[t] == 'date' && pattern.test(type[_x].$viewValue) == false) {
                             messages.push('O campo ' + label + ' está com uma data inválida');
@@ -293,51 +279,28 @@
                     }
                 }
 
-                // var _fields = $(window.crudForm).parsley().fields;
-
-                // for (var _x in _fields) {
-                //     var _field = _fields[_x];
-                //     // $_scope_field.$element.attr('name');
-                //     // debugger;
-
-                //     var errors = ParsleyUI.getErrorsMessages(_field);
-
-                //     if (errors.length > 0) {
-                //         var a = _field.$element[0].closest('.input-container')
-                //         var name = a.attributes['data-name'].value;
-                //         var label = $scope.headers.findLabel(name);
-
-                //         // console.log(label, errors);
-                //         for (var _y in errors) {
-
-                //             messages.push(errors[_y].replace('Este campo ', 'O campo ' + label + ' '));
-
-                //         }
-                //     }
-
-
-                // }
                 if (messages.length > 0) {
                     ngToast.warning(messages.join("<br />"));
                 }
                 else {
+
                     if (!$stateParams.id) {
                         var response = $scope.$parent.resource.post($scope.data);
+                        var typeSave = "new";
                     } else {
                         var response = $scope.data.put();
+                        var typeSave = "edit";
                     }
 
                     response.then(function () {
                         if ($scope.doAfterSave != undefined && typeof $scope.doAfterSave == 'function') {
-                            $scope.doAfterSave();
+                            $scope.doAfterSave(resp, typeSave);
                         } else {
                             $state.go($state.current.name.replace('.edit', '.list').replace('.new', '.list'));
                         }
                     }, function errorCallback(error) {
-                        console.log(error);
 
                         var messages = [];
-
 
                         function findLabel(name) {
                             for (var _x in $_scope.headers.fields) {
@@ -403,48 +366,11 @@
 
         $scope.autocompleteModels = {};
 
-        // $scope.newDetail = function (tab, data) {
-        //     // console.log(tab,data);
-        //
-        //     var modalInstance = $modal.open({
-        //         animation: true,
-        //         templateUrl: 'app/modules/core/utils/crud/crud-form.html',
-        //         controller: 'CRUDEditDetailController',
-        //         resolve: {
-        //             headers: {
-        //                 fields: tab.fields,
-        //                 route: module + tab.route,
-        //                 // route: module + '/:id/' + tab.name,
-        //                 label_row: tab.label_row,
-        //                 label: tab.label,
-        //                 tabs: {}
-        //             }
-        //         }
-        //         // size: size,
-        //         // resolve: {
-        //         //   items: function () {
-        //         //     return $scope.items;
-        //         //   }
-        //         // }
-        //     });
-        //
-        //     $rootScope.$$phase || $rootScope.$apply();
-        //
-        //     modalInstance.result.then(function (selectedItem) {
-        //         $scope.selected = selectedItem;
-        //     }, function () {
-        //         // console.info('Modal dismissed at: ' + new Date());
-        //     });
-        // };
-        // $scope.autocompleteWrapper = function(field, val) {
-        //   console.log(field, val);
-        // }
-
         $scope.autocompleteAdd = function (query) {
             // console.log(query);
         }
 
-        $scope.autocomplete = function (field, val) {
+        $scope._autocomplete = function (field, val, detail) {
 
             var queries = [];
 
@@ -455,29 +381,20 @@
                 for (var x in deps) {
                     var dep = deps[x];
                     if ($scope.data[dep.field] == undefined || $scope.data[dep.field] == null) {
-                        // window.alert('missing ' + dep);
-                        //            var text = 'missing ' + dep.field;
-
 
                         var text = 'Selecione antes o(a) ' + dep.label;
 
                         var data = [];
-                        data.push({ id: -1, label: text });
+                        data.push({ id: null, label: text });
 
                         deferred.resolve(data);
 
                         return deferred.promise;
                     } else {
                         queries[dep.field] = $scope.data[dep.field];
-                        // queries.push(dep + "=" + $scope.data[dep]);
                     }
-
-                    // console.log("?" + queries.join("&"));
                 }
             }
-            // return $scope.resource.customGET('autocomplete/' + field.name + '/' + val, queries);
-
-
 
             val = val.trim();
             if (val.length == 0 || field.customOptions.select == true) {
@@ -497,7 +414,24 @@
                     return deferred.reject();
                 });
             } else if (field.customOptions.list == undefined) {
-                $scope.resource.customGET('autocomplete/' + field.name + '/' + val, queries).then(function (data) {
+                
+                if (detail) {
+                    var route = 'details/' + detail + '/autocomplete/' + field.name + '/' + val;
+                } else {
+                    var route = 'autocomplete/' + field.name + '/' + val;
+                }
+
+                if (field.customOptions.select == true){
+                    queries["limit"] = 0;
+                }else{
+                    queries["limit"] = 20;
+                }
+
+                $scope.resource.customGET(route, queries).then(function (data) {
+
+                    if (field.customOptions.select == true) {
+                        data.unshift({ id: null, label: '--- Selecione ---' });
+                    }
 
                     if (field.quickAdd === true && val != '[blank]') {
                         data.push({ id: -1, label: 'Adicionar novo: ' + val });
@@ -514,144 +448,75 @@
             return deferred.promise;
         }
 
+        $scope.autocomplete = function (field, val) {
+            return this._autocomplete(field, val, null);
+        }
+
         $scope.autocompleteDetail = function (detail, field, val) {
-
-            var queries = [];
-
-            var deferred = $q.defer();
-
-            if (field.autocomplete_dependencies.length > 0) {
-                var deps = field.autocomplete_dependencies;
-                for (var x in deps) {
-                    var dep = deps[x];
-                    if ($scope.data[dep.field] == undefined || $scope.data[dep.field] == null) {
-                        // window.alert('missing ' + dep);
-                        //            var text = 'missing ' + dep.field;
-
-                        var text = 'Selecione antes o(a) ' + dep.label;
-
-                        var data = [];
-                        data.push({ id: -1, label: text });
-
-                        deferred.resolve(data);
-
-                        return deferred.promise;
-                    } else {
-                        queries[dep.field] = $scope.data[dep.field];
-                        // queries.push(dep + "=" + $scope.data[dep]);
-                    }
-
-                    // console.log("?" + queries.join("&"));
-                }
-            }
-
-            val = val.trim();
-            if (val.length == 0 || field.customOptions.select == true) {
-                val = '[blank]';
-            }
-
-            if (field.customOptions.general !== undefined) {
-                $scope.resource.customGET('general/autocomplete/' + field.customOptions.general + '/' + val, queries).then(function (data) {
-
-                    if (field.quickAdd === true && val != '[blank]') {
-                        data.push({ id: -1, label: 'Adicionar novo: ' + val });
-                    }
-
-                    deferred.resolve(data);
-
-                }, function errorCallback() {
-                    return deferred.reject();
-                });
-            } else $scope.resource.customGET('details/' + detail + '/autocomplete/' + field.name + '/' + val, queries).then(function (data) {
-                if (field.quickAdd && val != '[blank]') {
-                    data.push({ id: -1, query: val, label: 'Adicionar novo: ' + val });
-                }
-
-                deferred.resolve(data);
-
-            }, function errorCallback() {
-                return deferred.reject();
-            });
-
-            return deferred.promise;
+            return this._autocomplete(field, val, detail);
         }
 
-        $scope.autocompleteSelect = function ($item, $model, $label) {
-            $scope.$emit('selected-autocomplete', { type: this.field.name, data: $item });
-            if (typeof $item.id != 'integer' || (typeof $item.id == 'integer' && $item.id > 0)) {
-                this.data[this.field.name] = $item.id;
-            } else {
-                this.data[this.field.name + '.label'] = null;
+        $scope.doafterAutoCompleteSelect = {};
+
+        $scope._autocompleteSelect = function ($item, $model, $label, detail) {
+            
+            var _data = detail ? this.detail_data : this.data;
+
+            if ($item.id != null && typeof $item.id != 'integer' || (typeof $item.id == 'integer' && $item.id > 0)) {
+                _data[this.field.name] = $item.id;
+            }
+            else if ($item.id == null) {
+                _data[this.field.name] = _data[this.field.name + '.label'] = null;
+            }
+            else {
+                _data[this.field.name + '.label'] = null;
                 return false;
-                // $scope.resource.customPOST('quickAdd/')
-                // this.field.name
             }
-        }
 
-        $scope.doafterAutoCompleteSelect = function ($item, $model, $label) {
+            if (typeof $scope.doafterAutoCompleteSelect[this.field.name] == "function") {
+                $scope.doafterAutoCompleteSelect[this.field.name].call(this, _data, $item, $model, $label);
+            }
 
-        }
-
-        $scope.autocompleteDetailSelect = function (detail, $item, $model, $label) {
-            if ($item.id != -1) {
-                this.data[this.$parent.field.name] = $item.id;
+            if (detail) {
+                this.detail_data = _data;
             } else {
-                $item.$scope = this;
-
-                $scope.resource.customPOST({ query: $item.query }, 'quickAdd/' + this.field.name).then(function (data) {
-                    $item.$scope.data[$item.$scope.field.name] = data.id;
-                    $item.$scope.data[$item.$scope.field.name + '.label'] = $item.query;
-                }, function errorCallback() {
-                    ngToast.warning('Houve algum problema ao adicionar...');
-                });
+                this.data = _data;
             }
-            // this.$parent.data[detail][this.$parent.field] = $item.id;
-            // this.data[this.$parent.field.name] = $item.id;
+        }
 
-            $scope.doafterAutoCompleteSelect.call(this, this.data, $item, $model, $label)
+        $scope.autocompleteSelect = function (detail, $item, $model, $label) {
+            this._autocompleteSelect($item, $model, $label, null);
         };
 
+        $scope.autocompleteDetailSelect = function (detail, $item, $model, $label) {
+            this._autocompleteSelect($item, $model, $label, detail);
+        }
+
         $scope.openPopup = function ($event) {
-            // console.log('tango');
             $event.preventDefault();
             $event.stopPropagation();
             this.popupOpen = true;
         };
 
-        $scope.deleteDetailData = function (detail_data, detail_key) {
-            // console.log(detail_data, detail_key);
-            if (window.confirm('Deseja realmente excluir esse item?')) {
-                this.data[detail_key].splice(this.data[detail_key].indexOf(detail_data), 1);
-            }
+        $scope.buttonClick = function (method) {
+            $scope[method]();
+        };
+        
+        $scope.newDetail = function (tab, data, id, route) {
+            
+            var parentModel = $scope.headers.parent_route ? $scope.headers.parent_route : $scope.headers.route.toLowerCase();
+            tab.route = (id ? route : module+tab.route);
+            tab.id = id ? id : null;
+
+            fwModalService.createCRUDModal(tab, parentModel, null, true, "CRUDEditDetailController");
         };
 
         $scope.deleteDetail = function (route, row) {
-            // $http.delete($rootScope.appSettings.API_URL + route + '/' + row.id).then(function(response) {
-            //   $rootScope.$broadcast('refreshGRID');
-            // });
             var resource = Restangular.all(route);
             resource.customDELETE(row.id).then(function () {
-                // $state.go($scope.$parent.path + '.list');
                 $rootScope.$broadcast('refreshGRID');
                 $rootScope.$broadcast('data-grid-updated', { type: route.split('/').pop() });
             });
-        };
-
-        $scope.editDetail = function (route, row, detail_key) {
-            var origin = jQuery('.button-new').attr('origin');
-            var headers = $scope.headers[origin][detail_key];
-            var parentModel = $scope.headers.route.toLowerCase();
-            if ($scope.headers.parent_route) parentModel = $scope.headers.parent_route;
-
-            fwModalService.createCRUDModal(headers, parentModel, row, true)
-              .then(function (response) {
-                  var resource = Restangular.all(route);
-                  resource.customPUT(response, row.id).then(function (data) {
-                    // $state.go($scope.$parent.path + '.list');
-                    $rootScope.$broadcast('refreshGRID');
-                    $rootScope.$broadcast('data-grid-updated', { type: route.split('/').pop() });
-                  });
-              });
         };
 
         $scope.editDetailData = function (detail_data, detail_key) {
@@ -679,8 +544,10 @@
                 });
         };
 
-        $scope.buttonClick = function (method) {
-          $scope[method]();
+        $scope.deleteDetailData = function (detail_data, detail_key) {
+            if (window.confirm('Deseja realmente excluir esse item?')) {
+                this.data[detail_key].splice(this.data[detail_key].indexOf(detail_data), 1);
+            }
         };
 
     });

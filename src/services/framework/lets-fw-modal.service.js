@@ -44,6 +44,7 @@
         };
     
         return {
+            createModal: self._createModal,
             createCRUDModal: self.createCRUDModal,
             hide: self.hide
         };

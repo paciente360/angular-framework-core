@@ -1,23 +1,3 @@
-/*global angular*/
-/*jslint plusplus: true*/
-/*!
-* Angular Lets Core - Framework Date Picker Directive
-*
-* File:        directives/framework/lets-fw-datepicker.directive.js
-* Version:     1.0.0
-*
-* Author:      Lets Comunica
-* Info:        https://bitbucket.org/letscomunicadev/angular-framework-crud/src
-* Contact:     fabio@letscomunica.com.br
-*
-* Copyright 2018 Lets Comunica, all rights reserved.
-* Copyright 2018 Released under the MIT License
-*
-* This source file is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-* or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
-*/
-
 (function () {
     'use strict';
 
@@ -50,21 +30,11 @@
                     }
                 }
 
-
-
                 setAttributeIfNotExists('type', 'text');
                 setAttributeIfNotExists('is-open', controllerName + '.popupOpen');
-                // setAttributeIfNotExists('datepicker-popup', 'MM/yyyy');
                 setAttributeIfNotExists('show-button-bar', false);
                 setAttributeIfNotExists('show-weeks', false);
                 setAttributeIfNotExists('datepicker-options', 'datepickerOptions');
-
-                // setAttributeIfNotExists('datepicker-options', { 'datepickerMode': "'month'",
-                //   'minMode': 'month'});
-
-                // setAttributeIfNotExists('close-text', 'Schließen');
-                // setAttributeIfNotExists('clear-text', 'Löschen');
-                // setAttributeIfNotExists('current-text', 'Heute');
 
                 element.addClass('form-control');
                 element.removeAttr('fw-date-picker');
@@ -72,8 +42,6 @@
                 wrapper.prepend(element);
 
                 return function (scope, element) {
-                    // console.log('left');
-
                     var options = {
 
                     };
@@ -109,8 +77,6 @@
 
                     element.find('input').blur(function () {
                         if (!moment(this.value, format).isValid() && this.value !== '') {
-                            // console.log('esta errado aqui');
-                            // debugger;
                             scope.field.error = true;
                         } else {
                             scope.field.error = false;
@@ -119,19 +85,13 @@
 
                     scope.datepickerOptions = options;
 
-                    // if (scope.data.disabled) jQuery('.input-group-btn').remove();
-
                     $compile(element)(scope);
                 };
             },
             controller: function ($scope) {
-                // this.datePickerOptions =
-
-                // debugger;
                 this.popupOpen = false;
-                // console.log('down');
+                
                 this.openPopup = function ($event) {
-                    // console.log('tango');
                     $event.preventDefault();
                     $event.stopPropagation();
                     this.popupOpen = true;

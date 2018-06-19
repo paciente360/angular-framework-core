@@ -1,23 +1,3 @@
-/*global angular*/
-/*jslint plusplus: true*/
-/*!
-* Angular Lets Core - Framework Chart Directive
-*
-* File:        directives/framework/lets-fw-chart.directive.js
-* Version:     1.0.0
-*
-* Author:      Lets Comunica
-* Info:        https://bitbucket.org/letscomunicadev/angular-framework-crud/src
-* Contact:     fabio@letscomunica.com.br
-*
-* Copyright 2018 Lets Comunica, all rights reserved.
-* Copyright 2018 Released under the MIT License
-*
-* This source file is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-* or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
-*/
-
 (function () {
     'use strict';
 
@@ -35,20 +15,6 @@
                 crudChartData: '&'
             },
             templateUrl: 'lets/views/framework/chart.html',
-            // compile: function (el, attr) {
-            //     return {
-            //         pre: function (scope, el, attr, controller, transcludeFn) {
-            //             var crudChartSettings = scope.crudChartSettings();
-            //             var crudChartData = scope.crudChartData();
-            //
-            //             scope.key = crudChartSettings.key;
-            //
-            //             scope.d3chartConfig = fwChartService.configD3chart('line', ['#092e64']);
-            //             scope.d3chartData = fwChartService.configD3chartData(crudChartSettings.fillArea, crudChartSettings.key, crudChartData);
-            //
-            //         }
-            //     }
-            // },
             controller: function ($scope) {
                 var crudChartSettings = $scope.crudChartSettings();
                 var chartLimitSettings = crudChartSettings.chart_settings;
