@@ -46,6 +46,16 @@
                 }
             }
 
+            this.headers[name].get = function (name) {
+                for (var _x in this.fields) {
+                    var field = this.fields[_x];
+
+                    if (field.name == name) {
+                        return field;
+                    }
+                }
+            }
+
             return this.headers[name];
         }
 
@@ -53,10 +63,10 @@
             return this;
         };
     }
+
     appConfig.$inject = ['$stateProvider', '$httpProvider'];
     function appConfig($stateProvider, $httpProvider) {
-        // $authProvider.loginUrl = '/auth/login';
-        // $authProvider.baseUrl = 'http://192.168.1.112/';
+
     };
 })();
 /*global angular*/
@@ -740,6 +750,7 @@
         };
     
         return {
+            createModal: self._createModal,
             createCRUDModal: self.createCRUDModal,
             hide: self.hide
         };
@@ -747,26 +758,6 @@
   
 })();
   
-/*global angular*/
-/*jslint plusplus: true*/
-/*!
-* Angular Lets Core - Error Service
-*
-* File:        services/framework/lets-fw-error.service.js
-* Version:     1.0.0
-*
-* Author:      Lets Comunica
-* Info:        https://bitbucket.org/letscomunicadev/angular-framework-crud/src
-* Contact:     fabio@letscomunica.com.br
-*
-* Copyright 2018 Lets Comunica, all rights reserved.
-* Copyright 2018 Released under the MIT License
-*
-* This source file is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-* or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
-*/
-
 (function () {
     'use strict';
     fwErrorService.$inject = ["ngToast"];
@@ -807,26 +798,6 @@
     }
 
 })();
-
-/*global angular*/
-/*jslint plusplus: true*/
-/*!
-* Angular Lets Core - Chart Service
-*
-* File:        services/framework/lets-fw-chart.service.js
-* Version:     1.0.0
-*
-* Author:      Lets Comunica
-* Info:        https://bitbucket.org/letscomunicadev/angular-framework-crud/src
-* Contact:     fabio@letscomunica.com.br
-*
-* Copyright 2018 Lets Comunica, all rights reserved.
-* Copyright 2018 Released under the MIT License
-*
-* This source file is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-* or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
-*/
 
 (function () {
     'use strict';
@@ -1168,26 +1139,6 @@
     }
 })();
   
-/*global angular*/
-/*jslint plusplus: true*/
-/*!
-* Angular Lets Core - Framework Upload Directive
-*
-* File:        directives/framework/lets-fw-upload.directive.js
-* Version:     1.0.0
-*
-* Author:      Lets Comunica
-* Info:        https://bitbucket.org/letscomunicadev/angular-framework-crud/src
-* Contact:     fabio@letscomunica.com.br
-*
-* Copyright 2018 Lets Comunica, all rights reserved.
-* Copyright 2018 Released under the MIT License
-*
-* This source file is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-* or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
-*/
-
 (function () {
     'use strict';
 
@@ -1205,12 +1156,12 @@
                 $scope.defaultProgress = 0;
                 $scope.alreadySent = false;
 
-                $timeout(function () { // replace this by $scope.$on('data-loaded')
+                window.setProgressFile = function(){
                     if ($scope.data[$scope.field.name] != undefined && $scope.data[$scope.field.name] != null) {
                         $scope.defaultProgress = 100;
                         $scope.alreadySent = true;
                     }
-                }, 200);
+                };
 
                 $scope.upload = function (file, errFiles) {
                     $scope.f = file;
@@ -1224,9 +1175,10 @@
                                 file.result = response.data;
                                 var _input = element.find('input[type="hidden"]');
 
-                                _input.controller('ngModel').$setViewValue(file.name);
-                                if (!response.data.file) response.data.file = { name: response.data.result.files.file[0].name } // Multiple file upload case
-                                _input.scope().data[_input.scope().field.customOptions.file[0]] = response.data.file.name;
+                                file.newName = response.data.result.files.file[0].name;
+
+                                _input.controller('ngModel').$setViewValue(file.newName);
+
                             });
                         }, function (response) {
                             if (response.status > 0)
@@ -1237,48 +1189,11 @@
                         });
                     }
                 };
-
-                // element.click(function(e) {
-                //
-                //
-                //   element.find('input[type="file"]').click();
-                //
-                //   console.log('tango');
-                // });
-                //
-                //
-                //
-                // element.find('input[type="file"]').click(function(e) {
-                //   e.stopPropagation();
-                // }).change(function() {
-                //   element.find('input[name="temp_filename"]').val(this.files[0].name);
-                //
-                //   scope.upload(this.files[0]);
-                // })
+                
             }
         }
     }
 })();
-
-/*global angular*/
-/*jslint plusplus: true*/
-/*!
-* Angular Lets Core - Framework Tags Directive
-*
-* File:        directives/framework/lets-fw-tags.directive.js
-* Version:     1.0.0
-*
-* Author:      Lets Comunica
-* Info:        https://bitbucket.org/letscomunicadev/angular-framework-crud/src
-* Contact:     fabio@letscomunica.com.br
-*
-* Copyright 2018 Lets Comunica, all rights reserved.
-* Copyright 2018 Released under the MIT License
-*
-* This source file is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-* or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
-*/
 
 (function () {
     'use strict';
@@ -1293,7 +1208,6 @@
             restrict: 'E',
             scope: {
                 tags: '=',
-                // autocomplete: '=autocomplete'
             },
             template:
 
@@ -1303,9 +1217,6 @@
             '<div ng-repeat="(idx, tag) in tags" class="tag label label-success">{{tag}} <a class="close" href ng-click="remove(idx)">×</a></div>' +
             '</div>',
             link: function ($scope, $element) {
-                // $scope.tags = [];
-
-                // $scope.tags = $element.attr('tags');
 
                 if ($scope.tags == null) {
                     $scope.tags = [];
@@ -1385,26 +1296,6 @@
     };
 })();
 
-/*global angular*/
-/*jslint plusplus: true*/
-/*!
-* Angular Lets Core - Framework Input Directive
-*
-* File:        directives/framework/lets-fw-input.directive.js
-* Version:     1.0.0
-*
-* Author:      Lets Comunica
-* Info:        https://bitbucket.org/letscomunicadev/angular-framework-crud/src
-* Contact:     fabio@letscomunica.com.br
-*
-* Copyright 2018 Lets Comunica, all rights reserved.
-* Copyright 2018 Released under the MIT License
-*
-* This source file is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-* or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
-*/
-
 (function () {
     'use strict';
 
@@ -1419,11 +1310,12 @@
             scope: true,
             templateUrl: 'lets/views/framework/input.html',
             replace: true,
-            // priority: 99,
             link: {
 
                 pre: function preLink(scope, $el, attrs, controller) {
+                    
                     var dataVar = $el.attr('fw-data');
+                    
                     if (scope.field.customOptions.events == undefined) {
                         scope.field.customOptions.events = {};
                     }
@@ -1461,14 +1353,12 @@
                     }
 
                     if (scope.field.customOptions.cep != undefined) {
-                        // console.log(scope);
 
                         $el.find('input.main-input').blur(function () {
                             var $scope = angular.element(this).scope();
+                            
                             viaCEP.get(this.value).then(function (response) {
-                                // console.log(response, $scope);
                                 var map = $scope.field.customOptions.cep;
-                                // $scope.$parent.headers
 
                                 $scope.data[map.address] = response.logradouro;
                                 $scope.data[map.district] = response.bairro;
@@ -1481,20 +1371,15 @@
                     }
                     else if (scope.field.customOptions.multiple != undefined && scope.field.customOptions.multiple == true) {
                         var a = $compile($el.contents())(scope);
-                        console.log(a);
-                        // $el.replaceWith($compile($el.contents())(scope))
                     }
 
                     jQuery($el).on('blur', ':input[ng-model]', function (e) {
-                        // $el.find(':input[ng-model]').blur(function() {
-
                         try {
                             if (angular.element(this).scope().field.customOptions.events.blur != undefined) {
                                 angular.element(this).scope().field.customOptions.events.blur.call(this, e);
                             }
                         }
                         catch (e) {
-                            console.log(e);
                         }
 
 
@@ -1511,26 +1396,6 @@
     }
 })();
 
-/*global angular*/
-/*jslint plusplus: true*/
-/*!
-* Angular Lets Core - Framework Input Detail Directive
-*
-* File:        directives/framework/lets-fw-input-detail.directive.js
-* Version:     1.0.0
-*
-* Author:      Lets Comunica
-* Info:        https://bitbucket.org/letscomunicadev/angular-framework-crud/src
-* Contact:     fabio@letscomunica.com.br
-*
-* Copyright 2018 Lets Comunica, all rights reserved.
-* Copyright 2018 Released under the MIT License
-*
-* This source file is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-* or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
-*/
-
 (function () {
     'use strict';
 
@@ -1545,38 +1410,14 @@
             scope: true,
             templateUrl: 'lets/views/framework/input-detail.html',
             replace: true,
-            // controller: function($scope) {
-            //   $scope.data = $scope.detail_data;
-            // }
             link: {
                 post: function preLink(scope, $el, attrs, controller) {
 
-
-                },
+                }
             }
         }
     }
 })();
-
-/*global angular*/
-/*jslint plusplus: true*/
-/*!
-* Angular Lets Core - Framework Dynamic Directive
-*
-* File:        directives/framework/lets-fw-dynamic.directive.js
-* Version:     1.0.0
-*
-* Author:      Lets Comunica
-* Info:        https://bitbucket.org/letscomunicadev/angular-framework-crud/src
-* Contact:     fabio@letscomunica.com.br
-*
-* Copyright 2018 Lets Comunica, all rights reserved.
-* Copyright 2018 Released under the MIT License
-*
-* This source file is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-* or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
-*/
 
 (function () {
     'use strict';
@@ -1594,14 +1435,7 @@
 
         return {
             restrict: 'A',
-            // controller: function($scope, ) {
-            //
-            // },
             link: {
-                // pre: function preLink(scope, $el, attrs, controller) {
-                // },
-
-
                 post: function postLink(scope, $el, attrs, controller) {
                     if (!controller) {
                         controller = $el.controller('ngModel');
@@ -1609,81 +1443,15 @@
 
                     if (scope.field.customOptions.cpf != undefined) {
                         $el.mask('999.999.999-99');
-                        // } else if (scope.field.customOptions.email != undefined) {
-                        //     $el.attr('data-parsley-type', "email");
                     } else if (scope.field.customOptions.cnpj != undefined) {
                         $el.mask('99.999.999/9999-99');
                     } else if (scope.field.type == 'float') {
-
-
-
-                        // controller.$parsers.unshift(function(viewValue) {
-                        //     if (FLOAT_REGEXP_1.test(viewValue)) {
-                        //         controller.$setValidity('float', true);
-                        //         return parseFloat(viewValue.replace('.', '').replace(',', '.'));
-                        //     } else if (FLOAT_REGEXP_2.test(viewValue)) {
-                        //         controller.$setValidity('float', true);
-                        //         return parseFloat(viewValue.replace(',', ''));
-                        //     } else if (FLOAT_REGEXP_3.test(viewValue)) {
-                        //         controller.$setValidity('float', true);
-                        //         return parseFloat(viewValue);
-                        //     } else if (FLOAT_REGEXP_4.test(viewValue)) {
-                        //         controller.$setValidity('float', true);
-                        //         return parseFloat(viewValue.replace(',', '.'));
-                        //     } else {
-                        //         controller.$setValidity('float', false);
-                        //         return undefined;
-                        //     }
-                        // });
-
-                        // controller.$formatters.unshift(
-                        //     function(modelValue) {
-                        //         return $filter('number')(parseFloat(modelValue), 2);
-                        //     }
-                        // );
-
                         if (scope.field.customOptions.currency != undefined) {
                             $el.mask("#.##0,00", { reverse: true });
                         } else {
-                            // $el.mask("##0,00", { reverse: true });
-                            // var o = {
-                            //   // min: 1,
-                            //   // max: 9,
-                            //   step: 1,
-                            //   decimals: 2
-                            // };
-
-                            // $el.keydown(function(e) {-1 !== $.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190, 188]) || /65|67|86|88/.test(e.keyCode) && (!0 === e.ctrlKey || !0 === e.metaKey) || 35 <= e.keyCode && 40 >= e.keyCode || (e.shiftKey || 48 > e.keyCode || 57 < e.keyCode) && (96 > e.keyCode || 105 < e.keyCode) && e.preventDefault() });
-
-                            // var options = angular.extend(o, scope.touchspinOptions);
-
-                            // if (options.umed != 'UN') {
-                            //   options.postfix = options.umed;
-                            // }
-
-                            // $el.TouchSpin(o);
+                            
                         }
                     } else if (scope.field.customOptions.telefone != undefined) {
-                        // $el.mask("(99) 9999-9999?9")
-                        // .focusout(function (event) {
-                        //   var target, phone, element;
-                        //   target = (event.currentTarget) ? event.currentTarget : event.srcElement;
-                        //   phone = target.value.replace(/\D/g, '');
-                        //   element = $(target);
-                        //   element.unmask();
-                        //   if(phone.length > 10) {
-                        //     element.mask("(99) 99999-999?9");
-                        //   } else {
-                        //     element.mask("(99) 9999-9999");
-                        //   }
-                        // });
-
-                        // var val = $el.val();
-                        // if (val.replace(/\D/g, '').length === 11) {
-                        //
-                        // } '(00) 00000-0000' : '(00) 0000-00009'
-
-
                         var SPMaskBehavior = function (val) {
                             return val.replace(/\D/g, '').length === 11 ? '(00) 00000-0000' : '(00) 0000-00009';
                         },
@@ -1697,8 +1465,6 @@
                             $el.mask(SPMaskBehavior, spOptions);
                         }, 100);
 
-                        // $el.keyup();
-                        // $el.val($el.masked());
                     } else if (scope.field.type == 'date') {
                         $el.mask('99/99/9999');
                     } else if (scope.field.customOptions.cep != undefined) {
@@ -1721,26 +1487,6 @@
         }
     }
 })();
-
-/*global angular*/
-/*jslint plusplus: true*/
-/*!
-* Angular Lets Core - Framework Date Picker Directive
-*
-* File:        directives/framework/lets-fw-datepicker.directive.js
-* Version:     1.0.0
-*
-* Author:      Lets Comunica
-* Info:        https://bitbucket.org/letscomunicadev/angular-framework-crud/src
-* Contact:     fabio@letscomunica.com.br
-*
-* Copyright 2018 Lets Comunica, all rights reserved.
-* Copyright 2018 Released under the MIT License
-*
-* This source file is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-* or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
-*/
 
 (function () {
     'use strict';
@@ -1774,21 +1520,11 @@
                     }
                 }
 
-
-
                 setAttributeIfNotExists('type', 'text');
                 setAttributeIfNotExists('is-open', controllerName + '.popupOpen');
-                // setAttributeIfNotExists('datepicker-popup', 'MM/yyyy');
                 setAttributeIfNotExists('show-button-bar', false);
                 setAttributeIfNotExists('show-weeks', false);
                 setAttributeIfNotExists('datepicker-options', 'datepickerOptions');
-
-                // setAttributeIfNotExists('datepicker-options', { 'datepickerMode': "'month'",
-                //   'minMode': 'month'});
-
-                // setAttributeIfNotExists('close-text', 'Schließen');
-                // setAttributeIfNotExists('clear-text', 'Löschen');
-                // setAttributeIfNotExists('current-text', 'Heute');
 
                 element.addClass('form-control');
                 element.removeAttr('fw-date-picker');
@@ -1796,8 +1532,6 @@
                 wrapper.prepend(element);
 
                 return function (scope, element) {
-                    // console.log('left');
-
                     var options = {
 
                     };
@@ -1833,8 +1567,6 @@
 
                     element.find('input').blur(function () {
                         if (!moment(this.value, format).isValid() && this.value !== '') {
-                            // console.log('esta errado aqui');
-                            // debugger;
                             scope.field.error = true;
                         } else {
                             scope.field.error = false;
@@ -1843,19 +1575,13 @@
 
                     scope.datepickerOptions = options;
 
-                    // if (scope.data.disabled) jQuery('.input-group-btn').remove();
-
                     $compile(element)(scope);
                 };
             },
             controller: ["$scope", function ($scope) {
-                // this.datePickerOptions =
-
-                // debugger;
                 this.popupOpen = false;
-                // console.log('down');
+                
                 this.openPopup = function ($event) {
-                    // console.log('tango');
                     $event.preventDefault();
                     $event.stopPropagation();
                     this.popupOpen = true;
@@ -1865,26 +1591,6 @@
         };
     }
 })();
-
-/*global angular*/
-/*jslint plusplus: true*/
-/*!
-* Angular Lets Core - Framework Chart Directive
-*
-* File:        directives/framework/lets-fw-chart.directive.js
-* Version:     1.0.0
-*
-* Author:      Lets Comunica
-* Info:        https://bitbucket.org/letscomunicadev/angular-framework-crud/src
-* Contact:     fabio@letscomunica.com.br
-*
-* Copyright 2018 Lets Comunica, all rights reserved.
-* Copyright 2018 Released under the MIT License
-*
-* This source file is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-* or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
-*/
 
 (function () {
     'use strict';
@@ -1903,20 +1609,6 @@
                 crudChartData: '&'
             },
             templateUrl: 'lets/views/framework/chart.html',
-            // compile: function (el, attr) {
-            //     return {
-            //         pre: function (scope, el, attr, controller, transcludeFn) {
-            //             var crudChartSettings = scope.crudChartSettings();
-            //             var crudChartData = scope.crudChartData();
-            //
-            //             scope.key = crudChartSettings.key;
-            //
-            //             scope.d3chartConfig = fwChartService.configD3chart('line', ['#092e64']);
-            //             scope.d3chartData = fwChartService.configD3chartData(crudChartSettings.fillArea, crudChartSettings.key, crudChartData);
-            //
-            //         }
-            //     }
-            // },
             controller: ["$scope", function ($scope) {
                 var crudChartSettings = $scope.crudChartSettings();
                 var chartLimitSettings = crudChartSettings.chart_settings;
@@ -1956,26 +1648,6 @@
     }
 })();
 
-/*global angular*/
-/*jslint plusplus: true*/
-/*!
-* Angular Lets Core - Framework Auto Complete Directive
-*
-* File:        directives/framework/lets-fw-auto-complete.directive.js
-* Version:     1.0.0
-*
-* Author:      Lets Comunica
-* Info:        https://bitbucket.org/letscomunicadev/angular-framework-crud/src
-* Contact:     fabio@letscomunica.com.br
-*
-* Copyright 2018 Lets Comunica, all rights reserved.
-* Copyright 2018 Released under the MIT License
-*
-* This source file is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-* or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
-*/
-
 (function () {
     'use strict';
 
@@ -1995,17 +1667,7 @@
                 var clickHandler = function () {
                     var _oldVal = _input.val();
                     var _val = _oldVal + ' ';
-                    // if (_val.length == 0) {
-                    //   _val = (' ');
-                    //
-                    //   // _input.focus();
-                    //
-                    //   // scope.$apply();
-                    // }
-                    // _input.trigger('change');
                     _input.controller('ngModel').$setViewValue(_val);
-                    // _input.trigger('input');
-                    // _input.trigger('change');
                     scope.$digest;
                     _input.controller('ngModel').$setViewValue(_oldVal);
                 };
@@ -2014,32 +1676,12 @@
                 _input.click(clickHandler);
             },
             controller: function () {
-                // this.datePickerOptions =
+                
             },
             controllerAs: controllerName
         };
     }
 })();
-
-/*global angular*/
-/*jslint plusplus: true*/
-/*!
-* Angular Lets Core - Framework Auto Complete Table Directive
-*
-* File:        directives/framework/lets-fw-auto-complete-table.directive.js
-* Version:     1.0.0
-*
-* Author:      Lets Comunica
-* Info:        https://bitbucket.org/letscomunicadev/angular-framework-crud/src
-* Contact:     fabio@letscomunica.com.br
-*
-* Copyright 2018 Lets Comunica, all rights reserved.
-* Copyright 2018 Released under the MIT License
-*
-* This source file is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-* or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
-*/
 
 (function () {
     'use strict';
@@ -2138,26 +1780,6 @@
     }
 })();
 
-/*global angular*/
-/*jslint plusplus: true*/
-/*!
-* Angular Lets Core - Crud Tab List Directive
-*
-* File:        directives/crud/lets-crud-tab-list.directive.js
-* Version:     1.0.0
-*
-* Author:      Lets Comunica
-* Info:        https://bitbucket.org/letscomunicadev/angular-framework-crud/src
-* Contact:     fabio@letscomunica.com.br
-*
-* Copyright 2018 Lets Comunica, all rights reserved.
-* Copyright 2018 Released under the MIT License
-*
-* This source file is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-* or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
-*/
-
 (function () {
     'use strict';
 
@@ -2168,9 +1790,6 @@
 
     function crudTabList(jQuery) {
         return {
-            // restrict: 'E',
-            // replace: false,
-            // scope: true,
             scope: {
                 crudTabListData: '=',
                 crudTabListSettings: '&',
@@ -2178,8 +1797,6 @@
             },
             templateUrl: 'lets/views/crud/crud-tab-list.html',
             link: function (scope, $el) {
-                // scope.type = $el.attr('type');
-                // scope.data = scope.parentData;
     
                 setTimeout(function () {
                     var settings = scope.crudTabListSettings();
@@ -2198,26 +1815,6 @@
 })();
 
 
-
-/*global angular*/
-/*jslint plusplus: true*/
-/*!
-* Angular Lets Core - Crud List Directive
-*
-* File:        directives/crud/lets-crud-list.directive.js
-* Version:     1.0.0
-*
-* Author:      Lets Comunica
-* Info:        https://bitbucket.org/letscomunicadev/angular-framework-crud/src
-* Contact:     fabio@letscomunica.com.br
-*
-* Copyright 2018 Lets Comunica, all rights reserved.
-* Copyright 2018 Released under the MIT License
-*
-* This source file is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-* or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
-*/
 
 (function () {
     'use strict';
@@ -2238,7 +1835,6 @@
                 $scope.route = null;
 
                 $scope.$on('refreshGRID', function () {
-                    console.log('Refreshing grid...')
                     $scope.pageableCRUDModel.fetch();
                 });
             }],
@@ -2247,43 +1843,43 @@
                 scope.$el = $el;
 
                 function render() {
-                    // console.log(attrs);
-                    // var settings = scope.crudListSettings;
                     var settings = scope.crudListSettings();
                     settings.route = appSettings.API_URL + settings.url;
-                    // if (settings.pagerGeneral && settings.type) {
-                    //     var _t = settings.type[0].toUpperCase() + settings.type.slice(1);
-                    //     settings.route = appSettings.API_URL + settings.mainRoute + _t + '/pagerGeneral';
-                    // }
                     scope.route = settings.route;
 
                     Backgrid.InputCellEditor.prototype.attributes.class = 'form-control input-sm';
 
                     var CRUDModel = Backbone.Model.extend({});
 
-                    var PageableCRUDModel = Backbone.PageableCollection.extend({
+                    var paramsPageable = {
                         model: CRUDModel,
-                        //            url: './assets/json/pageable-territories.json',
-                        // url: settings.route + '/pager', //'http://192.168.1.104/' + scope.headers.route,
-                        url: settings.route + (!settings.pagerGeneral ? '/pager' : '/pagerGeneral'), //'http://192.168.1.104/' + scope.headers.route,
+                        url: settings.route + (!settings.pagerGeneral ? '/pager' : '/pagerGeneral'),
                         state: {
                             pageSize: 20
                         },
-                        mode: 'server', // page entirely on the client side
-                        // get the actual records
+                        mode: 'server',
                         parseRecords: function (resp, options) {
-                            // if (settings.pagerGeneral) {
-                            //     var extraData = scope.$parent.extraData;
-                            //     console.log('atualizado extraData from parent: ', extraData)
-                            //     var resultado = fwObjectService.convertCrudTabListExtraData(settings.type.toLowerCase(), extraData.structure, extraData.values);
-                            //     if (resultado) resp.data = resultado;
-                            // }
                             return resp.data;
                         },
                         parseState: function (resp, queryParams, state, options) {
                             return { totalRecords: resp.total_count };
                         },
-                    });
+                    };
+                    
+                    if (settings.filterScope){
+                        paramsPageable.queryParams = {
+                            scope: settings.filterScope
+                        };
+                    }
+
+                    if (settings.sort){
+                        paramsPageable.state.sortKey = settings.sort.sortKey;
+                        if (settings.sort.order && settings.sort.order=="desc"){
+                            paramsPageable.state.order = 1;
+                        }
+                    }
+
+                    var PageableCRUDModel = Backbone.PageableCollection.extend(paramsPageable);
 
                     var pageableCRUDModel = new PageableCRUDModel(),
                         initialCRUDModel = pageableCRUDModel;
@@ -2292,33 +1888,23 @@
 
                     var serverSideFilter = new Backgrid.Extension.ServerSideFilter({
                         collection: pageableCRUDModel,
-                        // the name of the URL query parameter
                         name: "q",
-                        placeholder: "Buscar por..." // HTML5 placeholder for the search box
+                        placeholder: "Buscar por..."
                     });
 
                     function createBackgrid(collection) {
                         var columns = [];
 
-                        var StringFormatter = function () { };
+                        var StringFormatter = function () {};
                         StringFormatter.prototype = new Backgrid.StringFormatter();
 
                         _.extend(StringFormatter.prototype, {
                             fromRaw: function (rawValue, b, c, d, e) {
-                                // var args = [].slice.call(arguments, 1);
-                                // args.unshift(rawValue * this.multiplier);
-                                // return NumberFormatter.prototype.fromRaw.apply(this, args) || "0" + this.symbol;
-
-                                // console.log(rawValue);
                                 return rawValue;
                             }
                         });
 
-                        // for (var idx in settings.fields) {
                         _.each(settings.fields, function (field, idx) {
-
-
-                            // var field = settings.fields[idx];
 
                             if (field.viewable) {
                                 var cellOptions = {
@@ -2329,16 +1915,10 @@
                                     headers: field
                                 };
 
-
                                 if (field.type == 'boolean') {
-                                    // cellOptions.cell = 'boolean';
                                     cellOptions.sortable = false;
                                     cellOptions.cell = Backgrid.Cell.extend({
-
-                                        // Cell default class names are the lower-cased and dasherized
-                                        // form of the the cell class names by convention.
                                         className: "custom-situation-cell",
-
                                         formatter: {
                                             fromRaw: function (rawData, model) {
                                                 return rawData ? field.customOptions.statusTrueText : field.customOptions.statusFalseText;
@@ -2350,99 +1930,53 @@
 
                                     });
                                 }
-                                if (field.type == 'simplecolor') {
-                                    // cellOptions.cell = 'boolean';
+                                else if (field.type == 'simplecolor') {
                                     cellOptions.sortable = false;
-
-                                    // var customFormatter = {
-                                    //     fromRaw: function (rawData, model) {
-                                    //         debugger;
-                                    //         return angular.element('<cp-color class="color-picker" color="'+rawData+'"></cp-color>');
-                                    //     },
-                                    //     toRaw: function (formattedData, model) {
-                                    //         return 'down';
-                                    //     }
-                                    // };
-
                                     cellOptions.cell = Backgrid.Cell.extend({
-
-                                        // Cell default class names are the lower-cased and dasherized
-                                        // form of the the cell class names by convention.
                                         className: "custom-situation-cell",
-
-                                        // formatter: customFormatter,
-
                                         initialize: function () {
                                             Backgrid.Cell.prototype.initialize.apply(this, arguments);
                                         },
                                         render: function () {
                                             this.$el.empty();
-                                            // var formattedValue = customFormatter.fromRaw();
                                             var formattedValue = '<cp-color class="color-picker" style="background-color: ' + this.model.attributes.cor + '"></cp-color>';
-
                                             this.$el.append(formattedValue);
                                             this.delegateEvents();
                                             return this;
                                         }
-
                                     });
                                 }
                                 else if (field.type == 'custom') {
-                                    // console.log('uopiuiopasfd');
                                     var customFormatter = {
-                                        // function (*, Backbone.Model): string
                                         fromRaw: field.toString,
-                                        // fromRaw: function (rawData, model) {
-                                        //   // return (rawData, model);
-                                        // },
-                                        // function (string, Backbone.Model): *|undefined
                                         toRaw: function (formattedData, model) {
                                             return 'down';
                                         }
                                     };
 
                                     cellOptions.sortable = false;
-                                    var _backgridCellExtend = {
-                                        // Cell default class names are the lower-cased and dasherized
-                                        // form of the the cell class names by convention.
+                                    var _backgridCellExtend = Backgrid.Cell.extend({
                                         className: "custom-cell",
                                         formatter: customFormatter
+                                    });
+
+                                    _backgridCellExtend.initialize = function () {
+                                        Backgrid.Cell.prototype.initialize.apply(this, arguments);
+                                    };
+                                    _backgridCellExtend.render = function () {
+                                        this.$el.empty();
+                                        this.$el.data('model', this.model);
+                                        var formattedValue = customFormatter.fromRaw();
+                                        this.$el.append(formattedValue);
+                                        this.delegateEvents();
+                                        return this;
                                     };
 
-                                    if (field.name === 'download' || field.name === 'print') {
-                                        _backgridCellExtend.initialize = function () {
-                                            Backgrid.Cell.prototype.initialize.apply(this, arguments);
-                                        };
-                                        _backgridCellExtend.render = function () {
-                                            this.$el.empty();
-                                            var formattedValue = customFormatter.fromRaw();
-                                            this.$el.append(formattedValue);
-                                            this.delegateEvents();
-                                            return this;
-                                        };
-                                    }
                                     cellOptions.cell = Backgrid.Cell.extend(_backgridCellExtend);
-                                } else if (field.type == 'address') {
-
+                                }
+                                else if (field.type == 'address') {
                                     var addressFormatter = {
-                                        // function (*, Backbone.Model): string
                                         fromRaw: function (rawData, model) {
-                                            //     "address" : {
-                                            //     "state" : "PR",
-                                            //     "city" : "Londrina",
-                                            //     "country" : "Brasil",
-                                            //     "street_number" : "3",
-                                            //     "neighborhood" : "Boa Vista",
-                                            //     "zipcode" : "86020200",
-                                            //     "geo_location" : {
-                                            //         "lat" : -23.3021531,
-                                            //         "lng" : -51.1731098
-                                            //     },
-                                            //     "location" : "",
-                                            //     "number" : "",
-                                            //     "complement" : "",
-                                            //     "street" : "Rua Maceió"
-                                            // }
                                             try {
                                                 return rawData.city + ' - ' + rawData.state;
                                             } catch (err) {
@@ -2450,31 +1984,27 @@
                                             }
 
                                         },
-                                        // function (string, Backbone.Model): *|undefined
                                         toRaw: function (formattedData, model) {
                                             return 'down';
                                         }
                                     };
 
                                     var AddressCell = Backgrid.Cell.extend({
-
-                                        // Cell default class names are the lower-cased and dasherized
-                                        // form of the the cell class names by convention.
                                         className: "address-cell",
-
                                         formatter: addressFormatter
 
                                     });
 
                                     cellOptions.cell = AddressCell;
 
-                                } else if (field.type == 'float') {
+                                }
+                                else if (field.type == 'float') {
                                     cellOptions.cell = Backgrid.NumberCell.extend({
                                         decimalSeparator: ',',
                                         orderSeparator: '.'
                                     });
-                                } else if (field.type == 'date') {
-                                    // console.log('tango');
+                                }
+                                else if (field.type == 'date') {
                                     var format = "DD/MM/YYYY";
                                     if (field.customOptions.monthpicker !== undefined) {
                                         format = "MM/YYYY";
@@ -2482,11 +2012,11 @@
 
                                     cellOptions.cell = Backgrid.Extension.MomentCell.extend({
                                         modelFormat: "YYYY/M/D",
-                                        // You can specify the locales of the model and display formats too
                                         displayLang: "pt-br",
                                         displayFormat: format
                                     });
-                                } else if (field.customOptions.enum != undefined) {
+                                }
+                                else if (field.customOptions.enum != undefined) {
 
                                     var enumOptions = [];
                                     for (var _idx in field.customOptions.enum) {
@@ -2498,49 +2028,14 @@
                                         optionValues: enumOptions
                                     });
 
-                                } else if (field.autocomplete == true) {
-                                    // if (field.customOptions.list != undefined) {
-                                    //     var customFormatter = {
-                                    //         // function (*, Backbone.Model): string
-                                    //         fromRaw: function(rawData, model) {
-                                    //             console.log('hehe');
-                                    //             var _list = field.customOptions.list;
-                                    //             console.log(field, rawData, model);
-                                    //             for (var _x in _list) {
-                                    //                 if (_list[_x].id == rawData) {
-                                    //                     return _list[_x].label;
-                                    //                 }
-                                    //             }
-                                    //         },
-                                    //         // fromRaw: function (rawData, model) {
-                                    //         //   // return (rawData, model);
-                                    //         // },
-                                    //         // function (string, Backbone.Model): *|undefined
-                                    //         toRaw: function(formattedData, model) {
-                                    //             return 'not implemented';
-                                    //         }
-                                    //     };
-
-                                    //     var customCell = Backgrid.Cell.extend({
-
-                                    //         formatter: customFormatter
-
-                                    //     });
-
-                                    //     cellOptions.cell = customCell;
-                                    //     console.log('entrou aqui');
-
-                                    // } else {
+                                }
+                                else if (field.autocomplete == true) {
                                     cellOptions.name = cellOptions.name + '.label';
-                                    // }
-
                                 }
 
                                 columns.push(cellOptions);
                             }
                         });
-                        // }
-
 
                         var ActionCell = Backgrid.Cell.extend({
                             className: 'text-right btn-column' + (settings.tab == true ? ' detail' : ''),
@@ -2556,7 +2051,7 @@
                                 } else {
                                     if (settings.settings) {
                                         if (settings.settings.edit) {
-                                            var _btnEditDetail = jQuery('<button type="button" class="btn btn-default btn-edit-detail-data"><span class="glyphicon glyphicon-pencil"></span></button>');
+                                            var _btnEditDetail = jQuery('<button type="button" class="btn btn-default btn-edit-detail"><span class="glyphicon glyphicon-pencil"></span></button>');
                                             _btnEditDetail.attr('data-route', settings.url);
                                             _buttons.push(_btnEditDetail);
                                         }
@@ -2567,7 +2062,6 @@
                                         }
                                     } else {
                                         var _btnDeleteDetail = jQuery('<button type="button" class="btn btn-default btn-delete-detail"><span class="glyphicon glyphicon-remove"></span></button>');
-                                        // _btnDeleteDetail.data('settings', settings);
                                         _btnDeleteDetail.attr('data-route', settings.url);
                                         _buttons.push(_btnDeleteDetail);
                                     }
@@ -2577,20 +2071,15 @@
                                 _group.append(_buttons);
 
                                 return _group;
-                            }, //_.template(_buttons),
+                            },
                             events: {
-                                // "click": "editRow"
+                               
                             },
                             editRow: function (e) {
                                 e.preventDefault();
-                                //Enable the occupation cell for editing
-                                //Save the changes
-                                //Render the changes.
-                                // console.log('tango')
                             },
                             render: function () {
                                 var _html = this.template(this.model.toJSON());
-                                // var _model = this.model;
                                 this.$el.html(_html);
                                 this.$el.data('model', this.model);
                                 this.$el.find('button.btn-edit').click(function (e) {
@@ -2607,7 +2096,7 @@
                                 });
 
                                 this.$el.find('button.btn-delete').click(function (e) {
-                                    // e.stopPropagation();
+                                    e.stopPropagation();
 
                                     var _confirm = window.confirm('Deseja realmente excluir esse registro?');
 
@@ -2620,47 +2109,38 @@
                                         }
                                     }
 
-
-
-                                    // response.then(function(data) {
-                                    //   console.log('asjkdlfç');
-                                    // });
-
-
                                 });
 
                                 this.$el.find('button.btn-delete-detail').click(function (e) {
                                     e.stopPropagation();
 
-                                    var $scope = angular.element(this).scope();
-                                    // var settings = this.$el.data('settings');
-                                    // console.log(settings.route);
-                                    var route = jQuery(this).attr('data-route');
+                                    var _confirm = window.confirm('Deseja realmente excluir esse registro?');
 
-                                    if (settings.tab) {
-                                        $scope.$parent.deleteDetail(route, $(this).closest('td').data('model').attributes);
-                                    } else {
-                                        $scope.deleteDetail(route, $(this).closest('td').data('model').attributes);
+                                    if (_confirm) {
+                                        var $scope = angular.element(this).scope();
+                                        var route = jQuery(this).attr('data-route');
+
+                                        if (settings.tab) {
+                                            $scope.$parent.deleteDetail(route, $(this).closest('td').data('model').attributes);
+                                        } else {
+                                            $scope.deleteDetail(route, $(this).closest('td').data('model').attributes);
+                                        }
                                     }
+                                    
                                 });
 
-                                this.$el.find('button.btn-edit-detail-data').click(function (e) {
+                                this.$el.find('button.btn-edit-detail').click(function (e) {
                                     e.stopPropagation();
-
+                  
                                     var $scope = angular.element(this).scope();
-                                    // var settings = this.$el.data('settings');
-                                    // console.log(settings.route);
-                                    var route = jQuery(this).attr('data-route');
-
-                                    if (settings.tab) {
-                                        $scope.$parent.editDetail(route, $(this).closest('td').data('model').attributes, $scope.type);
-                                    } else {
-                                        $scope.editDetail(route, $(this).closest('td').data('model').attributes, $scope.type);
-                                    }
+                                    var tab = $.parseJSON($(this).closest('.table-container').attr('tab-config'));
+                                    var row = $(this).closest('td').data('model').attributes;
+                                    var route = $(this).attr('data-route');
+                  
+                                    $scope.newDetail(tab, $scope.data, row.id, route);
                                 });
-
+                               
                                 this.delegateEvents();
-                                // console.log(_html);
                                 return this;
                             }
                         });
@@ -2687,22 +2167,7 @@
 
                         var ClickableRow = Backgrid.Row.extend({
                             className: rowClasses.join(' '),
-                            // events: {
-                            //   "click": "onClick"
-                            // },
-                            // onClick: function () {
-                            //   // Backbone.trigger("rowclicked", this.model);
-                            //   if (!this.$el.is('.detail') && !this.$el.is('.cant-edit')) {
-                            //     this.$el.scope().$parent.edit(this.model);
-                            //   }
-
-                            // }
                         });
-
-                        // Backbone.on("rowclicked", function (model) {
-                        //   console.log('clicou', model);
-                        //   // $scope.$parent.edit(model.id);
-                        // });
 
                         var pageableGrid = new Backgrid.Grid({
                             row: ClickableRow,
@@ -2740,15 +2205,6 @@
                             }
                         });
 
-                        // var serverSideFilter = new Backgrid.Extension.ServerSideFilter({
-                        //   collection: pageableCRUDModel,
-                        //   // the name of the URL query parameter
-                        //   name: "q",
-                        //   placeholder: "Busca..."
-                        // });
-                        //
-                        // jQuery('#table-dynamic').before(serverSideFilter.render().el);
-
                         var _filter = serverSideFilter.render().$el;
 
                         angular.element('.crud-list-header h4').css({
@@ -2781,13 +2237,11 @@
                         });
 
                         _filter.find('.clear').css({
-                            // 'display': 'block',
                             'height': '34px',
                             'line-height': '35px',
                             'top': 0,
                             'bottom': 0,
                             'margin-top': '0px',
-                            // 'margin-right': '-5px'
                         });
 
                         _filter.find('input[type="search"]').css({
@@ -2822,33 +2276,15 @@
 
                     createBackgrid(pageableCRUDModel);
 
-                    /*
-                    jQuery('#search-countries').keyup(function(){
-
-                      var $that = jQuery(this),
-                        filteredCollection = initialCRUDModel.fullCollection.filter(function(el){
-                          return ~el.get('name').toUpperCase().indexOf($that.val().toUpperCase());
-                        });
-                      createBackgrid(new PageableCRUDModel(filteredCollection, {
-                        state: {
-                          firstPage: 1,
-                          currentPage: 1
-                        }
-                      }));
-                    });
-                    */
-
                     pageableCRUDModel.fetch();
                 }
 
                 var listener = scope.$parent.$watch('headers', function (newValue, oldValue) {
-                    // console.log('tango', newValue);
                     if (newValue != null) {
                         var settings = scope.crudListSettings();
                         if (settings.tab == true) {
                             var listenerData = scope.$parent.$watch('data', function (newValue, oldValue) {
                                   if (newValue.id != undefined) {
-                                      // console.log('tango', newValue);
                                       render();
                                       listenerData();
                                       listener();
@@ -2866,26 +2302,6 @@
     }
 })();
 
-/*global angular*/
-/*jslint plusplus: true*/
-/*!
-* Angular Lets Core - Crud Form Directive
-*
-* File:        directives/crud/lets-crud-form.directive.js
-* Version:     1.0.0
-*
-* Author:      Lets Comunica
-* Info:        https://bitbucket.org/letscomunicadev/angular-framework-crud/src
-* Contact:     fabio@letscomunica.com.br
-*
-* Copyright 2018 Lets Comunica, all rights reserved.
-* Copyright 2018 Released under the MIT License
-*
-* This source file is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-* or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
-*/
-
 (function () {
     'use strict';
 
@@ -2898,50 +2314,11 @@
         return {
             replace: false,
             link: function (scope, $el) {
-                // var internalCounter = -1;
-
-                // if(scope.$parent.headers !== undefined) scope.headers = angular.copy(scope.$parent.headers);
-
-                // var newFields = [];
-
-                // scope.$parent.$watch('headers.fields', function() {
-                //     console.log(arguments);
-                // })
-
-                // $timeout(function () {
-                //     _.each(scope.headers.fields, function (field, key) {
-                //         newFields.push(field);
-                //         if (field.type == 'password') {
-                //             var newField = angular.copy(field);
-                //             newField.name = 'confirm_' + field.name;
-                //             newField.label = 'Confirmar ' + field.label;
-                //             newFields.push(newField);
-                //         }
-                //     });
-
-                //     scope.headers.fields = newFields;
-                // }, 500);
 
                 jQuery($el).on('click', '.button-new', function () {
                     var detail = jQuery(this).attr('detail');
                     var origin = jQuery(this).attr('origin');
-                    // var _new = {};
-                    //
-                    // var fields = scope.headers[origin][detail].fields;
-                    //
-                    // for (var x in fields) {
-                    //   if (fields[x].type != 'boolean') {
-                    //     _new[fields[x].name] = null;
-                    //   } else {
-                    //     _new[fields[x].name] = false;
-                    //   }
-                    // }
-
-                    // _new.new = true;
-
-                    // _new['ppho_id'] = internalCounter--;
-
-                    // console.log(_new);
+                    
                     if (scope.data[detail] == undefined) {
                         scope.data[detail] = [];
                     }
@@ -2961,23 +2338,10 @@
 
                 });
 
-
-                // debugger;
                 $timeout(function () {
-                    // debugger;
                     $el.find('.tab-group .nav-tabs li:first').find('a').click();
                     $el.find(':input[type!="hidden"]:first').focus();
-
-                    // ,
-                    // post: function postLink(scope, $el, attrs, controller) {
-                    // debugger;
-                    // $timeout(function() {
-
-                    // }, 500);
-
-                    // }
                 }, 500);
-
 
                 $($el).parsley({
                     priorityEnabled: false,
@@ -2986,31 +2350,10 @@
                     }
                 });
 
-                // data-ui-jq="parsley" data-parsley-errors-container=".input-container" data-parsley-priority-enabled="false"
             }
         }
     }
 })();
-
-/*global angular*/
-/*jslint plusplus: true*/
-/*!
-* Angular Lets Core - Crud Form Directive
-*
-* File:        directives/crud/lets-crud-form.directive.js
-* Version:     1.0.0
-*
-* Author:      Lets Comunica
-* Info:        https://bitbucket.org/letscomunicadev/angular-framework-crud/src
-* Contact:     fabio@letscomunica.com.br
-*
-* Copyright 2018 Lets Comunica, all rights reserved.
-* Copyright 2018 Released under the MIT License
-*
-* This source file is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-* or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
-*/
 
 (function () {
     'use strict';
@@ -3039,7 +2382,6 @@
         .provider('fwState', fwStateProvider);
 
     function fwStateProvider ($stateProvider) {
-        // this = $stateProvider;
 
         this.$get = $stateProvider.$get;
         this.state = $stateProvider.state;
@@ -3111,26 +2453,6 @@
     }
 })();
   
-/*global angular*/
-/*jslint plusplus: true*/
-/*!
-* Angular Lets Core - File Load Provider
-*
-* File:        providers/framework/lets-fw-file-load.provider.js
-* Version:     1.0.0
-*
-* Author:      Lets Comunica
-* Info:        https://bitbucket.org/letscomunicadev/angular-framework-crud/src
-* Contact:     fabio@letscomunica.com.br
-*
-* Copyright 2018 Lets Comunica, all rights reserved.
-* Copyright 2018 Released under the MIT License
-*
-* This source file is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-* or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
-*/
-
 (function () {
     'use strict';
     angular
@@ -3170,26 +2492,6 @@
     }
 })();
   
-/*global angular*/
-/*jslint plusplus: true*/
-/*!
-* Angular Lets Core - Framework Age Month Filter
-*
-* File:        filters/lets-fw-age-month.filter.js
-* Version:     1.0.0
-*
-* Author:      Lets Comunica
-* Info:        https://bitbucket.org/letscomunicadev/angular-framework-crud/src
-* Contact:     fabio@letscomunica.com.br
-*
-* Copyright 2018 Lets Comunica, all rights reserved.
-* Copyright 2018 Released under the MIT License
-*
-* This source file is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-* or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
-*/
-
 (function () {
     'use strict';
 
@@ -3221,36 +2523,9 @@
             }
 
             return _age + _birthType;
-            // var ageDifMs = Date.now() - birthday.getTime();
-            //
-            //
-            // var ageDate = new Date(ageDifMs); // miliseconds from epoch
-            // var meses = ageDate.getUTCMonth();
-            //
-            // return Math.abs(ageDate.getUTCFullYear() - 1970) + ' anos ' + (meses > 0 ? ('e ' + meses + (meses > 1 ? ' meses' : ' mês')) : '');
         }
     }
 })();
-
-/*global angular*/
-/*jslint plusplus: true*/
-/*!
-* Angular Lets Core - Backgrid Factory
-*
-* File:        factories/backgrid.directive.js
-* Version:     1.0.0
-*
-* Author:      Lets Comunica
-* Info:        https://bitbucket.org/letscomunicadev/angular-framework-crud/src
-* Contact:     fabio@letscomunica.com.br
-*
-* Copyright 2018 Lets Comunica, all rights reserved.
-* Copyright 2018 Released under the MIT License
-*
-* This source file is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-* or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
-*/
 
 (function () {
     'use strict';
@@ -3266,26 +2541,6 @@
 
 })();
 
-/*global angular*/
-/*jslint plusplus: true*/
-/*!
-* Angular Lets Core - Backbone Factory
-*
-* File:        factories/backbone.directive.js
-* Version:     1.0.0
-*
-* Author:      Lets Comunica
-* Info:        https://bitbucket.org/letscomunicadev/angular-framework-crud/src
-* Contact:     fabio@letscomunica.com.br
-*
-* Copyright 2018 Lets Comunica, all rights reserved.
-* Copyright 2018 Released under the MIT License
-*
-* This source file is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-* or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
-*/
-
 (function () {
     'use strict';
 
@@ -3300,26 +2555,6 @@
 
 })();
 
-/*global angular*/
-/*jslint plusplus: true*/
-/*!
-* Angular Lets Core - Crud Controller
-*
-* File:        controllers/lets-crud.controller.js
-* Version:     1.0.0
-*
-* Author:      Lets Comunica
-* Info:        https://bitbucket.org/letscomunicadev/angular-framework-crud/src
-* Contact:     fabio@letscomunica.com.br
-*
-* Copyright 2018 Lets Comunica, all rights reserved.
-* Copyright 2018 Released under the MIT License
-*
-* This source file is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-* or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
-*/
-
 (function () {
     'use strict';
 
@@ -3328,36 +2563,21 @@
     module.controller('CRUDController', ["$scope", "Restangular", "module", "$state", "$window", "$stateParams", "$rootScope", "headers", function ($scope, Restangular, module, $state, $window, $stateParams, $rootScope, headers) {
         $scope.headersReady = false;
 
-        // if ($window.localStorage.getItem('controllerHeaders') == undefined) {
-        //   var controllerHeaders = {};
-        // }
-        // else {
-        //   var controllerHeaders = JSON.parse($window.localStorage.getItem('controllerHeaders'));
-        // }
+        function getHeaders() {
+            var data = angular.copy(headers.get(module));
+            $scope.headers = data;
+        }
 
-        // if (controllerHeaders[module] == undefined) {
-        // debugger;
-        // console.log('312',headers.get(module));
-        // $scope.resource.customGET('headers').then(function (data) {
-        // console.log('module',module);
-        var data = headers.get(module);
-        $scope.headers = data;
-        // console.log(data);
+        getHeaders();
 
-        $scope.resource = Restangular.all(data.route);
-        // controllerHeaders[module] = data;
+        $scope.$on('refresh-headers', function () {
+            getHeaders();
+        })
 
-        // $window.localStorage.setItem('controllerHeaders', JSON.stringify(controllerHeaders));
+        $scope.resource = Restangular.all($scope.headers.route);
 
         $scope.$broadcast('headers-set');
         $scope.headersReady = true;
-        // });
-        // }
-        // else {
-        //   $scope.headers = controllerHeaders[module];
-        //   $scope.$broadcast('headers-set');
-        //   $scope.headersReady = true;
-        // }
 
         $scope.goNew = function () {
             $state.go($state.current.name.replace('.list', '.new'));
@@ -3374,37 +2594,13 @@
         };
 
         $scope.delete = function (row) {
-            // console.log(row);
             return $scope.resource.customDELETE(row.id).then(function () {
                 $rootScope.$broadcast('refreshGRID');
             });
-            // row.remove().then(function() {
-            //   $scope.refresh();
-            // });
         };
     }]);
 
 })();
-/*global angular*/
-/*jslint plusplus: true*/
-/*!
-* Angular Lets Core - Crud Form Modal Controller
-*
-* File:        controllers/lets-crud-form-modal.controller.js
-* Version:     1.0.0
-*
-* Author:      Lets Comunica
-* Info:        https://bitbucket.org/letscomunicadev/angular-framework-crud/src
-* Contact:     fabio@letscomunica.com.br
-*
-* Copyright 2018 Lets Comunica, all rights reserved.
-* Copyright 2018 Released under the MIT License
-*
-* This source file is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-* or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
-*/
-
 (function () {
     'use strict';
 
@@ -3443,37 +2639,18 @@
     }]);
 
 })();
-/*global angular*/
-/*jslint plusplus: true*/
-/*!
-* Angular Lets Core - Crud Edit Controller
-*
-* File:        controllers/lets-crud-edit.controller.js
-* Version:     1.0.0
-*
-* Author:      Lets Comunica
-* Info:        https://bitbucket.org/letscomunicadev/angular-framework-crud/src
-* Contact:     fabio@letscomunica.com.br
-*
-* Copyright 2018 Lets Comunica, all rights reserved.
-* Copyright 2018 Released under the MIT License
-*
-* This source file is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-* or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
-*/
-
 (function () {
     'use strict';
 
     var module = angular.module('letsAngular');
 
     module.controller('CRUDEditController', ["$scope", "Restangular", "$stateParams", "$timeout", "$modal", "module", "$state", "$rootScope", "$q", "ngToast", "$http", "Upload", "fwModalService", function ($scope, Restangular, $stateParams, $timeout, $modal, module, $state, $rootScope, $q, ngToast, $http, Upload, fwModalService) {
-
         $scope.data = {};
         $scope.dataLoaded = false;
         $scope.module = module;
         $scope.$http = $http;
+
+        $scope.$emit('refresh-headers');
 
         $scope.datepickers = {};
         $scope.datepickerToggle = function (name) {
@@ -3486,19 +2663,13 @@
         $scope.fetchData = function () {
             if ($stateParams.id) {
                 $scope.$parent.resource.customGET('crudGET/' + $stateParams.id).then(function (data) {
-                    // console.log(data);
-                    // @todo finish parsing detail data
                     for (var y in $scope.headers.fields) {
-                        // console.log(data[$scope.headers.fields[y].name]);
                         var field = $scope.headers.fields[y];
                         if (field.type == 'date' && (data[field.name] != undefined && data[field.name] != null)) {
                             data[field.name] = new Date(data[field.name]);
                         }
-
-                        if (field.customOptions.f) {
-
-                        }
                     }
+
                     // Establish read-only on tab-sessions or masterdetails fields that are filled with data
                     var list = $scope.headers.tabs_session;
                     if (list === undefined) {
@@ -3518,12 +2689,22 @@
                     }
                     $scope.data = data;
                     $scope.dataLoaded = true;
+
+                    if (typeof(window.setProgressFile)=="function"){
+                        $timeout(function(){
+                            window.setProgressFile();
+                        });
+                    }
+
                     $scope.$emit('data-loaded');
                 });
             } else {
 
+                $timeout(function () {
+                    $scope.$emit('data-new');
+                }, 50);
+
                 for (var y in $scope.headers.fields) {
-                    // console.log(data[$scope.headers.fields[y].name]);
                     var field = $scope.headers.fields[y];
                     if (field.type == 'boolean') {
                         $scope.data[field.name] = field.customOptions.default ? field.customOptions.default : false;
@@ -3541,7 +2722,7 @@
 
         $scope.$on('headers-set', function () {
             $scope.fetchData();
-        })
+        });
 
         $scope._upload = function (field, file) {
             var _url = $rootScope.appSettings.API_URL + 'upload';
@@ -3563,17 +2744,20 @@
                 var url = ($rootScope.appSettings.API_URL + $scope.module + '/download/' + field.name + '/' + id);
             }
 
-            $scope._download(url, field);
+            $scope._download(url, field, $scope.data);
         }
 
-        $scope.downloadDetail = function (detail, field, id) {
-            // window.open($rootScope.appSettings.API_URL + $scope.module + '/details/' + detail + '/download/' + field.name + '/' + id);
-            var url = $rootScope.appSettings.API_URL + $scope.module + '/details/' + detail + '/download/' + field.name + '/' + id;
+        $scope.downloadDetail = function (detail, field, id, data) {
+            if (field.customOptions.file.container != undefined) {
+                var url = $rootScope.appSettings.API_URL + 'upload/' + field.customOptions.file.container + '/download/' + data[field.name];
+            } else {
+                var url = $rootScope.appSettings.API_URL + $scope.module + '/details/' + detail + '/download/' + field.name + '/' + id;
+            }
 
-            $scope._download(url, field);
+            $scope._download(url, field, data);
         }
 
-        $scope._download = function (url, field) {
+        $scope._download = function (url, field, scopeData) {
             this.$http({
                 method: 'GET',
                 url: url,
@@ -3581,7 +2765,7 @@
             }).success(function (data, status, headers) {
                 headers = headers();
                 if (field.customOptions.file.container != undefined) {
-                    var filename = $scope.data[field.name];
+                    var filename = scopeData[field.name];
                 } else {
                     var filename = headers['content-disposition'].split(';')[1].split('=')[1].split('"')[1];
                 }
@@ -3609,15 +2793,14 @@
                 });
                 linkElement.dispatchEvent(clickEvent);
             } catch (e) {
-                // console.log(e);
             }
         }
 
         $scope.submit = function () {
             var $_scope = this;
-            // console.log(this.crudForm.$valid);
             var err = {};
             var _data = $_scope.data;
+
             _.each($_scope.headers.fields, function (field, key) {
                 if (field.type == 'password' && field.name.indexOf('confirm') != 0) {
                     if (_data['confirm_' + field.name] != _data[field.name]) {
@@ -3625,6 +2808,7 @@
                     }
                 }
             });
+
             _.each($_scope.data, function (dataValue, key) {
                 if (key.indexOf('.label') !== -1 && _data.id === undefined) {
                     if (typeof dataValue !== 'object' && dataValue !== '') {
@@ -3637,6 +2821,7 @@
                     }
                 }
             });
+
             if (Object.keys(err).length > 0) {
                 var _messages = new Array();
                 _.each(err, function (value, key) {
@@ -3645,23 +2830,24 @@
                 ngToast.warning(_messages.join("<br />"));
             }
             else if (this.crudForm.$valid) {
-                // if (true) { //this.crudForm.$valid) {
-                // console.log('jajajajaj');
 
                 if (!$stateParams.id) {
                     var response = $scope.$parent.resource.post($scope.data);
+                    var typeSave = "new";
                 } else {
                     var response = $scope.data.put();
+                    var typeSave = "edit";
                 }
 
-                response.then(function () {
+                response.then(function (resp) {
                     if ($scope.doAfterSave != undefined && typeof $scope.doAfterSave == 'function') {
-                        $scope.doAfterSave();
+                        $scope.doAfterSave(resp, typeSave);
                     } else {
                         $state.go($state.current.name.replace('.edit', '.list').replace('.new', '.list'));
                     }
                 }, function errorCallback(error) {
                     var messages = [];
+
                     function findLabel(name) {
                         for (var _x in $_scope.headers.fields) {
                             var field = $_scope.headers.fields[_x];
@@ -3727,10 +2913,6 @@
                     for (var _x in type) {
                         var label = type[_x].$options.fieldInfo.label;
                         if (errorTypes[t] == 'required') {
-                            // console.log(type[_x].$name);
-                            // debugger;
-                            // var label = $scope.headers.findLabel(type[_x].$name);
-
                             messages.push('O campo ' + label + ' é obrigatório');
                         } else if (errorTypes[t] == 'date' && pattern.test(type[_x].$viewValue) == false) {
                             messages.push('O campo ' + label + ' está com uma data inválida');
@@ -3738,51 +2920,28 @@
                     }
                 }
 
-                // var _fields = $(window.crudForm).parsley().fields;
-
-                // for (var _x in _fields) {
-                //     var _field = _fields[_x];
-                //     // $_scope_field.$element.attr('name');
-                //     // debugger;
-
-                //     var errors = ParsleyUI.getErrorsMessages(_field);
-
-                //     if (errors.length > 0) {
-                //         var a = _field.$element[0].closest('.input-container')
-                //         var name = a.attributes['data-name'].value;
-                //         var label = $scope.headers.findLabel(name);
-
-                //         // console.log(label, errors);
-                //         for (var _y in errors) {
-
-                //             messages.push(errors[_y].replace('Este campo ', 'O campo ' + label + ' '));
-
-                //         }
-                //     }
-
-
-                // }
                 if (messages.length > 0) {
                     ngToast.warning(messages.join("<br />"));
                 }
                 else {
+
                     if (!$stateParams.id) {
                         var response = $scope.$parent.resource.post($scope.data);
+                        var typeSave = "new";
                     } else {
                         var response = $scope.data.put();
+                        var typeSave = "edit";
                     }
 
                     response.then(function () {
                         if ($scope.doAfterSave != undefined && typeof $scope.doAfterSave == 'function') {
-                            $scope.doAfterSave();
+                            $scope.doAfterSave(resp, typeSave);
                         } else {
                             $state.go($state.current.name.replace('.edit', '.list').replace('.new', '.list'));
                         }
                     }, function errorCallback(error) {
-                        console.log(error);
 
                         var messages = [];
-
 
                         function findLabel(name) {
                             for (var _x in $_scope.headers.fields) {
@@ -3848,48 +3007,11 @@
 
         $scope.autocompleteModels = {};
 
-        // $scope.newDetail = function (tab, data) {
-        //     // console.log(tab,data);
-        //
-        //     var modalInstance = $modal.open({
-        //         animation: true,
-        //         templateUrl: 'app/modules/core/utils/crud/crud-form.html',
-        //         controller: 'CRUDEditDetailController',
-        //         resolve: {
-        //             headers: {
-        //                 fields: tab.fields,
-        //                 route: module + tab.route,
-        //                 // route: module + '/:id/' + tab.name,
-        //                 label_row: tab.label_row,
-        //                 label: tab.label,
-        //                 tabs: {}
-        //             }
-        //         }
-        //         // size: size,
-        //         // resolve: {
-        //         //   items: function () {
-        //         //     return $scope.items;
-        //         //   }
-        //         // }
-        //     });
-        //
-        //     $rootScope.$$phase || $rootScope.$apply();
-        //
-        //     modalInstance.result.then(function (selectedItem) {
-        //         $scope.selected = selectedItem;
-        //     }, function () {
-        //         // console.info('Modal dismissed at: ' + new Date());
-        //     });
-        // };
-        // $scope.autocompleteWrapper = function(field, val) {
-        //   console.log(field, val);
-        // }
-
         $scope.autocompleteAdd = function (query) {
             // console.log(query);
         }
 
-        $scope.autocomplete = function (field, val) {
+        $scope._autocomplete = function (field, val, detail) {
 
             var queries = [];
 
@@ -3900,29 +3022,20 @@
                 for (var x in deps) {
                     var dep = deps[x];
                     if ($scope.data[dep.field] == undefined || $scope.data[dep.field] == null) {
-                        // window.alert('missing ' + dep);
-                        //            var text = 'missing ' + dep.field;
-
 
                         var text = 'Selecione antes o(a) ' + dep.label;
 
                         var data = [];
-                        data.push({ id: -1, label: text });
+                        data.push({ id: null, label: text });
 
                         deferred.resolve(data);
 
                         return deferred.promise;
                     } else {
                         queries[dep.field] = $scope.data[dep.field];
-                        // queries.push(dep + "=" + $scope.data[dep]);
                     }
-
-                    // console.log("?" + queries.join("&"));
                 }
             }
-            // return $scope.resource.customGET('autocomplete/' + field.name + '/' + val, queries);
-
-
 
             val = val.trim();
             if (val.length == 0 || field.customOptions.select == true) {
@@ -3942,7 +3055,24 @@
                     return deferred.reject();
                 });
             } else if (field.customOptions.list == undefined) {
-                $scope.resource.customGET('autocomplete/' + field.name + '/' + val, queries).then(function (data) {
+                
+                if (detail) {
+                    var route = 'details/' + detail + '/autocomplete/' + field.name + '/' + val;
+                } else {
+                    var route = 'autocomplete/' + field.name + '/' + val;
+                }
+
+                if (field.customOptions.select == true){
+                    queries["limit"] = 0;
+                }else{
+                    queries["limit"] = 20;
+                }
+
+                $scope.resource.customGET(route, queries).then(function (data) {
+
+                    if (field.customOptions.select == true) {
+                        data.unshift({ id: null, label: '--- Selecione ---' });
+                    }
 
                     if (field.quickAdd === true && val != '[blank]') {
                         data.push({ id: -1, label: 'Adicionar novo: ' + val });
@@ -3959,144 +3089,75 @@
             return deferred.promise;
         }
 
+        $scope.autocomplete = function (field, val) {
+            return this._autocomplete(field, val, null);
+        }
+
         $scope.autocompleteDetail = function (detail, field, val) {
-
-            var queries = [];
-
-            var deferred = $q.defer();
-
-            if (field.autocomplete_dependencies.length > 0) {
-                var deps = field.autocomplete_dependencies;
-                for (var x in deps) {
-                    var dep = deps[x];
-                    if ($scope.data[dep.field] == undefined || $scope.data[dep.field] == null) {
-                        // window.alert('missing ' + dep);
-                        //            var text = 'missing ' + dep.field;
-
-                        var text = 'Selecione antes o(a) ' + dep.label;
-
-                        var data = [];
-                        data.push({ id: -1, label: text });
-
-                        deferred.resolve(data);
-
-                        return deferred.promise;
-                    } else {
-                        queries[dep.field] = $scope.data[dep.field];
-                        // queries.push(dep + "=" + $scope.data[dep]);
-                    }
-
-                    // console.log("?" + queries.join("&"));
-                }
-            }
-
-            val = val.trim();
-            if (val.length == 0 || field.customOptions.select == true) {
-                val = '[blank]';
-            }
-
-            if (field.customOptions.general !== undefined) {
-                $scope.resource.customGET('general/autocomplete/' + field.customOptions.general + '/' + val, queries).then(function (data) {
-
-                    if (field.quickAdd === true && val != '[blank]') {
-                        data.push({ id: -1, label: 'Adicionar novo: ' + val });
-                    }
-
-                    deferred.resolve(data);
-
-                }, function errorCallback() {
-                    return deferred.reject();
-                });
-            } else $scope.resource.customGET('details/' + detail + '/autocomplete/' + field.name + '/' + val, queries).then(function (data) {
-                if (field.quickAdd && val != '[blank]') {
-                    data.push({ id: -1, query: val, label: 'Adicionar novo: ' + val });
-                }
-
-                deferred.resolve(data);
-
-            }, function errorCallback() {
-                return deferred.reject();
-            });
-
-            return deferred.promise;
+            return this._autocomplete(field, val, detail);
         }
 
-        $scope.autocompleteSelect = function ($item, $model, $label) {
-            $scope.$emit('selected-autocomplete', { type: this.field.name, data: $item });
-            if (typeof $item.id != 'integer' || (typeof $item.id == 'integer' && $item.id > 0)) {
-                this.data[this.field.name] = $item.id;
-            } else {
-                this.data[this.field.name + '.label'] = null;
+        $scope.doafterAutoCompleteSelect = {};
+
+        $scope._autocompleteSelect = function ($item, $model, $label, detail) {
+            
+            var _data = detail ? this.detail_data : this.data;
+
+            if ($item.id != null && typeof $item.id != 'integer' || (typeof $item.id == 'integer' && $item.id > 0)) {
+                _data[this.field.name] = $item.id;
+            }
+            else if ($item.id == null) {
+                _data[this.field.name] = _data[this.field.name + '.label'] = null;
+            }
+            else {
+                _data[this.field.name + '.label'] = null;
                 return false;
-                // $scope.resource.customPOST('quickAdd/')
-                // this.field.name
             }
-        }
 
-        $scope.doafterAutoCompleteSelect = function ($item, $model, $label) {
+            if (typeof $scope.doafterAutoCompleteSelect[this.field.name] == "function") {
+                $scope.doafterAutoCompleteSelect[this.field.name].call(this, _data, $item, $model, $label);
+            }
 
-        }
-
-        $scope.autocompleteDetailSelect = function (detail, $item, $model, $label) {
-            if ($item.id != -1) {
-                this.data[this.$parent.field.name] = $item.id;
+            if (detail) {
+                this.detail_data = _data;
             } else {
-                $item.$scope = this;
-
-                $scope.resource.customPOST({ query: $item.query }, 'quickAdd/' + this.field.name).then(function (data) {
-                    $item.$scope.data[$item.$scope.field.name] = data.id;
-                    $item.$scope.data[$item.$scope.field.name + '.label'] = $item.query;
-                }, function errorCallback() {
-                    ngToast.warning('Houve algum problema ao adicionar...');
-                });
+                this.data = _data;
             }
-            // this.$parent.data[detail][this.$parent.field] = $item.id;
-            // this.data[this.$parent.field.name] = $item.id;
+        }
 
-            $scope.doafterAutoCompleteSelect.call(this, this.data, $item, $model, $label)
+        $scope.autocompleteSelect = function (detail, $item, $model, $label) {
+            this._autocompleteSelect($item, $model, $label, null);
         };
 
+        $scope.autocompleteDetailSelect = function (detail, $item, $model, $label) {
+            this._autocompleteSelect($item, $model, $label, detail);
+        }
+
         $scope.openPopup = function ($event) {
-            // console.log('tango');
             $event.preventDefault();
             $event.stopPropagation();
             this.popupOpen = true;
         };
 
-        $scope.deleteDetailData = function (detail_data, detail_key) {
-            // console.log(detail_data, detail_key);
-            if (window.confirm('Deseja realmente excluir esse item?')) {
-                this.data[detail_key].splice(this.data[detail_key].indexOf(detail_data), 1);
-            }
+        $scope.buttonClick = function (method) {
+            $scope[method]();
+        };
+        
+        $scope.newDetail = function (tab, data, id, route) {
+            
+            var parentModel = $scope.headers.parent_route ? $scope.headers.parent_route : $scope.headers.route.toLowerCase();
+            tab.route = (id ? route : module+tab.route);
+            tab.id = id ? id : null;
+
+            fwModalService.createCRUDModal(tab, parentModel, null, true, "CRUDEditDetailController");
         };
 
         $scope.deleteDetail = function (route, row) {
-            // $http.delete($rootScope.appSettings.API_URL + route + '/' + row.id).then(function(response) {
-            //   $rootScope.$broadcast('refreshGRID');
-            // });
             var resource = Restangular.all(route);
             resource.customDELETE(row.id).then(function () {
-                // $state.go($scope.$parent.path + '.list');
                 $rootScope.$broadcast('refreshGRID');
                 $rootScope.$broadcast('data-grid-updated', { type: route.split('/').pop() });
             });
-        };
-
-        $scope.editDetail = function (route, row, detail_key) {
-            var origin = jQuery('.button-new').attr('origin');
-            var headers = $scope.headers[origin][detail_key];
-            var parentModel = $scope.headers.route.toLowerCase();
-            if ($scope.headers.parent_route) parentModel = $scope.headers.parent_route;
-
-            fwModalService.createCRUDModal(headers, parentModel, row, true)
-              .then(function (response) {
-                  var resource = Restangular.all(route);
-                  resource.customPUT(response, row.id).then(function (data) {
-                    // $state.go($scope.$parent.path + '.list');
-                    $rootScope.$broadcast('refreshGRID');
-                    $rootScope.$broadcast('data-grid-updated', { type: route.split('/').pop() });
-                  });
-              });
         };
 
         $scope.editDetailData = function (detail_data, detail_key) {
@@ -4124,44 +3185,28 @@
                 });
         };
 
-        $scope.buttonClick = function (method) {
-          $scope[method]();
+        $scope.deleteDetailData = function (detail_data, detail_key) {
+            if (window.confirm('Deseja realmente excluir esse item?')) {
+                this.data[detail_key].splice(this.data[detail_key].indexOf(detail_data), 1);
+            }
         };
 
     }]);
 
 })();
-/*global angular*/
-/*jslint plusplus: true*/
-/*!
-* Angular Lets Core - Crud Edit Detail Controller
-*
-* File:        controllers/lets-crud-edit-detail.controller.js
-* Version:     1.0.0
-*
-* Author:      Lets Comunica
-* Info:        https://bitbucket.org/letscomunicadev/angular-framework-crud/src
-* Contact:     fabio@letscomunica.com.br
-*
-* Copyright 2018 Lets Comunica, all rights reserved.
-* Copyright 2018 Released under the MIT License
-*
-* This source file is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-* or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
-*/
-
 (function () {
     'use strict';
 
     var module = angular.module('letsAngular');
 
-    module.controller('CRUDEditDetailController', ["$scope", "Restangular", "$stateParams", "$timeout", "headers", "$rootScope", "$modalInstance", "$q", "ngToast", function ($scope, Restangular, $stateParams, $timeout, headers, $rootScope, $modalInstance, $q, ngToast) {
+    module.controller('CRUDEditDetailController', ["$scope", "Restangular", "$http", "$stateParams", "$timeout", "headers", "$rootScope", "$modalInstance", "$q", "ngToast", function ($scope, Restangular, $http, $stateParams, $timeout, headers, $rootScope, $modalInstance, $q, ngToast) {
 
         $scope.data = {};
         $scope.headers = headers;
-
         $scope.resource = Restangular.all(headers.route);
+        $scope.autocompleteModels = {};
+        $scope.doafterAutoCompleteSelect = {};
+        $scope.$http = $http;
 
         $scope.datepickers = {};
         $scope.datepickerToggle = function (name) {
@@ -4171,11 +3216,49 @@
             $scope.datepickers[name] = !$scope.datepickers[name];
         }
 
-        $timeout(function () { //@todo it must change
+        for (var y in $scope.headers.fields) {
+            var field = $scope.headers.fields[y];
+            if (field.type == 'boolean') {
+                $scope.data[field.name] = false;
+            }
+        }
 
+        if (headers.id) {
+            $scope.resource.customGET(headers.id).then(function (data) {
+                for (var y in $scope.headers.fields) {
+                    var field = $scope.headers.fields[y];
+                    if (field.type == 'date' && (data[field.name] != undefined && data[field.name] != null)) {
+                        data[field.name] = new Date(data[field.name]);
+                    }
+                    if (field.customOptions.f) {
+
+                    }
+                }
+                $scope.data = data;
+                if (typeof(window.setProgressFile)=="function"){
+                    $timeout(function(){
+                        window.setProgressFile();
+                    });
+                }
+                $scope.$emit('data-loaded-detail');
+            });
+        }else{
+            $timeout(function(){
+                $scope.$emit('data-new-detail'); 
+            },50);
+        }
+
+        $timeout(function () {
+            
             $scope.submit = function () {
                 if (this.crudForm.$valid) {
-                    $scope.resource.customPOST($scope.data, $stateParams.id).then(function () {
+                    if (!$scope.data.id) {
+                        var response = $scope.resource.customPOST($scope.data, $stateParams.id);
+                    } else {
+                        var response = $scope.resource.customPUT($scope.data, $scope.data.id);
+                    }
+
+                    response.then(function () {
                         $rootScope.$broadcast('refreshGRID');
                         $modalInstance.dismiss('success');
 
@@ -4187,111 +3270,178 @@
                                 messages.push(error.data[name][idx]);
                             }
                         }
-                        console.log('entrou nesse aqui');
                         ngToast.warning(messages.join("<br />"));
                     });
                 }
             };
 
             $scope.cancel = function () {
-                $modalInstance.dismiss('cancel');
+                $modalInstance.dismiss('success');
             };
 
-            $scope.autocompleteModels = {};
+            $scope._upload = function (field, file) {
+                var _url = $rootScope.appSettings.API_URL + 'upload';
 
-            // $scope.autocompleteAdd = function(field, query) {
-            //   // console.log(field, query);
-            //
-            //   return $scope.resource.customPOST('quickAdd/' + field.name + '/' + query);
-            // }
+                if (field.customOptions.file.container != undefined) {
+                    _url += '/' + field.customOptions.file.container + '/upload'
+                }
+
+                return Upload.upload({
+                    url: _url,
+                    data: { file: file }
+                });
+            }
+
+            $scope.download = function (field, id) {
+
+                if (field.customOptions.file.container != undefined) {
+                    var url = $rootScope.appSettings.API_URL + 'upload/' + field.customOptions.file.container + '/download/' + $scope.data[field.name];
+                } else {
+                    var url = ($rootScope.appSettings.API_URL + $scope.module + '/download/' + field.name + '/' + id);
+                }
+
+                $scope._download(url, field, $scope.data);
+            }
+
+            $scope.downloadDetail = function (detail, field, id, data) {
+                if (field.customOptions.file.container != undefined) {
+                    var url = $rootScope.appSettings.API_URL + 'upload/' + field.customOptions.file.container + '/download/' + data[field.name];
+                } else {
+                    var url = $rootScope.appSettings.API_URL + $scope.module + '/details/' + detail + '/download/' + field.name + '/' + id;
+                }
+
+                $scope._download(url, field, data);
+            }
+
+            $scope._download = function (url, field, scopeData) {
+                this.$http({
+                    method: 'GET',
+                    url: url,
+                    responseType: 'arraybuffer'
+                }).success(function (data, status, headers) {
+                    headers = headers();
+                    if (field.customOptions.file.container != undefined) {
+                        var filename = scopeData[field.name];
+                    } else {
+                        var filename = headers['content-disposition'].split(';')[1].split('=')[1].split('"')[1];
+                    }
+
+                    var contentType = headers['content-type'];
+
+                    var blob = new Blob([data], { type: contentType });
+
+                    $scope.downloadFile(blob, filename);
+                });
+            }
+
+            $scope.downloadFile = function (blob, filename) {
+                var linkElement = document.createElement('a');
+                try {
+
+                    var url = window.URL.createObjectURL(blob);
+
+                    linkElement.setAttribute('href', url);
+                    linkElement.setAttribute("download", filename);
+
+                    var clickEvent = new MouseEvent("click", {
+                        "view": window,
+                        "bubbles": true,
+                        "cancelable": false
+                    });
+                    linkElement.dispatchEvent(clickEvent);
+                } catch (ex) {
+                    // console.log(ex);
+                }
+            }
 
             $scope.autocomplete = function (field, val) {
-
                 var queries = [];
+
+                var deferred = $q.defer();
+
                 if (field.autocomplete_dependencies.length > 0) {
                     var deps = field.autocomplete_dependencies;
                     for (var x in deps) {
                         var dep = deps[x];
 
-                        if ($scope.data[dep] == undefined || $scope.data[dep] == null) {
-                            ngToast.warning('missing ' + dep);
-                            return;
-                        } else {
-                            queries[dep] = $scope.data[dep];
-                            // queries.push(dep + "=" + $scope.data[dep]);
-                        }
+                        if ($scope.data[dep.field] == undefined || $scope.data[dep.field] == null) {
 
-                        // console.log("?" + queries.join("&"));
+                            var text = 'Selecione o ' + dep.label;
+
+                            var data = [];
+                            data.push({ id: null, label: text });
+
+                            deferred.resolve(data);
+
+                            return deferred.promise;
+                        } else {
+
+                            if ($scope.data[dep.field].id) {
+                                queries[dep.field] = $scope.data[dep.field].id;
+                            } else {
+                                queries[dep.field] = $scope.data[dep.field];
+                            }
+
+                        }
                     }
                 }
 
-                var deferred = $q.defer();
-
                 val = val.trim();
-                if (val.length == 0) {
+                if (val.length == 0 || field.customOptions.select == true) {
                     val = '[blank]';
                 }
 
-                if (field.customOptions.general !== undefined) {
-                    var _resource = Restangular.all(headers.generalRoute);
-                    _resource.customGET('general/autocomplete/' + field.customOptions.general + '/' + val, queries).then(function (data) {
+                if (field.customOptions.list == undefined) {
+
+                    var route = 'autocomplete/' + field.name + '/' + val;
+
+                    if (field.customOptions.select == true){
+                        queries["limit"] = 0;
+                    }else{
+                        queries["limit"] = 20;
+                    }
+
+                    $scope.resource.customGET(route, queries).then(function (data) {
+
+                        if (field.customOptions.select == true) {
+                            data.unshift({ id: null, label: '--- Selecione ---' });
+                        }
 
                         if (field.quickAdd === true && val != '[blank]') {
-                            data.push({ id: -1, label: 'Adicionar novo: ' + val });
+                            data.push({ id: null, label: 'Adicionar novo: ' + val });
                         }
-
 
                         deferred.resolve(data);
 
                     }, function errorCallback() {
                         return deferred.reject();
                     });
+
                 } else {
-                    $scope.resource.customGET('autocomplete/' + field.name + '/' + val, queries).then(function (data) {
-                        if (field.quickAdd && val != '[blank]') {
-                            data.push({ id: -1, query: val, label: 'Adicionar novo: ' + val });
-                        }
-
-                        deferred.resolve(data);
-
-                    }, function errorCallback() {
-                        return deferred.reject();
-                    });
+                    deferred.resolve(field.customOptions.list);
                 }
 
                 return deferred.promise;
             }
 
-            // $scope.autocompleteDetail = function(detail, field, val) {
-            //   return $scope.resource.customGET('details/autocomplete/' + detail + '/' + field.name + '/' + val);
-            // }
-
             $scope.autocompleteSelect = function ($item, $model, $label) {
-                $scope.$emit('selected-autocomplete', { type: this.field.name, data: $item });
-                console.log($item)
-                if ($item.id != -1) {
+                if ($item.id != null && typeof $item.id != 'integer' || (typeof $item.id == 'integer' && $item.id > 0)) {
                     this.data[this.field.name] = $item.id;
-                } else {
-                    $item.$scope = this;
+                }
+                else if ($item.id == null) {
+                    this.data[this.field.name] = this.data[this.field.name + '.label'] = null;
+                }
+                else {
+                    this.data[this.field.name + '.label'] = null;
+                    return false;
+                }
 
-                    $scope.resource.customPOST({ query: $item.query }, 'quickAdd/' + this.field.name).then(function (data) {
-                        $item.$scope.data[$item.$scope.field.name] = data.id;
-                        $item.$scope.data[$item.$scope.field.name + '.label'] = $item.query;
-
-                    }, function errorCallback() {
-                        ngToast.warning('Houve algum problema ao adicionar...');
-                    });
+                if (typeof $scope.doafterAutoCompleteSelect[this.field.name] == "function") {
+                    $scope.doafterAutoCompleteSelect[this.field.name].call(this, this.data, $item, $model, $label);
                 }
             }
 
-            // $scope.autocompleteDetailSelect = function(detail, $item, $model, $label) {
-            //   // this.$parent.data[detail][this.$parent.field] = $item.id;
-            //   this.detail_data[this.$parent.field.name] = $item.id;
-            // }
-
-
-
-        }, 500);
+        }, 500); 
 
     }]);
 
