@@ -2666,6 +2666,34 @@
 (function () {
     'use strict';
 
+    angular.module('letsAngular')
+        .factory('Backgrid', BackgridFactory);
+
+    BackgridFactory.$inject = ['$window'];
+
+    function BackgridFactory($window) {
+        return $window.Backgrid;
+    }
+
+})();
+
+(function () {
+    'use strict';
+
+    angular.module('letsAngular')
+        .factory('Backbone', BackboneFactory);
+
+    BackboneFactory.$inject = ['$window'];
+
+    function BackboneFactory($window) {
+        return $window.Backbone;
+    }
+
+})();
+
+(function () {
+    'use strict';
+
     fwAgeMonth.$inject = ["birthday"];
     angular.module('letsAngular')
         .filter('fwAgeMonth', fwAgeMonth);
@@ -2696,34 +2724,6 @@
             return _age + _birthType;
         }
     }
-})();
-
-(function () {
-    'use strict';
-
-    angular.module('letsAngular')
-        .factory('Backgrid', BackgridFactory);
-
-    BackgridFactory.$inject = ['$window'];
-
-    function BackgridFactory($window) {
-        return $window.Backgrid;
-    }
-
-})();
-
-(function () {
-    'use strict';
-
-    angular.module('letsAngular')
-        .factory('Backbone', BackboneFactory);
-
-    BackboneFactory.$inject = ['$window'];
-
-    function BackboneFactory($window) {
-        return $window.Backbone;
-    }
-
 })();
 
 (function () {
@@ -2978,6 +2978,14 @@
                 ngToast.warning(_messages.join("<br />"));
             }
             else if (this.crudForm.$valid) {
+
+                if($_scope.headers.tabs){
+                    Object.keys($_scope.headers.tabs).forEach(function(tab){
+                        if($_scope.data[tab]){
+                            delete $_scope.data[tab];
+                        }
+                    });
+                }
 
                 if (!$stateParams.id) {
                     var response = $scope.$parent.resource.post($scope.data);
@@ -3372,7 +3380,7 @@
 
     var module = angular.module('letsAngular');
 
-    module.controller('CRUDEditDetailController', ["$scope", "Restangular", "$http", "$stateParams", "$timeout", "headers", "$rootScope", "$modalInstance", "$q", "ngToast", function ($scope, Restangular, $http, $stateParams, $timeout, headers, $rootScope, $modalInstance, $q, ngToast) {
+    module.controller('CRUDEditDetailController', ["$scope", "Restangular", "$http", "$stateParams", "$timeout", "headers", "$rootScope", "$modalInstance", "$q", "ngToast", "Upload", function ($scope, Restangular, $http, $stateParams, $timeout, headers, $rootScope, $modalInstance, $q, ngToast, Upload) {
 
         $scope.data = {};
         $scope.headers = headers;
@@ -3527,7 +3535,7 @@
                 }
             }
 
-            $scope.autocomplete = function (field, val) {
+            $scope._autocomplete = function (field, val, detail) {
                 var queries = [];
 
                 var deferred = $q.defer();
@@ -3597,7 +3605,7 @@
                 return deferred.promise;
             }
 
-            $scope.autocompleteSelect = function ($item, $model, $label) {
+            $scope._autocompleteSelect = function ($item, $model, $label, detail) {
                 if ($item.id != null && typeof $item.id != 'integer' || (typeof $item.id == 'integer' && $item.id > 0)) {
                     this.data[this.field.name] = $item.id;
                 }
@@ -3612,6 +3620,22 @@
                 if (typeof $scope.doafterAutoCompleteSelect[this.field.name] == "function") {
                     $scope.doafterAutoCompleteSelect[this.field.name].call(this, this.data, $item, $model, $label);
                 }
+            }
+
+            $scope.autocomplete = function (field, val) {
+                return this._autocomplete(field, val, null);
+            }
+
+            $scope.autocompleteDetail = function (detail, field, val) {
+                return this._autocomplete(field, val, detail);
+            }
+
+            $scope.autocompleteSelect = function (detail, $item, $model, $label) {
+                this._autocompleteSelect($item, $model, $label, null);
+            };
+    
+            $scope.autocompleteDetailSelect = function (detail, $item, $model, $label) {
+                this._autocompleteSelect($item, $model, $label, detail);
             }
 
         }, 500); 

@@ -3,3 +3,7 @@
     "./src/**/*.js",
     "./dist/lets-tpls.js"
 ]
+
+"main": [
+    "./dist/lets.min.js"
+]
