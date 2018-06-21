@@ -173,6 +173,14 @@
             }
             else if (this.crudForm.$valid) {
 
+                if($_scope.headers.tabs){
+                    Object.keys($_scope.headers.tabs).forEach(function(tab){
+                        if($_scope.data[tab]){
+                            delete $_scope.data[tab];
+                        }
+                    });
+                }
+
                 if (!$stateParams.id) {
                     var response = $scope.$parent.resource.post($scope.data);
                     var typeSave = "new";

@@ -1,0 +1,5 @@
+"main": [
+    "./src/lets.module.js",
+    "./src/**/*.js",
+    "./dist/lets-tpls.js"
+]

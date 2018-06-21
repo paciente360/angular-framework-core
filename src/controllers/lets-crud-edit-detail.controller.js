@@ -158,7 +158,7 @@
                 }
             }
 
-            $scope.autocomplete = function (field, val) {
+            $scope._autocomplete = function (field, val, detail) {
                 var queries = [];
 
                 var deferred = $q.defer();
@@ -228,7 +228,7 @@
                 return deferred.promise;
             }
 
-            $scope.autocompleteSelect = function ($item, $model, $label) {
+            $scope._autocompleteSelect = function ($item, $model, $label, detail) {
                 if ($item.id != null && typeof $item.id != 'integer' || (typeof $item.id == 'integer' && $item.id > 0)) {
                     this.data[this.field.name] = $item.id;
                 }
@@ -243,6 +243,22 @@
                 if (typeof $scope.doafterAutoCompleteSelect[this.field.name] == "function") {
                     $scope.doafterAutoCompleteSelect[this.field.name].call(this, this.data, $item, $model, $label);
                 }
+            }
+
+            $scope.autocomplete = function (field, val) {
+                return this._autocomplete(field, val, null);
+            }
+
+            $scope.autocompleteDetail = function (detail, field, val) {
+                return this._autocomplete(field, val, detail);
+            }
+
+            $scope.autocompleteSelect = function (detail, $item, $model, $label) {
+                this._autocompleteSelect($item, $model, $label, null);
+            };
+    
+            $scope.autocompleteDetailSelect = function (detail, $item, $model, $label) {
+                this._autocompleteSelect($item, $model, $label, detail);
             }
 
         }, 500); 
