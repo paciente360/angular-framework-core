@@ -4,9 +4,9 @@
     angular.module('letsAngular')
         .directive('crudForm', crudForm);
 
-    crudForm.$inject = ['jQuery', '$timeout', 'fwModalService'];
+    crudForm.$inject = ['jQuery', '$timeout'];
 
-    function crudForm(jQuery, $timeout, fwModalService) {
+    function crudForm(jQuery, $timeout) {
         return {
             replace: false,
             link: function (scope, $el) {
@@ -14,24 +14,9 @@
                 jQuery($el).on('click', '.button-new', function () {
                     var detail = jQuery(this).attr('detail');
                     var origin = jQuery(this).attr('origin');
-                    
-                    if (scope.data[detail] == undefined) {
-                        scope.data[detail] = [];
-                    }
+                    var modal = jQuery(this).attr('form-modal')=="true";
 
-                    var headers = scope.headers[origin][detail];
-                    var parentModel = scope.headers.route.toLowerCase();
-                    var autocompleteDetail = true;
-
-                    if (headers.autocompleteDetail !== undefined) autocompleteDetail = headers.autocompleteDetail;
-
-                    fwModalService.createCRUDModal(headers, parentModel, null, autocompleteDetail)
-                        .then(function (response) {
-                            response.new = true;
-                            response.disabled = true;
-                            scope.data[detail].push(response);
-                        });
-
+                    scope.newDetailData(origin, detail, modal);
                 });
 
                 $timeout(function () {

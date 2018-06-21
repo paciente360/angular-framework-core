@@ -49,6 +49,11 @@
                     } else if (scope.field.customOptions.cep != undefined) {
 
                         $el.blur(function () {
+
+                            if (!this.value){
+                                return false;
+                            }
+
                             var $scope = angular.element(this).scope();
                             var dataVar = jQuery(this).parent().attr('fw-data');
                             viaCEP.get(this.value).then(function (response) {

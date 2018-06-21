@@ -1,0 +1,29 @@
+<table class="table detail-table">
+    <thead>
+        <tr>
+            <th ng-repeat="field in detail.fields | filter: {editable: true}">{{field.label}}</th>
+            <th class="text-center">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="detail_data in data[detail_key]" ng-class="{'new': detail_data.new != undefined}">
+            <td ng-repeat="field in detail.fields | filter: {editable: true}">
+                <fw-input ng-if="!detail.modal" fw-data="detail_data"></fw-input>
+                <fw-detail-data ng-if="detail.modal"></fw-detail-data>
+            </td>
+            <td class="text-center">
+                <button type="button" class="btn btn-edit btn-default" ng-if="detail.modal===true" ng-click="editDetailData('tabs_session', detail_key, detail_data)">
+                    <span class="glyphicon glyphicon-pencil"></span>
+                </button>
+                <button type="button" class="btn btn-delete btn-default" ng-click="deleteDetailData(detail_data, detail_key)">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </button>
+            </td>
+        </tr>
+        <tr ng-if="!data[detail_key] || data[detail_key].length==0" class="no-data">
+            <td colspan="100%">
+                Nenhum dado cadastrado.
+            </td>
+        </tr>
+    </tbody>
+</table>

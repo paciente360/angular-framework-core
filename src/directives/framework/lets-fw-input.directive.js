@@ -26,31 +26,27 @@
                         return $sce.trustAsHtml(scope.field.toString());
                     }
 
-                    if (dataVar != 'data' && dataVar != 'modal_data') {
+                    if (dataVar != 'data') {
                         scope.data = scope[dataVar];
                     }
 
-                    if (dataVar != 'data' && scope.field.autocomplete !== false) {
-                        // Modal case
-                        if (scope.detail_key === undefined) scope.detail_key = scope.headers.route;
+                    if(dataVar=="detail_data"){
                         var detail = scope.detail_key;
 
-                        if (scope.acdetail) {
+                        if (scope.field.autocomplete !== false){
                             scope.autocomplete = function (field, val) {
                                 return scope.autocompleteDetail(detail, field, val);
                             }
+    
+                            scope.autocompleteSelect = function ($item, $model, $label) {
+                                return scope.autocompleteDetailSelect(detail, $item, $model, $label);
+                            }
                         }
 
-                        scope.autocompleteSelect = function ($item, $model, $label) {
-                            return scope.autocompleteDetailSelect(detail, $item, $model, $label);
-                        }
-
-                    }
-
-                    if (dataVar != 'data' && scope.field.customOptions.file != undefined) {
-                        scope.download = function (field, id) {
-                            var detail = scope.detail_key;
-                            return scope.downloadDetail(detail, field, id, scope.data);
+                        if (scope.field.customOptions.file != undefined) {
+                            scope.download = function (field, id) {
+                                return scope.downloadDetail(detail, field, id, scope.data);
+                            }
                         }
                     }
 

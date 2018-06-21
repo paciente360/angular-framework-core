@@ -16,7 +16,8 @@
         'ui.toggle',
         'ui.select',
         'ngSanitize',
-        'colorpicker-dr'
+        'colorpicker-dr',
+        'ckeditor'
     ]);
 
     // ----------------------------

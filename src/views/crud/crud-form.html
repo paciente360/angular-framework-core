@@ -1,126 +1,46 @@
 <div>
     <div class='fixed-caption-block' ng-if="headers.fixed_tab">
         <fieldset style='position: relative;'>
-            <ng-include ng-if="customFixedTabHTML != undefined" src="customFixedTabHTML"></ng-include>
+            <legend>
+                <strong>Informações Principais</strong>
+            </legend>
+            <ng-include ng-if="beforeForm != undefined" src="beforeForm"></ng-include>
             <div class="form-group" ng-repeat="field in headers.fields | filter: {tab: 'fixed', editable: true}">
-                <label for="{{field.name}}" class="col-sm-2 control-label">{{field.label}}
+                <label for="{{field.name}}" class="col-sm-2 control-label no-padding">{{field.label}}
                     <span ng-if="field.required">*</span>
                 </label>
                 <div class="col-sm-9">
                     <fw-input fw-data="data"></fw-input>
                 </div>
             </div>
-        </fieldset>
-        <fieldset ng-repeat="(detail_key, detail) in headers.masterdetails">
-            <legend>
-                <strong>{{detail.label}}</strong>
-            </legend>
-
-
-            <table class="detail-table">
-                <thead>
-                    <tr>
-                        <th ng-repeat="field in detail.fields | filter: {editable: true}">{{field.label}}</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="detail_data in data[detail_key]" ng-class="{'new': detail_data.new != undefined}">
-                        <td ng-repeat="field in detail.fields | filter: {editable: true}">
-                            <fw-input fw-data="detail_data"></fw-input>
-                        </td>
-
-                        <td>
-                            <button type="button" class="btn btn-delete btn-default" ng-click="deleteDetailData(detail_data, detail_key)">
-                                <span class="glyphicon glyphicon-remove"></span>
-                            </button>
-                        </td>
-                    </tr>
-
-                    <tr ng-if="data[detail_key].length == 0" class="no-data">
-                        <td colspan="100%">
-                            Nenhum dado cadastrado.
-                        </td>
-                    </tr>
-                </tbody>
-
-
-            </table>
-            <div class="pull-right">
-                <button type="button" class="btn btn-big btn-primary button-new" origin="masterdetails" detail="{{detail_key}}">
-                    <span class="icon fa fa-plus"></span>Novo Registro</button>
-            </div>
+            <ng-include ng-if="afterForm != undefined" src="afterForm"></ng-include>
         </fieldset>
     </div>
+    
     <tabset class='tab-group' ng-class="{'hide-nav': (_.size(headers.tabs) == 0 && _.size(headers.main_tabs) == 0 && _.size(headers.tabs_session) == 0)}">
+        
         <tab ng-if="headers.main_tabs == undefined" heading="{{headers.label_row}}">
-
             <fieldset>
                 <legend>
                     <strong>Informações Principais</strong>
                 </legend>
-
+                <ng-include ng-if="beforeForm != undefined" src="beforeForm"></ng-include>
                 <div class="form-group" ng-repeat="field in headers.fields | filter: {editable: true}">
-                    <label for="{{field.name}}" class="col-sm-2 control-label">{{field.label}}
+                    <label for="{{field.name}}" class="col-sm-2 control-label no-padding">{{field.label}}
                         <span ng-if="field.required">*</span>
                     </label>
                     <div class="col-sm-9">
                         <fw-input fw-data="data"></fw-input>
                     </div>
                 </div>
-                <div after-form></div>
+                <ng-include ng-if="afterForm != undefined" src="afterForm"></ng-include>
             </fieldset>
-
-            <fieldset ng-repeat="(detail_key, detail) in headers.masterdetails" ng-if="detail.visible == undefined || detail.visible == true">
-                <legend>
-                    <strong>{{detail.label}}</strong>
-                </legend>
-
-                <table class="detail-table">
-                    <thead>
-                        <tr>
-                            <th ng-repeat="field in detail.fields | filter: {editable: true}">{{field.label}}</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="detail_data in data[detail_key]" ng-class="{'new': detail_data.new != undefined}">
-                            <td ng-repeat="field in detail.fields | filter: {editable: true}">
-                                <fw-input fw-data="detail_data"></fw-input>
-                            </td>
-
-                            <td>
-                                <button type="button" class="btn btn-edit btn-default" ng-click="editDetailData(detail_data, detail_key)">
-                                  <span class="glyphicon glyphicon-pencil"></span>
-                                </button>
-                                <button type="button" class="btn btn-delete btn-default" ng-click="deleteDetailData(detail_data, detail_key)">
-                                    <span class="glyphicon glyphicon-remove"></span>
-                                </button>
-                            </td>
-                        </tr>
-
-                        <tr ng-if="data[detail_key].length == 0" class="no-data">
-                            <td colspan="100%">
-                                Nenhum dado cadastrado.
-                            </td>
-                        </tr>
-                    </tbody>
-
-
-                </table>
-                <div class="pull-right">
-                    <button type="button" class="btn btn-big btn-primary button-new" origin="masterdetails" detail="{{detail_key}}">
-                        <span class="icon fa fa-plus"></span>Novo Registro</button>
-                </div>
-            </fieldset>
-            <ng-include ng-if="customFooter != undefined" src="customFooter"></ng-include>
         </tab>
 
         <tab ng-if="headers.main_tabs != undefined" ng-repeat="tab in headers.main_tabs" heading="{{tab}}">
-
             <fieldset>
                 <div class="form-group" ng-repeat="field in headers.fields | filter: {tab: $index, editable: true}">
-                    <label for="{{field.name}}" class="col-sm-2 control-label">{{field.label}}
+                    <label for="{{field.name}}" class="col-sm-2 control-label no-padding">{{field.label}}
                         <span ng-if="field.required">*</span>
                     </label>
                     <div class="col-sm-9">
@@ -128,46 +48,19 @@
                     </div>
                 </div>
             </fieldset>
-
         </tab>
+
         <tab ng-repeat="(detail_key, detail) in headers.tabs_session" heading="{{detail.label}}">
             <fieldset>
-                <table class="detail-table">
-                    <thead>
-                        <tr>
-                            <th ng-repeat="field in detail.fields | filter: {editable: true}">{{field.label}}</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="detail_data in data[detail_key]" ng-class="{'new': detail_data.new != undefined}">
-                            <td ng-repeat="field in detail.fields | filter: {editable: true}">
-                                <fw-input fw-data="detail_data"></fw-input>
-                            </td>
-
-                            <td>
-                                <button type="button" class="btn btn-edit btn-default" ng-click="editDetailData(detail_data, detail_key)">
-                                  <span class="glyphicon glyphicon-pencil"></span>
-                                </button>
-                                <button type="button" class="btn btn-delete btn-default" ng-click="deleteDetailData(detail_data, detail_key)">
-                                    <span class="glyphicon glyphicon-remove"></span>
-                                </button>
-                            </td>
-                        </tr>
-
-                        <tr ng-if="data[detail_key].length == 0" class="no-data">
-                            <td colspan="100%">
-                                Nenhum dado cadastrado.
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <ng-include src="'lets/views/crud/crud-detail-list.html'"></ng-include>
                 <div class="pull-right">
-                    <button type="button" class="btn btn-big btn-primary button-new" origin="tabs_session" detail="{{detail_key}}">
-                        <span class="icon fa fa-plus"></span>Novo Registro</button>
+                    <button type="button" class="btn btn-big btn-primary button-new" origin="tabs_session" detail="{{detail_key}}" form-modal="{{detail.modal ? true : false}}">
+                        <span class="icon fa fa-plus"></span>Novo Registro
+                    </button>
                 </div>
             </fieldset>
         </tab>
+
         <tab ng-if="data.id != null" ng-repeat="(tab_name, tab) in headers.tabs" heading="{{tab.label}}" ng-hide="tab.hide">
             <div ng-if="tab.fields && !tab.templateUrl">
                 <div class="row">
@@ -186,6 +79,7 @@
                 <ng-include src="tab.templateUrl"></ng-include>
             </div>
         </tab>
+
     </tabset>
     <div class="form-actions">
         <div class="row">

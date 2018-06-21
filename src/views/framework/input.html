@@ -1,10 +1,11 @@
 <div class="input-container" data-name="{{field.name}}">
-    <div class="fw-input-group" ng-if="field.type != 'date' && field.type != 'time' && field.type != 'text' && field.customOptions.file == undefined && field.customOptions.enum == undefined && field.customOptions.list == undefined && field.autocomplete == false && field.type !='boolean' && field.type !='custom' && field.customOptions.autocomplete_table == undefined">
+    
+  <div class="fw-input-group" ng-if="field.type != 'date' && field.type != 'time' && field.type != 'text' && field.customOptions.file == undefined && field.customOptions.enum == undefined && field.customOptions.list == undefined && field.autocomplete == false && field.type !='boolean' && field.type !='custom' && field.customOptions.autocomplete_table == undefined">
       <span ng-if="field.customOptions.currency != undefined " class="input-group-addon">R$</span>
   
       <input step="0.5" data-parsley-type="number" type="number" lang="pt-BR" ng-if="field.type == 'float'" ng-model-options="{fieldInfo: field}"
         type="number" id="{{field.name}}" string-to-number fw-dynamic ng-required="field.notnull" ng-model="data[field.name]"
-        size="{{field.length}}" ng-disabled="field.disabled != undefined && field.disabled || data.disabled != undefined && data.disabled"
+        size="{{field.length}}" ng-disabled="field.disabled"
         class="main-input form-control" autocomplete="off" min="{{field.customOptions.min}}" />
   
       <fw-tags ng-model-options="{fieldInfo: field}" ng-if="field.type == 'tags'" fw-tags tags="data[field.name]" name="{{field.name}}">
@@ -14,30 +15,30 @@
       <!-- esse aqui é o de string -->
       <input ng-model-options="{fieldInfo: field}" ng-if="field.type != 'password' && field.type != 'date' && field.type != 'float' && field.type != 'text' && field.customOptions.file == undefined && field.customOptions.enum == undefined && field.customOptions.email == undefined && field.autocomplete == false && field.type != 'boolean' && field.type != 'tags' && field.type != 'custom' && field.type != 'simplecolor'"
         name="{{field.name}}" type="text" id="{{field.name}}" fw-dynamic ng-required="field.notnull" ng-model="data[field.name]"
-        size="{{field.length}}" ng-disabled="field.disabled != undefined && field.disabled || data.disabled != undefined && data.disabled"
+        size="{{field.length}}" ng-disabled="field.disabled"
         class="main-input form-control" autocomplete="off"/>
   
       <!-- esse aqui é o de simplecolor -->
       <input ng-model-options="{fieldInfo: field}" ng-if="field.type == 'simplecolor'" color-picker color-me="true" name="{{field.name}}"
              type="text" id="{{field.name}}" set-colors="{{field.customOptions.colors}}" fw-dynamic ng-required="field.notnull" ng-model="data[field.name]"
-             size="{{field.length}}" ng-disabled="field.disabled != undefined && field.disabled || data.disabled != undefined && data.disabled"
+             size="{{field.length}}" ng-disabled="field.disabled"
              class="main-input form-control" autocomplete="off"/>
   
       <input ng-model-options="{fieldInfo: field}" ng-if="field.type == 'password'" type="password" id="{{field.name}}" fw-dynamic
-        ng-required="field.notnull" ng-model="data[field.name]" ng-disabled="field.disabled != undefined && field.disabled || data.disabled != undefined && data.disabled"
+        ng-required="field.notnull" ng-model="data[field.name]" ng-disabled="field.disabled"
         class="main-input form-control" autocomplete="off" />
   
       <input ng-model-options="{fieldInfo: field}" ng-if="field.customOptions.email != undefined" type="email" id="{{field.name}}"
-        string-to-number fw-dynamic ng-required="field.notnull" ng-model="data[field.name]" ng-disabled="field.disabled != undefined && field.disabled"
+        string-to-number fw-dynamic ng-required="field.notnull" ng-model="data[field.name]" ng-disabled="field.disabled"
         class="main-input form-control" autocomplete="off" />
-    </div>
+  </div>
   
     <div ng-if="field.type == 'custom'" ng-bind-html="fieldHtml()"></div>
   
     <div ng-if="field.type == 'date'">
       <input ng-model-options="{fieldInfo: field, allowInvalid: true}" type="text" fw-date-picker="true" fw-dynamic ng-required="field.notnull"
         id="{{field.name}}" name="{{field.name}}" ng-model="$parent.data[field.name]" class="form-control" data-date-format="DD/MM/YYYY"
-        placeholder="DD/MM/YYYY" ng-disabled="data.disabled != undefined && data.disabled" autocomplete="off" />
+        placeholder="DD/MM/YYYY" ng-disabled="field.disabled" autocomplete="off" />
   
       <ul class="parsley-errors-list filled" ng-if="field.error">
         <li class="parsley-required">A data informada é inválida.</li>
@@ -45,7 +46,7 @@
     </div>
     
     <div ng-if="field.type == 'time'">
-      <timepicker ng-model="$parent.data[field.name]" ng-disabled="data.disabled != undefined && data.disabled"
+      <timepicker ng-model="$parent.data[field.name]" ng-disabled="field.disabled"
                   hour-step="field.customoptions.timepicker.hstep || 1"
                   minute-step="field.customoptions.timepicker.mstep || 1"
                   show-meridian="field.customoptions.timepicker.meridian"></timepicker>
@@ -68,7 +69,7 @@
         </div>
   
       </div>
-      <input ng-model-options="{fieldInfo: field}" type="hidden" class="form-control" disabled="disabled" name="temp_filename" ng-model="$parent.data[field.name]"
+      <input ng-model-options="{fieldInfo: field}" type="hidden" class="form-control" name="temp_filename" ng-model="$parent.data[field.name]"
         id="{{field.name}}" ng-required="field.notnull" autocomplete="off" />
       <span class="input-group-btn">
               <button ng-if="alreadySent == false || field.customOptions.only_upload == true" type="file" ngf-select="upload($file, $invalidFiles)" class="btn btn-default btn-upload">
@@ -80,12 +81,12 @@
           </span>
     </div>
   
-    <textarea ng-model-options="{fieldInfo: field}" ng-if="field.type == 'text'" id="{{field.name}}" fw-dynamic ng-required="field.notnull"
-      ng-model="data[field.name]" ng-disabled="field.disabled != undefined && field.disabled || data.disabled != undefined && data.disabled"
+    <textarea ng-model-options="{fieldInfo: field}" ng-if="field.type == 'text' && !field.customOptions.rich" id="{{field.name}}" fw-dynamic ng-required="field.notnull"
+      ng-model="data[field.name]" ng-disabled="field.disabled"
       placeholder="{{field.customOptions.placeholder ? field.customOptions.placeholder : ''}}" class="main-input form-control" rows="{{field.customOptions.rows}}"></textarea>
   
     <textarea ckeditor="{'language':'pt-br'}" ng-model-options="{fieldInfo: field}" ng-if="field.type == 'text' && field.customOptions.rich" id="{{field.name}}" fw-dynamic ng-required="field.notnull"
-    ng-model="data[field.name]" class="main-input form-control"></textarea>
+    ng-model="data[field.name]" class="main-input form-control" ng-disabled="field.disabled"></textarea>
 
     <div class="row" ng-if="field.customOptions.enum != undefined">
       <div class="col-sm-6">
@@ -127,8 +128,8 @@
           <toggle id="{{field.name}}" ng-model-options="{fieldInfo: field}" ng-model="data[field.name]"
                   name="{{field.name}}" on="{{field.customOptions.statusTrueText}}"
                   off="{{field.customOptions.statusFalseText}}" size="btn-sm"
-                  ng-if="data.disabled == undefined || (data.disabled != undefined && !data.disabled)"></toggle>
-          <span ng-if="data.disabled != undefined && data.disabled">{{$parent.data[field.name] ? field.customOptions.statusTrueText : field.customOptions.statusFalseText}}</span>
+                  ng-if="!field.disabled"></toggle>
+          <span ng-if="field.disabled">{{$parent.data[field.name] ? field.customOptions.statusTrueText : field.customOptions.statusFalseText}}</span>
       </label>
   
     <!--autocomplete(field, $viewValue)-->
@@ -136,12 +137,12 @@
       <input id="{{field.name}}" ng-model-options="{fieldInfo: field}" fw-auto-complete typeahead-on-select="autocompleteSelect($item, $model, $label)"
         aria-autocomplete="none" autocomplete="off" typeahead-min-length="0" typeahead="row as row.label for row in autocomplete(field, $viewValue)"
         type="text" class="form-control" name="{{field.name}}" ng-required="field.notnull" ng-model="$parent.data[field.name + '.label']"
-        size="{{field.length}}" placeholder="{{field.label}}" ng-disabled="(data.disabled != undefined && data.disabled) || field.disabled"
+        size="{{field.length}}" placeholder="{{field.label}}" ng-disabled="field.disabled"
         ng-readonly="field.customOptions.select == true"
         ng-class="{'fieldSelect': field.customOptions.select == true}"
         />
-      <span class="input-group-btn" ng-if="data.disabled == undefined">
-        <button type="button" class="btn btn-default" disabled="true">
+      <span class="input-group-btn">
+        <button type="button" class="btn btn-default">
           <i class="glyphicon" ng-class="{'glyphicon-search': field.customOptions.select == undefined, 'glyphicon-menu-down': field.customOptions.select == true}"></i>
         </button>
       </span>
@@ -154,7 +155,7 @@
       <input style="display:none" id="{{field.name}}" ng-model-options="{fieldInfo: field}" fw-auto-complete typeahead-on-select="autocompleteSelect($item, $model, $label)"
         aria-autocomplete="none" autocomplete="off" typeahead-min-length="0" typeahead="row as row.label for row in autocomplete(field, $viewValue)"
         type="text" class="form-control" name="{{field.name}}" ng-required="field.notnull" ng-model="$parent.data[field.name + '.label']"
-        size="{{field.length}}" placeholder="{{field.label}}" ng-disabled="data.disabled != undefined && data.disabled" />
+        size="{{field.length}}" placeholder="{{field.label}}" ng-disabled="field.disabled" />
     </div>
     
     <div fw-auto-complete-table="" ng-if="field.customOptions.autocomplete_table != undefined"
@@ -162,9 +163,9 @@
       <div class="fw-input-group fw-auto-complete input-group">
         <input type="text" id="input-ac-table" ng-model="$parent.data[field.name + '.label']" ng-model-options="{fieldInfo: field, debounce: 500}" class="form-control" autocomplete="off"
           ng-change="updateAutocompleteTable(field.customOptions.autocomplete_table.table_name,field.customOptions.autocomplete_table.table_columns[0].name, this)"
-          ng-focus="autocompleteTableFocus(field.customOptions.autocomplete_table.table_name)" ng-blur="autocompleteTableLostFocus()" ng-disabled="data.disabled != undefined && data.disabled">
-        <span class="input-group-btn" ng-if="data.disabled == undefined">
-          <button type="button" class="btn btn-default" disabled="true">
+          ng-focus="autocompleteTableFocus(field.customOptions.autocomplete_table.table_name)" ng-blur="autocompleteTableLostFocus()" ng-disabled="field.disabled">
+        <span class="input-group-btn">
+          <button type="button" class="btn btn-default">
             <i class="glyphicon" ng-class="{'glyphicon-search': field.customOptions.select == undefined, 'glyphicon-menu-down': field.customOptions.select == true}"></i>
           </button>
         </span>

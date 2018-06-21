@@ -16,7 +16,8 @@
         'ui.toggle',
         'ui.select',
         'ngSanitize',
-        'colorpicker-dr'
+        'colorpicker-dr',
+        'ckeditor'
     ]);
 
     // ----------------------------
@@ -720,28 +721,25 @@
             return $modal.open(config).result;
         };
     
-        self.createCRUDModal = function (headers, parentModel, data, autocompleteDetail, ctrl, template) {
+        self.createCRUDModal = function (headers, data, ctrl, template) {
             return self._createModal({
-            animation: true,
-            templateUrl: template || 'lets/views/crud/crud-modal.html',
-            controller: ctrl || 'CRUDFormModalController',
-            resolve: {
-                headers: function() { return headers; },
-                parentModel: function() { return parentModel; },
-                autocompleteDetail: function() { return autocompleteDetail; },
-                data: function() {
-                var _data;
-                try {
-                    _data = angular.copy(data);
-                } catch(error) {
-                    _data = jQuery.extend({}, data);
-                }
-                return _data;
-                }
-            },
-            size: 'lg',
-            backdrop: 'static',
-            keyboard: false
+                animation: true,
+                templateUrl: template || 'lets/views/crud/crud-modal.html',
+                controller: ctrl || 'CRUDFormModalController',
+                resolve: {
+                    headers: function() { return headers; },
+                    data: function() {
+                        try {
+                            var _data = angular.copy(data);
+                        } catch(error) {
+                            var _data = jQuery.extend({}, data);
+                        }
+                        return _data;
+                    }
+                },
+                size: 'lg',
+                backdrop: 'static',
+                keyboard: false
             });
         };
     
@@ -1324,31 +1322,27 @@
                         return $sce.trustAsHtml(scope.field.toString());
                     }
 
-                    if (dataVar != 'data' && dataVar != 'modal_data') {
+                    if (dataVar != 'data') {
                         scope.data = scope[dataVar];
                     }
 
-                    if (dataVar != 'data' && scope.field.autocomplete !== false) {
-                        // Modal case
-                        if (scope.detail_key === undefined) scope.detail_key = scope.headers.route;
+                    if(dataVar=="detail_data"){
                         var detail = scope.detail_key;
 
-                        if (scope.acdetail) {
+                        if (scope.field.autocomplete !== false){
                             scope.autocomplete = function (field, val) {
                                 return scope.autocompleteDetail(detail, field, val);
                             }
+    
+                            scope.autocompleteSelect = function ($item, $model, $label) {
+                                return scope.autocompleteDetailSelect(detail, $item, $model, $label);
+                            }
                         }
 
-                        scope.autocompleteSelect = function ($item, $model, $label) {
-                            return scope.autocompleteDetailSelect(detail, $item, $model, $label);
-                        }
-
-                    }
-
-                    if (dataVar != 'data' && scope.field.customOptions.file != undefined) {
-                        scope.download = function (field, id) {
-                            var detail = scope.detail_key;
-                            return scope.downloadDetail(detail, field, id, scope.data);
+                        if (scope.field.customOptions.file != undefined) {
+                            scope.download = function (field, id) {
+                                return scope.downloadDetail(detail, field, id, scope.data);
+                            }
                         }
                     }
 
@@ -1470,6 +1464,11 @@
                     } else if (scope.field.customOptions.cep != undefined) {
 
                         $el.blur(function () {
+
+                            if (!this.value){
+                                return false;
+                            }
+
                             var $scope = angular.element(this).scope();
                             var dataVar = jQuery(this).parent().attr('fw-data');
                             viaCEP.get(this.value).then(function (response) {
@@ -1482,6 +1481,39 @@
                             });
                         });
                     }
+                }
+            }
+        }
+    }
+})();
+
+(function () {
+    'use strict';
+
+    angular.module('letsAngular')
+        .directive('fwDetailData', fwDetailData);
+
+    fwDetailData.$inject = ['$timeout', '$compile', 'jQuery', '$sce'];
+
+    function fwDetailData($timeout, $compile, jQuery, $sce) {
+        return {
+            restrict: 'E',
+            scope: true,
+            template: '<span">{{ formatData(detail_data, field) }}</span>',
+            replace: true,
+            link: {
+                pre: function preLink(scope, $el, attrs, controller) {
+                   
+                    scope.formatData = function (data, field) {
+
+                        if (field.autocomplete !== false){
+                            return data[field.name+ '.label'].label || data[field.name+ '.label'];
+                        }
+
+                        return data[field.name];
+
+                    }
+                    
                 }
             }
         }
@@ -1591,6 +1623,160 @@
         };
     }
 })();
+
+(function (root, factory) {
+  // AMD
+  if (typeof define === 'function' && define.amd) define(['angular'], factory);
+  // Global
+  else factory(angular);
+}(this, function (angular) {
+
+  angular
+  .module('ckeditor', [])
+  .directive('ckeditor', ['$parse', ckeditorDirective]);
+
+  // Polyfill setImmediate function.
+  var setImmediate = window && window.setImmediate ? window.setImmediate : function (fn) {
+    setTimeout(fn, 0);
+  };
+
+  /**
+   * CKEditor directive.
+   *
+   * @example
+   * <div ckeditor="options" ng-model="content" ready="onReady()"></div>
+   */
+
+  function ckeditorDirective($parse) {
+    return {
+      restrict: 'A',
+      require: ['ckeditor', 'ngModel'],
+      controller: [
+        '$scope',
+        '$element',
+        '$attrs',
+        '$parse',
+        '$q',
+        ckeditorController
+      ],
+      link: function (scope, element, attrs, ctrls) {
+        // get needed controllers
+        var controller = ctrls[0]; // our own, see below
+        var ngModelController = ctrls[1];
+
+        // Initialize the editor content when it is ready.
+        controller.ready().then(function initialize() {
+          // Sync view on specific events.
+          ['dataReady', 'change', 'blur', 'saveSnapshot'].forEach(function (event) {
+            controller.onCKEvent(event, function syncView() {
+              ngModelController.$setViewValue(controller.instance.getData() || '');
+            });
+          });
+
+          controller.instance.setReadOnly(!! attrs.readonly);
+          attrs.$observe('readonly', function (readonly) {
+            controller.instance.setReadOnly(!! readonly);
+          });
+
+          // Defer the ready handler calling to ensure that the editor is
+          // completely ready and populated with data.
+          setImmediate(function () {
+            $parse(attrs.ready)(scope);
+          });
+        });
+
+        // Set editor data when view data change.
+        ngModelController.$render = function syncEditor() {
+          controller.ready().then(function () {
+            // "noSnapshot" prevent recording an undo snapshot
+            controller.instance.setData(ngModelController.$viewValue || '', {
+              noSnapshot: true,
+              callback: function () {
+                // Amends the top of the undo stack with the current DOM changes
+                // ie: merge snapshot with the first empty one
+                // http://docs.ckeditor.com/#!/api/CKEDITOR.editor-event-updateSnapshot
+                controller.instance.fire('updateSnapshot');
+              }
+            });
+          });
+        };
+      }
+    };
+  }
+
+  /**
+   * CKEditor controller.
+   */
+
+  function ckeditorController($scope, $element, $attrs, $parse, $q) {
+    var config = $parse($attrs.ckeditor)($scope) || {};
+    var editorElement = $element[0];
+    var instance;
+    var readyDeferred = $q.defer(); // a deferred to be resolved when the editor is ready
+
+    // Create editor instance.
+    if (editorElement.hasAttribute('contenteditable') &&
+        editorElement.getAttribute('contenteditable').toLowerCase() == 'true') {
+      instance = this.instance = CKEDITOR.inline(editorElement, config);
+    }
+    else {
+      instance = this.instance = CKEDITOR.replace(editorElement, config);
+    }
+
+    /**
+     * Listen on events of a given type.
+     * This make all event asynchronous and wrapped in $scope.$apply.
+     *
+     * @param {String} event
+     * @param {Function} listener
+     * @returns {Function} Deregistration function for this listener.
+     */
+
+    this.onCKEvent = function (event, listener) {
+      instance.on(event, asyncListener);
+
+      function asyncListener() {
+        var args = arguments;
+        setImmediate(function () {
+          applyListener.apply(null, args);
+        });
+      }
+
+      function applyListener() {
+        var args = arguments;
+        $scope.$apply(function () {
+          listener.apply(null, args);
+        });
+      }
+
+      // Return the deregistration function
+      return function $off() {
+        instance.removeListener(event, applyListener);
+      };
+    };
+
+    this.onCKEvent('instanceReady', function() {
+      readyDeferred.resolve(true);
+    });
+
+    /**
+     * Check if the editor if ready.
+     *
+     * @returns {Promise}
+     */
+    this.ready = function ready() {
+      return readyDeferred.promise;
+    };
+
+    // Destroy editor when the scope is destroyed.
+    $scope.$on('$destroy', function onDestroy() {
+      // do not delete too fast or pending events will throw errors
+      readyDeferred.promise.then(function() {
+        instance.destroy(false);
+      });
+    });
+  }
+}));
 
 (function () {
     'use strict';
@@ -2308,9 +2494,9 @@
     angular.module('letsAngular')
         .directive('crudForm', crudForm);
 
-    crudForm.$inject = ['jQuery', '$timeout', 'fwModalService'];
+    crudForm.$inject = ['jQuery', '$timeout'];
 
-    function crudForm(jQuery, $timeout, fwModalService) {
+    function crudForm(jQuery, $timeout) {
         return {
             replace: false,
             link: function (scope, $el) {
@@ -2318,24 +2504,9 @@
                 jQuery($el).on('click', '.button-new', function () {
                     var detail = jQuery(this).attr('detail');
                     var origin = jQuery(this).attr('origin');
-                    
-                    if (scope.data[detail] == undefined) {
-                        scope.data[detail] = [];
-                    }
+                    var modal = jQuery(this).attr('form-modal')=="true";
 
-                    var headers = scope.headers[origin][detail];
-                    var parentModel = scope.headers.route.toLowerCase();
-                    var autocompleteDetail = true;
-
-                    if (headers.autocompleteDetail !== undefined) autocompleteDetail = headers.autocompleteDetail;
-
-                    fwModalService.createCRUDModal(headers, parentModel, null, autocompleteDetail)
-                        .then(function (response) {
-                            response.new = true;
-                            response.disabled = true;
-                            scope.data[detail].push(response);
-                        });
-
+                    scope.newDetailData(origin, detail, modal);
                 });
 
                 $timeout(function () {
@@ -2606,22 +2777,18 @@
 
     var module = angular.module('letsAngular');
 
-    module.controller('CRUDFormModalController', ["$controller", "$scope", "$modalInstance", "ngToast", "headers", "Restangular", "$stateParams", "$timeout", "$state", "$rootScope", "$q", "$http", "Upload", "$modal", "parentModel", "autocompleteDetail", "data", "fwStringService", "auth", "fwObjectService", "fwErrorService", function ($controller, $scope, $modalInstance, ngToast, headers, Restangular, $stateParams, $timeout, $state, $rootScope, $q, $http, Upload, $modal, parentModel, autocompleteDetail, data, fwStringService, auth, fwObjectService, fwErrorService) {
+    module.controller('CRUDFormModalController', ["$controller", "$scope", "$modalInstance", "ngToast", "headers", "Restangular", "$stateParams", "$timeout", "$state", "$rootScope", "$q", "$http", "Upload", "$modal", "data", "fwStringService", "auth", "fwObjectService", "fwErrorService", function ($controller, $scope, $modalInstance, ngToast, headers, Restangular, $stateParams, $timeout, $state, $rootScope, $q, $http, Upload, $modal, data, fwStringService, auth, fwObjectService, fwErrorService) {
         $controller('CRUDEditController', { $scope: $scope, Restangular: Restangular, $stateParams: $stateParams, $timeout: $timeout, $modal: $modal, module: module, $state: $state, $rootScope: $rootScope, $q: $q, ngToast: ngToast, $http: $http, Upload: Upload });
 
         $scope.data = data || {};
-        $scope.data.emp_id = auth.getUser().emp_id;
-        headers.modal_tab = true;
         $scope.headers = headers;
-        $scope.acdetail = autocompleteDetail;
 
-        parentModel = fwStringService.lemmatize(parentModel);
-        $scope.resource = Restangular.all(parentModel);
+        $scope.resource = Restangular.all(headers.route);
 
         $scope.cancel = function () {
-            if ($scope.data.disabled !== undefined) data.disabled = true;
             $modalInstance.dismiss('cancel');
         }
+        
         $scope.submit = function () {
             if (this.crudForm.$valid) {
                 $modalInstance.close($scope.data);
@@ -2629,9 +2796,7 @@
                 fwErrorService.emitFormErrors(this.crudForm)
             }
         };
-        $scope.$on('selected-autocomplete', function (event, res) {
-            
-        });
+
         $rootScope.$on('cancel-modal', function (event, res) {
             $modalInstance.dismiss('cancel');
         });
@@ -2670,23 +2835,6 @@
                         }
                     }
 
-                    // Establish read-only on tab-sessions or masterdetails fields that are filled with data
-                    var list = $scope.headers.tabs_session;
-                    if (list === undefined) {
-                        // Since masterdetails is an object, convert it to a list to be iterated
-                        list = [];
-                        for (var prop in $scope.headers.masterdetails) {
-                            list.push($scope.headers.masterdetails[prop]);
-                        }
-                    }
-                    for (var i in list) {
-                        var label = list[i].label_stem;
-                        if (data[label] !== undefined && data[label].length > 0) {
-                            for (var j in data[label]) {
-                                data[label][j].disabled = true;
-                            }
-                        }
-                    }
                     $scope.data = data;
                     $scope.dataLoaded = true;
 
@@ -3103,6 +3251,10 @@
             
             var _data = detail ? this.detail_data : this.data;
 
+            if (_data==undefined){
+                _data = {};
+            }
+
             if ($item.id != null && typeof $item.id != 'integer' || (typeof $item.id == 'integer' && $item.id > 0)) {
                 _data[this.field.name] = $item.id;
             }
@@ -3149,7 +3301,7 @@
             tab.route = (id ? route : module+tab.route);
             tab.id = id ? id : null;
 
-            fwModalService.createCRUDModal(tab, parentModel, null, true, "CRUDEditDetailController");
+            fwModalService.createCRUDModal(tab, null, "CRUDEditDetailController");
         };
 
         $scope.deleteDetail = function (route, row) {
@@ -3160,29 +3312,50 @@
             });
         };
 
-        $scope.editDetailData = function (detail_data, detail_key) {
 
-            var origin = jQuery('.button-new').attr('origin');
-            var headers = $scope.headers[origin][detail_key];
-            var parentModel = $scope.headers.route.toLowerCase();
+        $scope.newDetailData = function(origin, detail, modal){
 
-            detail_data.disabled = false;
+            $scope.data[detail] = $scope.data[detail] || [];
 
-            function processResponse(response) {
-                headers.fields.forEach(function(x) {
-                    detail_data[x.name] = response[x.name];
+            if (modal){
+                var headers = $scope.headers[origin][detail];
+                headers.route = $scope.headers.route+"/details/"+detail;
+
+                fwModalService.createCRUDModal(headers)
+                .then(function (response) {
+                    response.new = true;
+                    $scope.data[detail].push(response);
                 });
+            }else{
+                var _new = {};
+                var fields = $scope.headers[origin][detail].fields;
 
-                detail_data.disabled = true;
+                for (var x in fields) {
+                    if (fields[x].type != 'boolean') {
+                    _new[fields[x].name] = null;
+                    } else {
+                    _new[fields[x].name] = false;
+                    }
+                }
+
+                _new.new = true;
+
+                $scope.data[detail].push(_new);
+                $scope.$apply();
             }
 
-            fwModalService.createCRUDModal(headers, parentModel, detail_data, true)
-                .then(function (response) {
-                    // detail_data = response;
+        }
 
-                    processResponse(response);
+        $scope.editDetailData = function (origin, detail, detail_data) {
 
-                });
+            var headers = $scope.headers[origin][detail];
+            headers.route = $scope.headers.route+"/details/"+detail;
+
+            fwModalService.createCRUDModal(headers, detail_data)
+            .then(function (response) {
+                $scope.data[detail][ $scope.data[detail].indexOf(detail_data)] = response;
+            });
+
         };
 
         $scope.deleteDetailData = function (detail_data, detail_key) {

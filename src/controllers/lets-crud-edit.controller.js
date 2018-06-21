@@ -29,23 +29,6 @@
                         }
                     }
 
-                    // Establish read-only on tab-sessions or masterdetails fields that are filled with data
-                    var list = $scope.headers.tabs_session;
-                    if (list === undefined) {
-                        // Since masterdetails is an object, convert it to a list to be iterated
-                        list = [];
-                        for (var prop in $scope.headers.masterdetails) {
-                            list.push($scope.headers.masterdetails[prop]);
-                        }
-                    }
-                    for (var i in list) {
-                        var label = list[i].label_stem;
-                        if (data[label] !== undefined && data[label].length > 0) {
-                            for (var j in data[label]) {
-                                data[label][j].disabled = true;
-                            }
-                        }
-                    }
                     $scope.data = data;
                     $scope.dataLoaded = true;
 
@@ -462,6 +445,10 @@
             
             var _data = detail ? this.detail_data : this.data;
 
+            if (_data==undefined){
+                _data = {};
+            }
+
             if ($item.id != null && typeof $item.id != 'integer' || (typeof $item.id == 'integer' && $item.id > 0)) {
                 _data[this.field.name] = $item.id;
             }
@@ -508,7 +495,7 @@
             tab.route = (id ? route : module+tab.route);
             tab.id = id ? id : null;
 
-            fwModalService.createCRUDModal(tab, parentModel, null, true, "CRUDEditDetailController");
+            fwModalService.createCRUDModal(tab, null, "CRUDEditDetailController");
         };
 
         $scope.deleteDetail = function (route, row) {
@@ -519,29 +506,50 @@
             });
         };
 
-        $scope.editDetailData = function (detail_data, detail_key) {
 
-            var origin = jQuery('.button-new').attr('origin');
-            var headers = $scope.headers[origin][detail_key];
-            var parentModel = $scope.headers.route.toLowerCase();
+        $scope.newDetailData = function(origin, detail, modal){
 
-            detail_data.disabled = false;
+            $scope.data[detail] = $scope.data[detail] || [];
 
-            function processResponse(response) {
-                headers.fields.forEach(function(x) {
-                    detail_data[x.name] = response[x.name];
+            if (modal){
+                var headers = $scope.headers[origin][detail];
+                headers.route = $scope.headers.route+"/details/"+detail;
+
+                fwModalService.createCRUDModal(headers)
+                .then(function (response) {
+                    response.new = true;
+                    $scope.data[detail].push(response);
                 });
+            }else{
+                var _new = {};
+                var fields = $scope.headers[origin][detail].fields;
 
-                detail_data.disabled = true;
+                for (var x in fields) {
+                    if (fields[x].type != 'boolean') {
+                    _new[fields[x].name] = null;
+                    } else {
+                    _new[fields[x].name] = false;
+                    }
+                }
+
+                _new.new = true;
+
+                $scope.data[detail].push(_new);
+                $scope.$apply();
             }
 
-            fwModalService.createCRUDModal(headers, parentModel, detail_data, true)
-                .then(function (response) {
-                    // detail_data = response;
+        }
 
-                    processResponse(response);
+        $scope.editDetailData = function (origin, detail, detail_data) {
 
-                });
+            var headers = $scope.headers[origin][detail];
+            headers.route = $scope.headers.route+"/details/"+detail;
+
+            fwModalService.createCRUDModal(headers, detail_data)
+            .then(function (response) {
+                $scope.data[detail][ $scope.data[detail].indexOf(detail_data)] = response;
+            });
+
         };
 
         $scope.deleteDetailData = function (detail_data, detail_key) {
