@@ -243,6 +243,11 @@
                 if (typeof $scope.doafterAutoCompleteSelect[this.field.name] == "function") {
                     $scope.doafterAutoCompleteSelect[this.field.name].call(this, this.data, $item, $model, $label);
                 }
+
+                var field = this.field;
+                $timeout(function(){
+                    jQuery('#'+field.name).trigger('keyup');
+                });
             }
 
             $scope.autocomplete = function (field, val) {

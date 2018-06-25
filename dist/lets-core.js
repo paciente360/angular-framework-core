@@ -2666,34 +2666,6 @@
 (function () {
     'use strict';
 
-    angular.module('letsAngular')
-        .factory('Backgrid', BackgridFactory);
-
-    BackgridFactory.$inject = ['$window'];
-
-    function BackgridFactory($window) {
-        return $window.Backgrid;
-    }
-
-})();
-
-(function () {
-    'use strict';
-
-    angular.module('letsAngular')
-        .factory('Backbone', BackboneFactory);
-
-    BackboneFactory.$inject = ['$window'];
-
-    function BackboneFactory($window) {
-        return $window.Backbone;
-    }
-
-})();
-
-(function () {
-    'use strict';
-
     fwAgeMonth.$inject = ["birthday"];
     angular.module('letsAngular')
         .filter('fwAgeMonth', fwAgeMonth);
@@ -3283,6 +3255,11 @@
             } else {
                 this.data = _data;
             }
+
+            var field = this.field;
+            $timeout(function(){
+                jQuery('#'+field.name).trigger('keyup');
+            });
         }
 
         $scope.autocompleteSelect = function (detail, $item, $model, $label) {
@@ -3620,6 +3597,11 @@
                 if (typeof $scope.doafterAutoCompleteSelect[this.field.name] == "function") {
                     $scope.doafterAutoCompleteSelect[this.field.name].call(this, this.data, $item, $model, $label);
                 }
+
+                var field = this.field;
+                $timeout(function(){
+                    jQuery('#'+field.name).trigger('keyup');
+                });
             }
 
             $scope.autocomplete = function (field, val) {
@@ -3641,5 +3623,32 @@
         }, 500); 
 
     }]);
+
+})();
+(function () {
+    'use strict';
+
+    angular.module('letsAngular')
+        .factory('Backgrid', BackgridFactory);
+
+    BackgridFactory.$inject = ['$window'];
+
+    function BackgridFactory($window) {
+        return $window.Backgrid;
+    }
+
+})();
+
+(function () {
+    'use strict';
+
+    angular.module('letsAngular')
+        .factory('Backbone', BackboneFactory);
+
+    BackboneFactory.$inject = ['$window'];
+
+    function BackboneFactory($window) {
+        return $window.Backbone;
+    }
 
 })();

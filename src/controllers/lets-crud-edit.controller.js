@@ -477,6 +477,11 @@
             } else {
                 this.data = _data;
             }
+
+            var field = this.field;
+            $timeout(function(){
+                jQuery('#'+field.name).trigger('keyup');
+            });
         }
 
         $scope.autocompleteSelect = function (detail, $item, $model, $label) {
