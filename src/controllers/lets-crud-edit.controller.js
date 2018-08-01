@@ -27,6 +27,15 @@
                         if (field.type == 'date' && (data[field.name] != undefined && data[field.name] != null)) {
                             data[field.name] = new Date(data[field.name]);
                         }
+
+                        if (field.customOptions && field.customOptions.list!=undefined) {
+                            field.customOptions.list.forEach(function(item){
+                                if (item.id==data[field.name]){
+                                    data[field.name+'.label'] = item.label;
+                                }
+                            });
+                        }
+
                     }
 
                     $scope.data = data;
@@ -434,7 +443,14 @@
                     return deferred.reject();
                 });
             } else {
-                deferred.resolve(field.customOptions.list);
+
+                var options = angular.copy(field.customOptions.list) || [];
+
+                if (field.customOptions.select == true) {
+                    options.unshift({ id: null, label: '--- Selecione ---' });
+                }
+
+                deferred.resolve(options);
             }
             return deferred.promise;
         }

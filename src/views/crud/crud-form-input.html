@@ -1,0 +1,23 @@
+<div class="form-group" ng-repeat="field in headers.fields | filter: filter" ng-if="!auto_layout">
+    <label for="{{field.name}}" class="col-sm-2 control-label no-padding">{{field.label}}
+        <span ng-if="field.required">*</span>
+    </label>
+    <div class="col-sm-9">
+        <fw-input fw-data="data"></fw-input>
+    </div>
+</div>
+
+<div class="form-group form-auto-layout" ng-repeat="field in headers.fields | filter: filter"
+    ng-class="
+        field.size ? 'col-sm-'+field.size
+        : field.type == 'text' ? 'col-sm-12'
+        : (field.type == 'date' || field.type == 'time' || field.type == 'boolean' || ((field.type == 'number' || field.type == 'integer' || field.type == 'bigint') && !field.autocomplete)) ? 'col-sm-3'
+        : 'col-sm-6'
+    "
+    ng-if="auto_layout">
+
+    <label for="{{field.name}}" class="control-label">{{field.label}}
+        <span ng-if="field.required">*</span>
+    </label>
+    <fw-input fw-data="data"></fw-input>
+</div>

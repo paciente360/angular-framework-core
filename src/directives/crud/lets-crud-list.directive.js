@@ -212,7 +212,36 @@
 
                                 }
                                 else if (field.autocomplete == true) {
-                                    cellOptions.name = cellOptions.name + '.label';
+
+                                    if (field.customOptions && field.customOptions.list!=undefined) {
+
+                                        cellOptions.cell = Backgrid.Cell.extend({
+                                            className: "custom-situation-cell-select",
+                                            formatter: {
+                                                fromRaw: function (rawData, model) {
+
+                                                    var label="";
+                                                    field.customOptions.list.forEach(function(item){
+                                                        if (item.id==rawData){
+                                                            label = item.label;
+                                                        }
+                                                    });
+
+                                                    return label;
+
+                                                },
+                                                toRaw: function (formattedData, model) {
+                                                    return 'down';
+                                                }
+                                            }
+    
+                                        });
+
+
+                                    }else{
+                                        cellOptions.name = cellOptions.name + '.label';
+                                    }
+                                    
                                 }
 
                                 columns.push(cellOptions);

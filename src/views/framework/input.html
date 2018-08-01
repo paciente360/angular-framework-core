@@ -1,40 +1,73 @@
 <div class="input-container" data-name="{{field.name}}">
     
-  <div class="fw-input-group" ng-if="field.type != 'date' && field.type != 'time' && field.type != 'text' && field.customOptions.file == undefined && field.customOptions.enum == undefined && field.customOptions.list == undefined && field.autocomplete == false && field.type !='boolean' && field.type !='custom' && field.customOptions.autocomplete_table == undefined">
-      <span ng-if="field.customOptions.currency != undefined " class="input-group-addon">R$</span>
-  
-      <input step="0.5" data-parsley-type="number" lang="pt-BR" ng-if="field.type == 'float'" ng-model-options="{fieldInfo: field}"
+    <!-- Currency -->
+    <div ng-if="field.type == 'float' && field.customOptions.currency">
+      <div class="fw-input-group">
+        <span ng-if="field.customOptions.currency != undefined " class="input-group-addon">R$</span>
+        <input step="0.5" data-parsley-type="number" lang="pt-BR" ng-model-options="{fieldInfo: field}"
         type="text" id="{{field.name}}" string-to-number fw-dynamic ng-required="field.notnull" ng-model="data[field.name]"
         size="{{field.length}}" ng-disabled="field.disabled"
         class="main-input form-control" autocomplete="off" min="{{field.customOptions.min}}" />
-  
-      <fw-tags ng-model-options="{fieldInfo: field}" ng-if="field.type == 'tags'" fw-tags tags="data[field.name]" name="{{field.name}}">
-      </fw-tags>
-  
-  
-      <!-- esse aqui é o de string -->
-      <input ng-model-options="{fieldInfo: field}" ng-if="field.type != 'password' && field.type != 'date' && field.type != 'float' && field.type != 'text' && field.customOptions.file == undefined && field.customOptions.enum == undefined && field.customOptions.email == undefined && field.autocomplete == false && field.type != 'boolean' && field.type != 'tags' && field.type != 'custom' && field.type != 'simplecolor'"
-        name="{{field.name}}" type="text" id="{{field.name}}" fw-dynamic ng-required="field.notnull" ng-model="data[field.name]"
+      </div>
+    </div>
+
+    <!-- Float -->
+    <div ng-if="field.type == 'float' && !field.customOptions.currency">
+        <input step="0.5" data-parsley-type="number" lang="pt-BR" ng-model-options="{fieldInfo: field}"
+        type="text" id="{{field.name}}" string-to-number fw-dynamic ng-required="field.notnull" ng-model="data[field.name]"
         size="{{field.length}}" ng-disabled="field.disabled"
-        class="main-input form-control" autocomplete="off"/>
-  
-      <!-- esse aqui é o de simplecolor -->
-      <input ng-model-options="{fieldInfo: field}" ng-if="field.type == 'simplecolor'" color-picker color-me="true" name="{{field.name}}"
-             type="text" id="{{field.name}}" set-colors="{{field.customOptions.colors}}" fw-dynamic ng-required="field.notnull" ng-model="data[field.name]"
-             size="{{field.length}}" ng-disabled="field.disabled"
-             class="main-input form-control" autocomplete="off"/>
-  
-      <input ng-model-options="{fieldInfo: field}" ng-if="field.type == 'password'" type="password" id="{{field.name}}" fw-dynamic
+        class="main-input form-control" autocomplete="off" min="{{field.customOptions.min}}" />
+    </div>
+
+    <!-- Number or Integer -->
+    <div ng-if="(field.type == 'number' || field.type == 'integer' || field.type == 'bigint') && !field.autocomplete">
+        <input ng-model-options="{fieldInfo: field}"
+        type="text" id="{{field.name}}" string-to-number numbers-only fw-dynamic ng-required="field.notnull" ng-model="data[field.name]"
+        size="{{field.length}}" ng-disabled="field.disabled"
+        class="main-input form-control" autocomplete="off" />
+    </div>
+
+    <!-- String -->
+    <div ng-if="field.type == 'string' && (!field.customOptions.file && !field.customOptions.email && !field.autocomplete)">
+      <input ng-model-options="{fieldInfo: field}"
+      name="{{field.name}}" type="text" id="{{field.name}}" fw-dynamic ng-required="field.notnull" ng-model="data[field.name]"
+      size="{{field.length}}" ng-disabled="field.disabled"
+      class="main-input form-control" autocomplete="off"/>
+    </div>
+
+    <!-- Simplecolor -->
+    <div ng-if="field.type == 'simplecolor'" >
+      <input ng-model-options="{fieldInfo: field}" color-picker color-me="true" name="{{field.name}}"
+      type="text" id="{{field.name}}" set-colors="{{field.customOptions.colors}}" fw-dynamic ng-required="field.notnull" ng-model="data[field.name]"
+      size="{{field.length}}" ng-disabled="field.disabled"
+      class="main-input form-control" autocomplete="off"/>
+    </div>
+
+    <!-- Tags -->
+    <div ng-if="field.type == 'tags'">
+      <fw-tags ng-model-options="{fieldInfo: field}" fw-tags tags="data[field.name]" name="{{field.name}}"></fw-tags>
+    </div>
+
+    <!-- Password -->
+    <div ng-if="field.type == 'password'">
+        <input ng-model-options="{fieldInfo: field}"  type="password" id="{{field.name}}" fw-dynamic
         ng-required="field.notnull" ng-model="data[field.name]" ng-disabled="field.disabled"
         class="main-input form-control" autocomplete="off" />
-  
-      <input ng-model-options="{fieldInfo: field}" ng-if="field.customOptions.email != undefined" type="email" id="{{field.name}}"
+    </div>
+   
+    <!-- Email -->
+    <div ng-if="field.type == 'string' && field.customOptions.email">
+        <input ng-model-options="{fieldInfo: field}" type="email" id="{{field.name}}"
         string-to-number fw-dynamic ng-required="field.notnull" ng-model="data[field.name]" ng-disabled="field.disabled"
         class="main-input form-control" autocomplete="off" />
-  </div>
+    </div>
   
-    <div ng-if="field.type == 'custom'" ng-bind-html="fieldHtml()"></div>
+     <!-- Custom -->
+     <div ng-if="field.type == 'custom'">
+      <div ng-bind-html="fieldHtml()"></div>
+    </div>
   
+     <!-- Date -->
     <div ng-if="field.type == 'date'">
       <input ng-model-options="{fieldInfo: field, allowInvalid: true}" type="text" fw-date-picker="true" fw-dynamic ng-required="field.notnull"
         id="{{field.name}}" name="{{field.name}}" ng-model="$parent.data[field.name]" class="form-control" data-date-format="DD/MM/YYYY"
@@ -45,6 +78,7 @@
       </ul>
     </div>
     
+    <!-- Time -->
     <div ng-if="field.type == 'time'">
       <timepicker ng-model="$parent.data[field.name]" ng-disabled="field.disabled"
                   hour-step="field.customoptions.timepicker.hstep || 1"
@@ -56,146 +90,122 @@
       </ul>
     </div>
   
-    <div fw-upload ng-if="field.type == 'string' && field.customOptions.file != undefined" class="fw-input-group">
-      <div class="progress">
-        <div class="progress-bar" role="progressbar" aria-valuenow="{{f.progress || defaultProgress}}" aria-valuemin="0" aria-valuemax="100"
-          style="text-align: left; min-width: 2em;" ng-style="{'width': '{{f.progress || defaultProgress}}%'}" ng-if="(f.progress != undefined && f.progress != 0) || defaultProgress != 0">
-          <span ng-if="f.progress != undefined && f.progress != 0">
-            {{f.progress + '%'}}
-            <span style="display: inline-block; width: 89%;" ng-if="f.progress == 100 && !f.newName">{{f.name}}</span>
-            <span style="display: inline-block; width: 89%;" ng-if="f.progress == 100 && f.newName">{{f.newName}}</span>
-          </span>
-          <span ng-if="f == undefined || f.progress == undefined" ng-bind="$parent.data[field.name]"></span>
+    <!-- Upload -->
+    <div ng-if="field.type == 'string' && field.customOptions.file">
+      <div fw-upload class="fw-input-group">
+        <div class="progress">
+          <div class="progress-bar" role="progressbar" aria-valuenow="{{f.progress || defaultProgress}}" aria-valuemin="0" aria-valuemax="100"
+            style="text-align: left; min-width: 2em;" ng-style="{'width': '{{f.progress || defaultProgress}}%'}" ng-if="(f.progress != undefined && f.progress != 0) || defaultProgress != 0">
+            <span ng-if="f.progress != undefined && f.progress != 0">
+              {{f.progress + '%'}}
+              <span style="display: inline-block; width: 89%;" ng-if="f.progress == 100 && !f.newName">{{f.name}}</span>
+              <span style="display: inline-block; width: 89%;" ng-if="f.progress == 100 && f.newName">{{f.newName}}</span>
+            </span>
+            <span ng-if="f == undefined || f.progress == undefined" ng-bind="$parent.data[field.name]"></span>
+          </div>
+    
         </div>
-  
+        <input ng-model-options="{fieldInfo: field}" type="hidden" class="form-control" name="temp_filename" ng-model="$parent.data[field.name]"
+          id="{{field.name}}" ng-required="field.notnull" autocomplete="off" />
+        <span class="input-group-btn">
+                <button ng-if="alreadySent == false || field.customOptions.only_upload == true" type="file" ngf-select="upload($file, $invalidFiles)" class="btn btn-default btn-upload">
+                    <i class="glyphicon glyphicon-upload"></i>
+                </button>
+                <button ng-if="alreadySent == true && (field.customOptions.only_upload != true)" ng-click="download(field, data.id)" type="button" class="btn btn-default">
+                    <i class="glyphicon glyphicon-download"></i>
+                </button>
+            </span>
       </div>
-      <input ng-model-options="{fieldInfo: field}" type="hidden" class="form-control" name="temp_filename" ng-model="$parent.data[field.name]"
-        id="{{field.name}}" ng-required="field.notnull" autocomplete="off" />
-      <span class="input-group-btn">
-              <button ng-if="alreadySent == false || field.customOptions.only_upload == true" type="file" ngf-select="upload($file, $invalidFiles)" class="btn btn-default btn-upload">
-                  <i class="glyphicon glyphicon-upload"></i>
-              </button>
-              <button ng-if="alreadySent == true && (field.customOptions.only_upload != true)" ng-click="download(field, data.id)" type="button" class="btn btn-default">
-                  <i class="glyphicon glyphicon-download"></i>
-              </button>
-          </span>
     </div>
   
-    <textarea ng-model-options="{fieldInfo: field}" ng-if="field.type == 'text' && !field.customOptions.rich" id="{{field.name}}" fw-dynamic ng-required="field.notnull"
-      ng-model="data[field.name]" ng-disabled="field.disabled"
-      placeholder="{{field.customOptions.placeholder ? field.customOptions.placeholder : ''}}" class="main-input form-control" rows="{{field.customOptions.rows}}"></textarea>
-  
-    <textarea ckeditor="{'language':'pt-br'}" ng-model-options="{fieldInfo: field}" ng-if="field.type == 'text' && field.customOptions.rich" id="{{field.name}}" fw-dynamic ng-required="field.notnull"
-    ng-model="data[field.name]" class="main-input form-control" ng-disabled="field.disabled"></textarea>
+    <!-- Textarea -->
+    <div ng-if="field.type == 'text' && !field.customOptions.rich">
+      <textarea ng-model-options="{fieldInfo: field}" id="{{field.name}}" fw-dynamic ng-required="field.notnull"
+        ng-model="data[field.name]" ng-disabled="field.disabled"
+        placeholder="{{field.customOptions.placeholder ? field.customOptions.placeholder : ''}}" class="main-input form-control" rows="{{field.customOptions.rows}}"></textarea>
+    </div>
 
-    <div class="row" ng-if="field.customOptions.enum != undefined">
-      <div class="col-sm-6">
-        <div ng-class="{checkbox: (field.customOptions.multiple != undefined && field.customOptions.multiple == true),
-                  radio: (field.customOptions.multiple == undefined || field.customOptions.multiple == false)}" ng-repeat="(option_key, option_label) in field.customOptions.enum">
-          <input ng-model-options="{fieldInfo: field}" ng-if="(field.customOptions.multiple == undefined || field.customOptions.multiple == false)"
-            type="radio" name="{{field.name}}" id="{{field.name}}_{{option_key}}" value="{{option_key}}" ng-model="$parent.data[field.name]"
-            ng-required="field.notnull" selected="{'selected': $parent.data[field.name] == $parent.data[field.name]}" autocomplete="off" />
-          <input ng-model-options="{fieldInfo: field}" ng-if="(field.customOptions.multiple != undefined && field.customOptions.multiple == true)"
-            type="checkbox" checklist-before-change="shouldChange(key)" ng-required="field.notnull" id="{{field.name}}_{{option_key}}"
-            checklist-model="data[field.name]" checklist-value="option_key" autocomplete="off">
-  
-          <label for="{{field.name}}_{{option_key}}"></label> {{option_label}}
-          </label>
-        </div>
-        <div ng-if="!isEmpty(field.customOptions.enum)">
-          <span>Nenhuma alternativa foi cadastrada para esse campo!</span>
-        </div>
-      </div>
+    <!-- Ckeditor -->
+    <div ng-if="field.type == 'text' && field.customOptions.rich">
+      <textarea ckeditor="{'language':'pt-br'}" ng-model-options="{fieldInfo: field}" id="{{field.name}}" fw-dynamic ng-required="field.notnull"
+      ng-model="data[field.name]" class="main-input form-control" ng-disabled="field.disabled"></textarea>
     </div>
-  
-    <ui-select ng-if="field.customOptions.list !== undefined"
-               ng-model="$parent.data[field.name]"
-               ng-model-options="{fieldInfo: field}"
-               ng-required="field.notnull" theme="bootstrap" id="{{field.name}}_{{option_key}}"
-      value="{{option_key}}">
-      <ui-select-match placeholder="Selecione uma opção da lista">{{$parent.data[field.name].value}}</ui-select-match>
-      <!--{{$select.selected.name}}-->
-      <ui-select-choices repeat="(option_key, option_label) in field.customOptions.list | filter: $select.search">
-        <div ng-bind-html="option_label.value | highlight: $select.search"></div>
-        <!--<small ng-bind-html="item.email | highlight: $select.search"></small>-->
-      </ui-select-choices>
-    </ui-select>
-  
-    <label for="{{field.name}}" ng-if="field.type == 'boolean'">
-          <!--data-ui-switch="{size: 'small', color: '#1a848e'}"-->
-          <!--<input type="checkbox" id="{{field.name}}" ng-model-options="{fieldInfo: field}" data-ng-model="$parent.data[field.name]"-->
-              <!--name="{{field.name}}" checked="{checked: $parent.data[field.name]}" autocomplete="off">-->
+
+    <!-- Boolean -->
+    <div ng-if="field.type == 'boolean'">
+      <label for="{{field.name}}">
           <toggle id="{{field.name}}" ng-model-options="{fieldInfo: field}" ng-model="data[field.name]"
                   name="{{field.name}}" on="{{field.customOptions.statusTrueText}}"
                   off="{{field.customOptions.statusFalseText}}" size="btn-sm"
                   ng-if="!field.disabled"></toggle>
           <span ng-if="field.disabled">{{$parent.data[field.name] ? field.customOptions.statusTrueText : field.customOptions.statusFalseText}}</span>
       </label>
-  
-    <!--autocomplete(field, $viewValue)-->
-    <div fw-auto-complete="" class="fw-input-group fw-auto-complete input-group" ng-if="field.autocomplete !== false && field.customOptions.autocomplete_table == undefined">
-      <input id="{{field.name}}" ng-model-options="{fieldInfo: field}" fw-auto-complete typeahead-on-select="autocompleteSelect($item, $model, $label)"
-        aria-autocomplete="none" autocomplete="off" typeahead-min-length="0" typeahead="row as row.label for row in autocomplete(field, $viewValue)"
-        type="text" class="form-control" name="{{field.name}}" ng-required="field.notnull" ng-model="$parent.data[field.name + '.label']"
-        size="{{field.length}}" placeholder="{{field.label}}" ng-disabled="field.disabled"
-        ng-readonly="field.customOptions.select == true"
-        ng-class="{'fieldSelect': field.customOptions.select == true}"
-        />
-      <span class="input-group-btn">
-        <button type="button" class="btn btn-default">
-          <i class="glyphicon" ng-class="{'glyphicon-search': field.customOptions.select == undefined, 'glyphicon-menu-down': field.customOptions.select == true}"></i>
-        </button>
-      </span>
     </div>
-    
-    <!--Autocomplete Table-->
   
-    <!--autocomplete(field, $viewValue)-->
-    <div fw-auto-complete="" class="fw-input-group fw-auto-complete input-group" ng-if="field.autocomplete !== false && field.customOptions.autocomplete_table != undefined">
-      <input style="display:none" id="{{field.name}}" ng-model-options="{fieldInfo: field}" fw-auto-complete typeahead-on-select="autocompleteSelect($item, $model, $label)"
-        aria-autocomplete="none" autocomplete="off" typeahead-min-length="0" typeahead="row as row.label for row in autocomplete(field, $viewValue)"
-        type="text" class="form-control" name="{{field.name}}" ng-required="field.notnull" ng-model="$parent.data[field.name + '.label']"
-        size="{{field.length}}" placeholder="{{field.label}}" ng-disabled="field.disabled" />
-    </div>
-    
-    <div fw-auto-complete-table="" ng-if="field.customOptions.autocomplete_table != undefined"
-         data-name="{{field.name}}">
-      <div class="fw-input-group fw-auto-complete input-group">
-        <input type="text" id="input-ac-table" ng-model="$parent.data[field.name + '.label']" ng-model-options="{fieldInfo: field, debounce: 500}" class="form-control" autocomplete="off"
-          ng-change="updateAutocompleteTable(field.customOptions.autocomplete_table.table_name,field.customOptions.autocomplete_table.table_columns[0].name, this)"
-          ng-focus="autocompleteTableFocus(field.customOptions.autocomplete_table.table_name)" ng-blur="autocompleteTableLostFocus()" ng-disabled="field.disabled">
+    <!--Autocomplete-->
+    <div ng-if="field.autocomplete && !field.customOptions.autocomplete_table">
+      <div fw-auto-complete="" class="fw-input-group fw-auto-complete input-group">
+        <input id="{{field.name}}" ng-model-options="{fieldInfo: field}" fw-auto-complete typeahead-on-select="autocompleteSelect($item, $model, $label)"
+          aria-autocomplete="none" autocomplete="off" typeahead-min-length="0" typeahead="row as row.label for row in autocomplete(field, $viewValue)"
+          type="text" class="form-control" name="{{field.name}}" ng-required="field.notnull" ng-model="$parent.data[field.name + '.label']"
+          size="{{field.length}}" placeholder="{{field.label}}" ng-disabled="field.disabled"
+          ng-readonly="field.customOptions.select == true"
+          ng-class="{'fieldSelect': field.customOptions.select == true}"
+          />
         <span class="input-group-btn">
-          <button type="button" class="btn btn-default">
+          <button type="button" class="btn btn-default" ng-disabled="field.disabled">
             <i class="glyphicon" ng-class="{'glyphicon-search': field.customOptions.select == undefined, 'glyphicon-menu-down': field.customOptions.select == true}"></i>
           </button>
         </span>
       </div>
-      <!--Table-->
-      <div ng-if="field.customOptions.autocomplete_table != undefined"
-           ng-show="tableVisibily" ng-model-options="{fieldInfo: field}">
-        <div class="table-container">
-          <table id="myTable" class="table table-striped">
-            <thead>
-              <tr>
-                <th ng-repeat="column in field.customOptions.autocomplete_table.table_columns">
-                  {{column.label}}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr ng-repeat="data in autocompleteTableData2" id="{{data.id}}" ng-mousedown="tableSelected($event,field.name,data)">
-                <!-- <td>{{autocompleteTableData[0]}}</td> -->
-                <!--             <td>{{field.customOptions.autocomplete_table.table_name}}</td> -->
-                <td ng-repeat="column in field.customOptions.autocomplete_table.table_columns">
-                  {{data[column.name]}}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <!--Autocomplete Table-->
     </div>
-  
+    
+    <!--Autocomplete Table-->
+    <div ng-if="field.autocomplete && field.customOptions.autocomplete_table">
+      <div fw-auto-complete="" class="fw-input-group fw-auto-complete input-group">
+        <input style="display:none" id="{{field.name}}" ng-model-options="{fieldInfo: field}" fw-auto-complete typeahead-on-select="autocompleteSelect($item, $model, $label)"
+          aria-autocomplete="none" autocomplete="off" typeahead-min-length="0" typeahead="row as row.label for row in autocomplete(field, $viewValue)"
+          type="text" class="form-control" name="{{field.name}}" ng-required="field.notnull" ng-model="$parent.data[field.name + '.label']"
+          size="{{field.length}}" placeholder="{{field.label}}" ng-disabled="field.disabled" />
+      </div>
+      <div fw-auto-complete-table="" data-name="{{field.name}}">
+        <div class="fw-input-group fw-auto-complete input-group">
+          <input type="text" id="input-ac-table" ng-model="$parent.data[field.name + '.label']" ng-model-options="{fieldInfo: field, debounce: 500}" class="form-control" autocomplete="off"
+            ng-change="updateAutocompleteTable(field.customOptions.autocomplete_table.table_name,field.customOptions.autocomplete_table.table_columns[0].name, this)"
+            ng-focus="autocompleteTableFocus(field.customOptions.autocomplete_table.table_name)" ng-blur="autocompleteTableLostFocus()" ng-disabled="field.disabled">
+          <span class="input-group-btn">
+            <button type="button" class="btn btn-default">
+              <i class="glyphicon" ng-class="{'glyphicon-search': field.customOptions.select == undefined, 'glyphicon-menu-down': field.customOptions.select == true}"></i>
+            </button>
+          </span>
+        </div>
+        <!--Table-->
+        <div ng-if="field.customOptions.autocomplete_table != undefined"
+            ng-show="tableVisibily" ng-model-options="{fieldInfo: field}">
+          <div class="table-container">
+            <table id="myTable" class="table table-striped">
+              <thead>
+                <tr>
+                  <th ng-repeat="column in field.customOptions.autocomplete_table.table_columns">
+                    {{column.label}}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="data in autocompleteTableData2" id="{{data.id}}" ng-mousedown="tableSelected($event,field.name,data)">
+                  <!-- <td>{{autocompleteTableData[0]}}</td> -->
+                  <!--             <td>{{field.customOptions.autocomplete_table.table_name}}</td> -->
+                  <td ng-repeat="column in field.customOptions.autocomplete_table.table_columns">
+                    {{data[column.name]}}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!--Autocomplete Table-->
+      </div>
+    </div>
+
   </div>
   

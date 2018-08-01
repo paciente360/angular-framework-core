@@ -1297,6 +1297,33 @@
 (function () {
     'use strict';
 
+    angular.module('letsAngular').directive('numbersOnly', function(){
+        return {
+            require: 'ngModel',
+            link: function (scope, element, attr, ngModelCtrl) {
+                function fromUser(text) {
+                    if (text) {
+                        var transformedInput = text.replace(/[^0-9]/g, '');
+    
+                        if (transformedInput !== text) {
+                            ngModelCtrl.$setViewValue(transformedInput);
+                            ngModelCtrl.$render();
+                        }
+                        return transformedInput;
+                    }
+                    return undefined;
+                }            
+                ngModelCtrl.$parsers.push(fromUser);
+            }
+        };
+    });
+
+
+})();
+
+(function () {
+    'use strict';
+
     angular.module('letsAngular')
         .directive('fwInput', fwInput);
 
@@ -1435,16 +1462,37 @@
                         controller = $el.controller('ngModel');
                     }
 
-                    if (scope.field.customOptions.cpf != undefined) {
+                    if (scope.field.type == 'date') {
+                        $el.mask('99/99/9999');
+
+                    } else if (scope.field.customOptions.cpf != undefined) {
                         $el.mask('999.999.999-99');
+
                     } else if (scope.field.customOptions.cnpj != undefined) {
                         $el.mask('99.999.999/9999-99');
+
                     } else if (scope.field.type == 'float') {
                         if (scope.field.customOptions.currency != undefined) {
                             $el.mask("#.##0,00", { reverse: true });
                         } else {
                             
                         }
+                    }else if (scope.field.customOptions.documento !== undefined) {
+
+                        var cpfOrCnpj = function (val) {
+                            return val.replace(/\D/g, '').length >= 12 ? '00.000.000/0000-00' : '000.000.000-009' ;
+                        },
+                            docOptions = {
+                                onKeyPress: function (val, e, field,  options) {
+                                    field.mask(cpfOrCnpj.apply({}, arguments), options);
+                                }
+                            };
+     
+                        $timeout(function () {
+                            $el.mask(cpfOrCnpj, docOptions);
+                        }, 10);
+
+
                     } else if (scope.field.customOptions.telefone != undefined) {
                         var SPMaskBehavior = function (val) {
                             return val.replace(/\D/g, '').length === 11 ? '(00) 00000-0000' : '(00) 0000-00009';
@@ -1459,8 +1507,6 @@
                             $el.mask(SPMaskBehavior, spOptions);
                         }, 100);
 
-                    } else if (scope.field.type == 'date') {
-                        $el.mask('99/99/9999');
                     } else if (scope.field.customOptions.cep != undefined) {
 
                         $el.blur(function () {
@@ -2216,7 +2262,36 @@
 
                                 }
                                 else if (field.autocomplete == true) {
-                                    cellOptions.name = cellOptions.name + '.label';
+
+                                    if (field.customOptions && field.customOptions.list!=undefined) {
+
+                                        cellOptions.cell = Backgrid.Cell.extend({
+                                            className: "custom-situation-cell-select",
+                                            formatter: {
+                                                fromRaw: function (rawData, model) {
+
+                                                    var label="";
+                                                    field.customOptions.list.forEach(function(item){
+                                                        if (item.id==rawData){
+                                                            label = item.label;
+                                                        }
+                                                    });
+
+                                                    return label;
+
+                                                },
+                                                toRaw: function (formattedData, model) {
+                                                    return 'down';
+                                                }
+                                            }
+    
+                                        });
+
+
+                                    }else{
+                                        cellOptions.name = cellOptions.name + '.label';
+                                    }
+                                    
                                 }
 
                                 columns.push(cellOptions);
@@ -2701,6 +2776,34 @@
 (function () {
     'use strict';
 
+    angular.module('letsAngular')
+        .factory('Backgrid', BackgridFactory);
+
+    BackgridFactory.$inject = ['$window'];
+
+    function BackgridFactory($window) {
+        return $window.Backgrid;
+    }
+
+})();
+
+(function () {
+    'use strict';
+
+    angular.module('letsAngular')
+        .factory('Backbone', BackboneFactory);
+
+    BackboneFactory.$inject = ['$window'];
+
+    function BackboneFactory($window) {
+        return $window.Backbone;
+    }
+
+})();
+
+(function () {
+    'use strict';
+
     var module = angular.module('letsAngular');
 
     module.controller('CRUDController', ["$scope", "Restangular", "module", "$state", "$window", "$stateParams", "$rootScope", "headers", function ($scope, Restangular, module, $state, $window, $stateParams, $rootScope, headers) {
@@ -2805,6 +2908,15 @@
                         if (field.type == 'date' && (data[field.name] != undefined && data[field.name] != null)) {
                             data[field.name] = new Date(data[field.name]);
                         }
+
+                        if (field.customOptions && field.customOptions.list!=undefined) {
+                            field.customOptions.list.forEach(function(item){
+                                if (item.id==data[field.name]){
+                                    data[field.name+'.label'] = item.label;
+                                }
+                            });
+                        }
+
                     }
 
                     $scope.data = data;
@@ -3212,7 +3324,14 @@
                     return deferred.reject();
                 });
             } else {
-                deferred.resolve(field.customOptions.list);
+
+                var options = angular.copy(field.customOptions.list) || [];
+
+                if (field.customOptions.select == true) {
+                    options.unshift({ id: null, label: '--- Selecione ---' });
+                }
+
+                deferred.resolve(options);
             }
             return deferred.promise;
         }
@@ -3388,9 +3507,15 @@
                     if (field.type == 'date' && (data[field.name] != undefined && data[field.name] != null)) {
                         data[field.name] = new Date(data[field.name]);
                     }
-                    if (field.customOptions.f) {
-
+                    
+                    if (field.customOptions && field.customOptions.list!=undefined) {
+                        field.customOptions.list.forEach(function(item){
+                            if (item.id==data[field.name]){
+                                data[field.name+'.label'] = item.label;
+                            }
+                        });
                     }
+
                 }
                 $scope.data = data;
                 if (typeof(window.setProgressFile)=="function"){
@@ -3576,7 +3701,15 @@
                     });
 
                 } else {
-                    deferred.resolve(field.customOptions.list);
+
+                    var options = angular.copy(field.customOptions.list) || [];
+
+                    if (field.customOptions.select == true) {
+                        options.unshift({ id: null, label: '--- Selecione ---' });
+                    }
+
+                    deferred.resolve(options);
+
                 }
 
                 return deferred.promise;
@@ -3623,32 +3756,5 @@
         }, 500); 
 
     }]);
-
-})();
-(function () {
-    'use strict';
-
-    angular.module('letsAngular')
-        .factory('Backgrid', BackgridFactory);
-
-    BackgridFactory.$inject = ['$window'];
-
-    function BackgridFactory($window) {
-        return $window.Backgrid;
-    }
-
-})();
-
-(function () {
-    'use strict';
-
-    angular.module('letsAngular')
-        .factory('Backbone', BackboneFactory);
-
-    BackboneFactory.$inject = ['$window'];
-
-    function BackboneFactory($window) {
-        return $window.Backbone;
-    }
 
 })();
