@@ -542,7 +542,12 @@
 
             if (modal){
                 var headers = $scope.headers[origin][detail];
-                headers.route = $scope.headers.route+"/details/"+detail;
+
+                if (headers.route_detail){
+                    headers.route = headers.route_detail;
+                }else{
+                    headers.route = $scope.headers.route+"/details/"+detail;
+                }
 
                 fwModalService.createCRUDModal(headers)
                 .then(function (response) {
@@ -572,7 +577,12 @@
         $scope.editDetailData = function (origin, detail, detail_data) {
 
             var headers = $scope.headers[origin][detail];
-            headers.route = $scope.headers.route+"/details/"+detail;
+
+            if (headers.route_detail){
+                headers.route = headers.route_detail;
+            }else{
+                headers.route = $scope.headers.route+"/details/"+detail;
+            }
 
             fwModalService.createCRUDModal(headers, detail_data)
             .then(function (response) {

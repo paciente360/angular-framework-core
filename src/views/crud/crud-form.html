@@ -6,7 +6,7 @@
             </legend>
             <ng-include ng-if="beforeForm != undefined" src="beforeForm"></ng-include>
             
-            <ng-include src="'lets/views/crud/crud-form-input.html'" ng-init="auto_layout=headers.auto_layout; filter={tab: 'fixed', editable: true}"></ng-include>
+            <ng-include src="'lets/views/crud/crud-form-input.html'" ng-init="auto_layout=headers.auto_layout; fields=headers.fields; filter={tab: 'fixed', editable: true}"></ng-include>
 
             <ng-include ng-if="afterForm != undefined" src="afterForm"></ng-include>
         </fieldset>
@@ -21,7 +21,7 @@
                 </legend>
                 <ng-include ng-if="beforeForm != undefined" src="beforeForm"></ng-include>
                 
-                <ng-include src="'lets/views/crud/crud-form-input.html'" ng-init="auto_layout=headers.auto_layout; filter={editable: true}"></ng-include>
+                <ng-include src="'lets/views/crud/crud-form-input.html'" ng-init="auto_layout=headers.auto_layout; fields=headers.fields; filter={editable: true}"></ng-include>
                 
                 <ng-include ng-if="afterForm != undefined" src="afterForm"></ng-include>
             </fieldset>
@@ -29,15 +29,15 @@
 
         <tab ng-if="headers.main_tabs != undefined" ng-repeat="tab in headers.main_tabs" heading="{{tab}}">
             <fieldset>
-               <ng-include src="'lets/views/crud/crud-form-input.html'" ng-init="auto_layout=headers.auto_layout; filter={tab: $index, editable: true}"></ng-include>
+               <ng-include src="'lets/views/crud/crud-form-input.html'" ng-init="auto_layout=headers.auto_layout; fields=headers.fields; filter={tab: $index, editable: true}"></ng-include>
             </fieldset>
         </tab>
 
-        <tab ng-repeat="(detail_key, detail) in headers.tabs_session" heading="{{detail.label}}">
+        <tab ng-if="!detail.hide" ng-repeat="(detail_key, detail) in headers.tabs_session" heading="{{detail.label}}">
             <fieldset>
                 <ng-include src="'lets/views/crud/crud-detail-list.html'"></ng-include>
                 <div class="pull-right">
-                    <button type="button" class="btn btn-big btn-primary button-new" origin="tabs_session" detail="{{detail_key}}" form-modal="{{detail.modal ? true : false}}">
+                    <button type="button" class="btn btn-primary button-new" origin="tabs_session" detail="{{detail_key}}" form-modal="{{detail.modal ? true : false}}">
                         <span class="icon fa fa-plus"></span>Novo Registro
                     </button>
                 </div>

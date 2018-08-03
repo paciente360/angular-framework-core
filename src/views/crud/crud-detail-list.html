@@ -1,16 +1,22 @@
 <table class="table detail-table">
     <thead>
         <tr>
-            <th ng-repeat="field in detail.fields | filter: {editable: true}">{{field.label}}</th>
+            <th ng-repeat="field in detail.fields | filter: {viewable: true}" ng-if="detail.modal===true">{{field.label}}</th>
+            <th ng-repeat="field in detail.fields | filter: {editable: true}" ng-if="!detail.modal">{{field.label}}</th>
             <th class="text-center">Ações</th>
         </tr>
     </thead>
     <tbody>
         <tr ng-repeat="detail_data in data[detail_key]" ng-class="{'new': detail_data.new != undefined}">
-            <td ng-repeat="field in detail.fields | filter: {editable: true}">
-                <fw-input ng-if="!detail.modal" fw-data="detail_data"></fw-input>
+            
+            <td ng-repeat="field in detail.fields | filter: {viewable: true}" ng-if="detail.modal===true">
                 <fw-detail-data ng-if="detail.modal"></fw-detail-data>
             </td>
+
+            <td ng-repeat="field in detail.fields | filter: {editable: true}" ng-if="!detail.modal">
+                <fw-input ng-if="!detail.modal" fw-data="detail_data"></fw-input>
+            </td>
+
             <td class="text-center">
                 <button type="button" class="btn btn-edit btn-default" ng-if="detail.modal===true" ng-click="editDetailData('tabs_session', detail_key, detail_data)">
                     <span class="glyphicon glyphicon-pencil"></span>

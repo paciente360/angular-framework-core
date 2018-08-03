@@ -11,6 +11,21 @@
 
         $scope.resource = Restangular.all(headers.route);
 
+        for (var y in $scope.headers.fields) {
+            var field = $scope.headers.fields[y];
+            if (field.type == 'boolean' && $scope.data[field.name]==undefined) {
+                if (field.customOptions.default){
+                    $scope.data[field.name] = true;
+                }else{
+                    $scope.data[field.name] = false;
+                }
+            }
+        }
+
+        if(headers.modal_id){
+            $rootScope.$emit('open:'+headers.modal_id+'', $scope);
+        }
+
         $scope.cancel = function () {
             $modalInstance.dismiss('cancel');
         }

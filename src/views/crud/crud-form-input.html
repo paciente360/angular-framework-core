@@ -1,4 +1,4 @@
-<div class="form-group" ng-repeat="field in headers.fields | filter: filter" ng-if="!auto_layout">
+<div class="form-group" ng-repeat="field in fields | filter: filter" ng-if="!auto_layout">
     <label for="{{field.name}}" class="col-sm-2 control-label no-padding">{{field.label}}
         <span ng-if="field.required">*</span>
     </label>
@@ -7,7 +7,7 @@
     </div>
 </div>
 
-<div class="form-group form-auto-layout" ng-repeat="field in headers.fields | filter: filter"
+<div class="form-group form-auto-layout" ng-repeat="field in fields | filter: filter"
     ng-class="
         field.size ? 'col-sm-'+field.size
         : field.type == 'text' ? 'col-sm-12'

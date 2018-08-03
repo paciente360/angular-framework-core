@@ -21,6 +21,16 @@
                             return data[field.name+ '.label'].label || data[field.name+ '.label'];
                         }
 
+                        if (field.type == 'boolean'){
+                            if (field.customOptions.statusFalseText && field.customOptions.statusTrueText){
+                                if (data[field.name]){
+                                    return field.customOptions.statusTrueText;
+                                }else{
+                                    return field.customOptions.statusFalseText;
+                                }
+                            }
+                        }
+
                         return data[field.name];
 
                     }
