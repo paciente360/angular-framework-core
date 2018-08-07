@@ -42,6 +42,12 @@
             $modalInstance.dismiss('cancel');
         });
 
+        $timeout(function(){
+            if (typeof(window.setProgressFile)=="function"){
+                window.setProgressFile();
+            }
+        });
+
     });
 
 })();
