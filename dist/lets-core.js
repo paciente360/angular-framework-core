@@ -2208,7 +2208,7 @@
                                     _backgridCellExtend.render = function () {
                                         this.$el.empty();
                                         this.$el.data('model', this.model);
-                                        var formattedValue = customFormatter.fromRaw();
+                                        var formattedValue = customFormatter.fromRaw(this.model);
                                         this.$el.append(formattedValue);
                                         this.delegateEvents();
                                         return this;
