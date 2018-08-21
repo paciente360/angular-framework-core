@@ -15,13 +15,16 @@
     -->
     <!--</div>-->
     <div class="row col-md-7 col-lg-7 col-xs-7" style="padding-right: 0;">
-      <div class="col-md-4 col-lg-4 col-xs-4" ng-if="headers.settings.add" style="float: right; padding-right: 0;">
+      <div class="hidden-xs col-md-4 col-lg-4 col-xs-4" ng-if="headers.settings.add" style="float: right; padding-right: 0;">
           <a class="btn btn-primary btn-block btn-new" ng-click="goNew()"><span class="icon fa fa-plus"></span>Novo Registro</a>
+      </div>
+      <div class="visible-xs col-md-4 col-lg-4 col-xs-4 text-center" ng-if="headers.settings.add" style="float: right; padding-right: 0;">
+        <a class="btn btn-primary btn-block btn-new" ng-click="goNew()"><span class="icon fa fa-plus"></span></a>
       </div>
     </div>
 </div>
 <section class="widget" crud-list crud-list-settings="{url: headers.route, fields: headers.fields, tab: false, settings: headers.settings}">
-    <header class='crud-list-header row' style='display: flex;'>
+    <header class='crud-list-header row hidden-xs' style='display: flex;'>
         <h4>
             {{headers.label}}
         </h4>
