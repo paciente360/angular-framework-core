@@ -20,11 +20,18 @@
     </div>
 
     <!-- Number or Integer -->
-    <div ng-if="(field.type == 'number' || field.type == 'integer' || field.type == 'bigint') && !field.autocomplete">
+    <div ng-if="(field.type == 'number' || field.type == 'integer' || field.type == 'bigint') && !field.autocomplete && !field.customOptions.range">
         <input ng-model-options="{fieldInfo: field}"
         type="text" id="{{field.name}}" string-to-number numbers-only fw-dynamic ng-required="field.notnull" ng-model="data[field.name]"
         size="{{field.length}}" ng-disabled="field.disabled"
         class="main-input form-control" autocomplete="off" />
+    </div>
+
+    <!-- Number or Integer with range-->
+    <div ng-if="(field.type == 'number' || field.type == 'integer' || field.type == 'bigint') && !field.autocomplete && field.customOptions.range">
+      <input ng-model-options="{fieldInfo: field}" type="number" id="{{field.name}}" ng-required="{{field.notnull}}" ng-model="data[field.name]"
+        ng-disabled="field.disabled" class="main-input form-control" autocomplete="off" min="{{field.customOptions.range.min}}"
+        max="{{field.customOptions.range.max}}" />
     </div>
 
     <!-- String -->
