@@ -1,33 +1,12 @@
 <div class="row">
     <crud-breadcrumb></crud-breadcrumb>
-    <!--<div class="col-md-2 col-lg-2 col-xs-2">-->
-        <!--
-    <form class="navbar-form navbar-left" role="search">
-      <div class="form-group">
-        <div class="input-group input-group-no-border">
-                    <span class="input-group-addon">
-                        <i class="fa fa-search"></i>
-                    </span>
-          <input class="form-control" type="text" placeholder="Search Dashboard">
-        </div>
-      </div>
-    </form>
-    -->
-    <!--</div>-->
-    <div class="row col-md-7 col-lg-7 col-xs-7" style="padding-right: 0;">
-      <div class="hidden-xs col-md-4 col-lg-4 col-xs-4" ng-if="headers.settings.add" style="float: right; padding-right: 0;">
+      <div class="col-sm-3 col-lg-2 text-right" ng-if="headers.settings.add" style="margin-bottom: 10px;">
           <a class="btn btn-primary btn-block btn-new" ng-click="goNew()"><span class="icon fa fa-plus"></span>Novo Registro</a>
       </div>
-      <div class="visible-xs col-md-4 col-lg-4 col-xs-4 text-center" ng-if="headers.settings.add" style="float: right; padding-right: 0;">
-        <a class="btn btn-primary btn-block btn-new" ng-click="goNew()"><span class="icon fa fa-plus"></span></a>
-      </div>
-    </div>
 </div>
 <section class="widget" crud-list crud-list-settings="{url: headers.route, fields: headers.fields, tab: false, settings: headers.settings}">
     <header class='crud-list-header row hidden-xs' style='display: flex;'>
-        <h4>
-            {{headers.label}}
-        </h4>
+        <h4>{{headers.label}}</h4>
     </header>
     <div class="widget-body">
         <div class="table-container"></div>

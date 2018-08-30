@@ -4,7 +4,7 @@
     <div ng-if="field.type == 'float' && field.customOptions.currency">
       <div class="fw-input-group">
         <span ng-if="field.customOptions.currency != undefined " class="input-group-addon">R$</span>
-        <input step="0.5" data-parsley-type="number" lang="pt-BR" ng-model-options="{fieldInfo: field}"
+        <input step="0.5" data-parsley-pattern="^\d{1,3}(?:\.\d{3})*,\d{2}$" lang="pt-BR" ng-model-options="{fieldInfo: field}"
         type="text" id="{{field.name}}" string-to-number fw-dynamic ng-required="field.notnull" ng-model="data[field.name]"
         size="{{field.length}}" ng-disabled="field.disabled"
         class="main-input form-control" autocomplete="off" min="{{field.customOptions.min}}" />

@@ -32,6 +32,12 @@
                     } else if (scope.field.type == 'float') {
                         if (scope.field.customOptions.currency != undefined) {
                             $el.mask("#.##0,00", { reverse: true });
+                            controller.$parsers.unshift(function (value) {
+                                return parseFloat($el.cleanVal(),10)/100;
+                            });
+                            controller.$formatters.unshift(function (value) {
+                                return $el.masked(value*100);
+                            });
                         } else {
                             
                         }
