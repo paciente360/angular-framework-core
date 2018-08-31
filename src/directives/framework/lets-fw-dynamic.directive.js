@@ -36,7 +36,7 @@
                                 return parseFloat($el.cleanVal(),10)/100;
                             });
                             controller.$formatters.unshift(function (value) {
-                                return $el.masked(value*100);
+                                return $el.masked(value ? parseFloat(value).toFixed(2) : null);
                             });
                         } else {
                             

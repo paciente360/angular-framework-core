@@ -4,9 +4,9 @@
     angular.module('letsAngular')
         .directive('fwAutoComplete', fwAutoComplete);
 
-    fwAutoComplete.$inject = ['$compile'];
+    fwAutoComplete.$inject = ['$compile', '$timeout'];
 
-    function fwAutoComplete($compile) {
+    function fwAutoComplete($compile, $timeout) {
         var controllerName = 'vm';
         return {
             restrict: 'A',
@@ -18,12 +18,21 @@
                     var _oldVal = _input.val();
                     var _val = _oldVal + ' ';
                     _input.controller('ngModel').$setViewValue(_val);
-                    scope.$digest;
-                    _input.controller('ngModel').$setViewValue(_oldVal);
+                    // scope.$digest;
+                    $timeout(function(){
+                        _input.controller('ngModel').$setViewValue(_oldVal);
+                    });
                 };
 
                 element.find('button').click(clickHandler);
                 _input.click(clickHandler);
+
+                _input.keyup(function(){
+                    if (this.value.trim()==""){
+                        delete _input.scope().data[_input.attr('name')];
+                    }
+                })
+
             },
             controller: function () {
                 
