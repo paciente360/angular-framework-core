@@ -16,8 +16,8 @@
             controller: function ($scope) {
                 $scope.route = null;
 
-                $scope.$on('refreshGRID', function () {
-                    $scope.pageableCRUDModel.fetch();
+                $scope.$on('refreshGRID', function (event, params) {
+                    $scope.pageableCRUDModel.fetch(params);
                 });
             },
             link: function (scope, $el, attrs) {
@@ -67,12 +67,6 @@
                         initialCRUDModel = pageableCRUDModel;
 
                     scope.pageableCRUDModel = pageableCRUDModel;
-
-                    var serverSideFilter = new Backgrid.Extension.ServerSideFilter({
-                        collection: pageableCRUDModel,
-                        name: "q",
-                        placeholder: "Buscar por..."
-                    });
 
                     function createBackgrid(collection) {
                         var columns = [];
@@ -416,60 +410,6 @@
                             }
                         });
 
-                        var _filter = serverSideFilter.render().$el;
-
-                        angular.element('.crud-list-header h4').css({
-                            'vertical-align': 'middle',
-                            'line-height': '34px',
-                            'flex': 1
-                        });
-
-                        _filter.css({
-                            'margin': '0px',
-                            'float': 'none',
-                            'display': 'inline-block',
-                            'vertical-align': 'middle',
-                            'line-height': '34px',
-                            'height': '34px',
-                            'padding': '0px',
-                            'width': '300px'
-                        });
-
-                        _filter.find('span').css({
-
-                            'top': 0,
-                            'bottom': 0,
-                            'height': '34px',
-                            'font-size': '34px',
-                            'vertical-align': 'middle',
-                            'left': '10px',
-                            'margin-top': '0px'
-
-                        });
-
-                        _filter.find('.clear').css({
-                            'height': '34px',
-                            'line-height': '35px',
-                            'top': 0,
-                            'bottom': 0,
-                            'margin-top': '0px',
-                        });
-
-                        _filter.find('input[type="search"]').css({
-
-                            'height': '34px',
-                            'padding-top': 0,
-                            'padding-bottom': 0,
-                            'vertical-align': 'middle',
-                            'line-height': '34px',
-                            'padding-left': '30px',
-                            'padding-right': '30px',
-                            'width': '80%'
-
-                        })
-
-                        scope.$el.find('.crud-list-header').append(_filter)
-
                         function _returnPageGridWithSort() {
                             if (settings.fields[1]) {
                                 if (settings.fields[1].type === 'string') return pageableGrid.render().sort(settings.fields[1].name, 'ascending').$el;
@@ -487,7 +427,7 @@
 
                     createBackgrid(pageableCRUDModel);
 
-                    pageableCRUDModel.fetch();
+                    scope.$broadcast('refreshGRID');
                 }
 
                 var listener = scope.$parent.$watch('headers', function (newValue, oldValue) {
