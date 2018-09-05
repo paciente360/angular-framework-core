@@ -96,7 +96,8 @@
       "moment-duration-format": "^2.2.1",
       "angular-bootstrap-toggle": "^0.1.3",
       "angular-ui-select": "^0.19.8",
-      "angular-lets-colorpicker-component": "git+ssh://git@bitbucket.org/letscomunicadev/angular-lets-colorpicker-component.git#v0.0.1"
+      "angular-lets-colorpicker-component": "git+ssh://git@bitbucket.org/letscomunicadev/angular-lets-colorpicker-component.git#v0.0.1",
+      "ng-dropzone": "https://github.com/thatisuday/ng-dropzone.git#v2.0.2"
     },
     "devDependencies": {
       

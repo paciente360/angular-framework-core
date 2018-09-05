@@ -98,7 +98,7 @@
     </div>
   
     <!-- Upload -->
-    <div ng-if="field.type == 'string' && field.customOptions.file">
+    <div ng-if="field.type == 'string' && field.customOptions.file && !field.customOptions.dad">
       <div fw-upload class="fw-input-group">
         <div class="progress">
           <div class="progress-bar" role="progressbar" aria-valuenow="{{f.progress || defaultProgress}}" aria-valuemin="0" aria-valuemax="100"
@@ -122,6 +122,21 @@
                     <i class="glyphicon glyphicon-download"></i>
                 </button>
             </span>
+      </div>
+    </div>
+
+    <!-- Drag and Drop -->
+    <div ng-if="field.type == 'string' && field.customOptions.file && field.customOptions.dad">
+      <div fw-upload class="fw-input-group">
+        <input ng-model-options="{fieldInfo: field}" type="hidden" class="form-control" name="temp_filename" ng-model="$parent.data[field.name]"
+          id="{{field.name}}" ng-required="field.notnull" autocomplete="off" value="fileName" />
+        <p class="file-preview" ng-if="alreadySent == true" style="margin-right: 2rem; text-align:center;">
+          <i class="fa fa-file-o" aria-hidden="true" style="font-size: 3.333333em;line-height: 1.75em;"></i>
+          <a class="dz-open" ng-click="download(field, data.id)">{{fileName}}</a>
+          <a class="dz-open" ng-click="download(field, data.id)" data-dz-download>Baixar Arquivo</a>
+          <a class="dz-remove" ng-click="remove(fileName)" style="color: red" data-dz-remove>Remover Arquivo</a>
+        </p>
+        <div class="dropzone" options="dzOptions" callbacks="pushName()" methods="dzMethods" ng-dropzone></div>
       </div>
     </div>
   

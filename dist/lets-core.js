@@ -17,7 +17,8 @@
         'ui.select',
         'ngSanitize',
         'colorpicker-dr',
-        'ckeditor'
+        'ckeditor',
+        'thatisuday.dropzone'
     ]);
 
     // ----------------------------
@@ -1153,12 +1154,35 @@
 
                 $scope.defaultProgress = 0;
                 $scope.alreadySent = false;
+                var controll = true;
 
                 window.setProgressFile = function(){
-                    if ($scope.data[$scope.field.name] != undefined && $scope.data[$scope.field.name] != null) {
+                    if ($scope.data[$scope.field.name] != undefined && $scope.data[$scope.field.name] != null && ($scope.fileName && $scope.fileName != 'fileName')) {
                         $scope.defaultProgress = 100;
                         $scope.alreadySent = true;
                     }
+                };
+
+                $scope.pushName = function () {
+                    $timeout(function () {
+                        if (document.getElementsByClassName('dz-filename')[0] && controll) {
+                            controll = false;
+                            document.getElementsByClassName('dropzone')[0].style.width = '192px';
+                            if (document.getElementsByClassName('file-preview')[0]) {
+                                document.getElementsByClassName('file-preview')[0].style.display = 'none';
+                            }
+                            document.getElementsByName('temp_filename')[0].value = document.getElementsByClassName('dz-filename')[0].firstElementChild.innerText;
+                            var _input = element.find('input[type="hidden"]');
+                            _input.controller('ngModel').$setViewValue(document.getElementsByName('temp_filename')[0].value);
+                        }
+                    });
+                };
+
+                $scope.remove = function () {
+                    $scope.alreadySent = false;
+                    var _input = element.find('input[type="hidden"]');
+                    document.getElementsByName('temp_filename')[0].value = null;
+                    _input.controller('ngModel').$setViewValue(null);
                 };
 
                 $scope.upload = function (file, errFiles) {
@@ -2534,12 +2558,35 @@
     angular.module('letsAngular')
         .directive('crudForm', crudForm);
 
-    crudForm.$inject = ['jQuery', '$timeout'];
+    crudForm.$inject = ['jQuery', '$timeout', 'appSettings'];
 
-    function crudForm(jQuery, $timeout) {
+    function crudForm(jQuery, $timeout, appSettings) {
         return {
             replace: false,
             link: function (scope, $el) {
+
+                /* Dropzone */
+                //Set options for dropzone
+                for (var y in scope.headers.fields) {
+                    var field = scope.headers.fields[y];
+                    if (field.customOptions.file) {
+                        scope.dzOptions = {
+                            url: appSettings.API_URL + 'upload/' + field.customOptions.file.container + '/upload',
+                            acceptedFiles: field.customOptions.file.acceptedFiles,
+                            maxFilesize: '25',
+                            maxFiles: '1',
+                            uploadMultiple: false,
+                            addRemoveLinks: true,
+                        };
+                    }
+                }
+                //Apply methods for dropzone
+                scope.dzMethods = {};
+                scope.removeNewFile = function () {
+                    scope.dzMethods.removeFile(scope.newFile); //We got $scope.newFile from 'addedfile' event callback
+                }
+                /* Dropzone */
+
 
                 jQuery($el).on('click', '.button-new', function () {
                     var detail = jQuery(this).attr('detail');
@@ -3077,6 +3124,10 @@
                                     data[field.name+'.label'] = item.label;
                                 }
                             });
+                        }
+
+                        if (field.customOptions && field.customOptions.file != undefined) {
+                            $scope.fileName = data[field.name];
                         }
 
                     }

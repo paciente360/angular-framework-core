@@ -36,6 +36,10 @@
                             });
                         }
 
+                        if (field.customOptions && field.customOptions.file != undefined) {
+                            $scope.fileName = data[field.name];
+                        }
+
                     }
 
                     $scope.data = data;

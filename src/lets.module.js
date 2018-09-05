@@ -17,7 +17,8 @@
         'ui.select',
         'ngSanitize',
         'colorpicker-dr',
-        'ckeditor'
+        'ckeditor',
+        'thatisuday.dropzone'
     ]);
 
     // ----------------------------
