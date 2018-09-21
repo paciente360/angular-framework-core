@@ -2637,7 +2637,8 @@
 
                 scope.fieldsFilter = [];
                 fields.forEach(function(field, idx){
-                    if (field.type=="custom" || field.name=="id" || field.type=="password")return;
+                    // if (field.type=="custom" || field.name=="id" || field.type=="password")return;
+                    if (!field.filter)return;
 
                     field.disabled = false;
                     field.notnull = false;

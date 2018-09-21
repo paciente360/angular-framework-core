@@ -5,7 +5,7 @@
                 <div class="form-group col-sm-3" style="margin-bottom: 10px;">
                     <div class="fw-input-group input-group">
                         <input autocomplete="off" type="text" class="form-control" name="q" ng-model="data['q']" ng-disabled="showBuscaAvancada" placeholder="Buscar por..."/>
-                        <span class="input-group-btn" ng-if="fieldsFilter.length > 1">
+                        <span class="input-group-btn" ng-if="fieldsFilter.length > 0">
                             <button type="button" class="btn btn-default" title="Busca Avançada" ng-click="openBuscaAvancada()">
                                 <i class="glyphicon" ng-class="{'glyphicon-plus': !showBuscaAvancada, 'glyphicon-minus': showBuscaAvancada}"></i>
                             </button>
