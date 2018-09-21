@@ -374,11 +374,18 @@
                             className: rowClasses.join(' '),
                         });
 
-                        var pageableGrid = new Backgrid.Grid({
+                        // Join default classes and custom classes (headers.tableClass) if exists
+                        var defaultClasses = 'table table-striped table-editable no-margin mb-sm';
+                        
+                        var _tableClass = (scope.$parent.$parent.headers.tableClass)
+                            ? [defaultClasses, scope.$parent.$parent.headers.tableClass].join(' ')
+                            : defaultClasses;
+
+                            var pageableGrid = new Backgrid.Grid({
                             row: ClickableRow,
                             columns: columns,
                             collection: collection,
-                            className: 'table table-striped table-editable no-margin mb-sm'
+                            className: _tableClass
                         });
 
                         var paginator = new Backgrid.Extension.Paginator({
