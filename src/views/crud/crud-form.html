@@ -46,13 +46,18 @@
 
         <tab ng-if="data.id != null && !tab.hide" ng-repeat="(tab_name, tab) in headers.tabs" heading="{{tab.label}}">
             <div ng-if="tab.fields && !tab.templateUrl">
-                <div class="row">
-                    <div class="pull-right">
-                        <a class="btn btn-primary btn-block btn-new" ng-click="newDetail(tab, data)">
-                            <span class="fa fa-plus"></span> Novo Registro</a>
+                <section class="" grid="{{tab_name}}" crud-list crud-list-settings="{url: headers.route + '/details/' + data.id + '/' + tab_name, fields: tab.fields, tab: true, settings: headers.settings, filterScope: tab.filterScope, sort:tab.sort}">
+                    
+                    <div class="col-sm-12 filter-tab" style="margin-top: 15px;">
+                        <div class="pull-right" style="position: absolute; right:0">
+                            <a class="btn btn-primary btn-block btn-new" ng-click="newDetail(tab, data)">
+                                <span class="fa fa-plus"></span> Novo Registro</a>
+                        </div>
+                        <div class="row">
+                            <div crud-filter fields="tab.fields" route="headers.route + '/details/' + data.id + '/' + tab_name" grid="{{tab_name}}"></div>
+                        </div>
                     </div>
-                </div>
-                <section class="widget" crud-list crud-list-settings="{url: headers.route + '/details/' + data.id + '/' + tab_name, fields: tab.fields, tab: true, settings: headers.settings, filterScope: tab.filterScope, sort:tab.sort}">
+
                     <div class="widget-body">
                         <div class="table-container" tab-config="{{tab}}"></div>
                     </div>

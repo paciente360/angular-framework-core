@@ -2115,8 +2115,9 @@
             controller: ["$scope", function ($scope) {
                 $scope.route = null;
 
-                $scope.$on('refreshGRID', function (event, params) {
-                    $scope.pageableCRUDModel.fetch(params);
+                $scope.$on('refreshGRID', function (event) {
+                    var $scopeFilter = $('div[crud-filter][grid="'+$scope.$el.attr('grid')+'"] input').scope()
+                    $scope.pageableCRUDModel.fetch($scopeFilter.objFilter);
                 });
             }],
             link: function (scope, $el, attrs) {
@@ -2637,7 +2638,6 @@
 
                 scope.fieldsFilter = [];
                 fields.forEach(function(field, idx){
-                    // if (field.type=="custom" || field.name=="id" || field.type=="password")return;
                     if (!field.filter)return;
 
                     field.disabled = false;
@@ -2651,8 +2651,7 @@
                     if (field.type=="text"){
                         field.type = "string";
                     }
-
-                    if (field.type=="boolean"){
+                    else if (field.type=="boolean"){
                         field.type = "number";
                         field.autocomplete = true;
                         field.customOptions = {
@@ -2662,6 +2661,24 @@
                             ],
                             "select":true
                         };
+                    }
+                    else if (field.type=="date"){
+                        
+                        if (typeof(field.filter)=="object" && field.filter.range===true){
+                            
+                            var _ini = angular.copy(field);
+                            _ini.name +="_ini";
+                            _ini.label +=" (início)";
+                            scope.fieldsFilter.push(_ini);
+
+                            var _fim = angular.copy(field);
+                            _fim.name +="_fim";
+                            _fim.label +=" (Fim)";
+                            scope.fieldsFilter.push(_fim);
+
+                            return;
+                        }
+
                     }
 
                     scope.fieldsFilter.push(field);
@@ -2767,18 +2784,42 @@
                 }
 
                 scope.filterData = function(){
+
+                    scope.objFilter = undefined;
+
                     var filterData = {};
                     if (scope.showBuscaAvancada){
                         fields.forEach(function(field, idx){
+
+                            if (typeof(field.filter)=="object" && field.filter.range===true){
+
+                                var values = {};
+
+                                if (scope.data[field.name+"_ini"]){
+                                    values.ini = scope.data[field.name+"_ini"];
+                                }
+
+                                if (scope.data[field.name+"_fim"]){
+                                    values.fim = scope.data[field.name+"_fim"];
+                                }
+
+                                if (Object.keys(values).length>0){
+                                    filterData[field.name] = values;
+                                }
+                                
+                            }
+
                             if (scope.data[field.name]){
                                 filterData[field.name] = scope.data[field.name];
                             }
                         });
-                        $rootScope.$broadcast('refreshGRID', {data:{filter:filterData}} );
+                        scope.objFilter = {data:{filter:filterData}};
                     }else{
                         filterData.q = scope.data.q;
-                        $rootScope.$broadcast('refreshGRID', {data:filterData} );
+                        scope.objFilter = {data:filterData};
                     }
+
+                    $rootScope.$broadcast('refreshGRID');
                 }
 
                 scope.openBuscaAvancada = function(){

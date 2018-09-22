@@ -16,8 +16,9 @@
             controller: function ($scope) {
                 $scope.route = null;
 
-                $scope.$on('refreshGRID', function (event, params) {
-                    $scope.pageableCRUDModel.fetch(params);
+                $scope.$on('refreshGRID', function (event) {
+                    var $scopeFilter = $('div[crud-filter][grid="'+$scope.$el.attr('grid')+'"] input').scope()
+                    $scope.pageableCRUDModel.fetch($scopeFilter.objFilter);
                 });
             },
             link: function (scope, $el, attrs) {

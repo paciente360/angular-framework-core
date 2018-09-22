@@ -1,33 +1,31 @@
-<div> 
-    <div class="filtros row" style="margin-top: 15px;">
-        <form ng-submit="filterData()">
-            <div class="busca">
-                <div class="form-group col-sm-3" style="margin-bottom: 10px;">
-                    <div class="fw-input-group input-group">
-                        <input autocomplete="off" type="text" class="form-control" name="q" ng-model="data['q']" ng-disabled="showBuscaAvancada" placeholder="Buscar por..."/>
-                        <span class="input-group-btn" ng-if="fieldsFilter.length > 0">
-                            <button type="button" class="btn btn-default" title="Busca Avançada" ng-click="openBuscaAvancada()">
-                                <i class="glyphicon" ng-class="{'glyphicon-plus': !showBuscaAvancada, 'glyphicon-minus': showBuscaAvancada}"></i>
-                            </button>
-                        </span>
-                    </div>
+<div class="filtros">
+    <form ng-submit="filterData()">
+        <div class="busca row">
+            <div class="form-group col-sm-3" style="margin-bottom: 10px;">
+                <div class="fw-input-group input-group">
+                    <input autocomplete="off" type="text" class="form-control" name="q" ng-model="data['q']" ng-disabled="showBuscaAvancada" placeholder="Buscar por..."/>
+                    <span class="input-group-btn" ng-if="fieldsFilter.length > 0">
+                        <button type="button" class="btn btn-default" title="Busca Avançada" ng-click="openBuscaAvancada()">
+                            <i class="glyphicon" ng-class="{'glyphicon-plus': !showBuscaAvancada, 'glyphicon-minus': showBuscaAvancada}"></i>
+                        </button>
+                    </span>
                 </div>
-                <div class="clearfix"></div>
             </div>
-            
-            <div class="busca-avancada" collapse="!showBuscaAvancada">
-                <div class="form-group col-sm-3" style="margin-bottom: 10px;" ng-repeat="field in fieldsFilter">
-                    <label for="{{field.name}}" class="control-label" style="font-size:12px; margin-bottom: 0px;">{{field.label}}</label>
-                    <fw-input fw-data="data"></fw-input>
-                </div>
-                <div class="form-group col-sm-2">
-                    <label class="control-label" style="font-size:12px; margin-bottom: 0px;">&nbsp;</label>
-                    <div>
-                        <button type="submit" class="btn btn-primary"><span class="icon fa fa-search"></span>Buscar</button>
-                    </div>
-                </div>
-                <div class="clearfix"></div>
+            <div class="clearfix"></div>
+        </div>
+        
+        <div class="busca-avancada row" collapse="!showBuscaAvancada">
+            <div class="form-group" style="margin-bottom: 10px;" ng-repeat="field in fieldsFilter" ng-class="field.filter.range===true ? 'col-sm-2' : 'col-sm-3'">
+                <label for="{{field.name}}" class="control-label" style="font-size:12px; margin-bottom: 0px;">{{field.label}}</label>
+                <fw-input fw-data="data"></fw-input>
             </div>
-        </form>
-    </div>
+            <div class="form-group col-sm-2">
+                <label class="control-label" style="font-size:12px; margin-bottom: 0px;">&nbsp;</label>
+                <div>
+                    <button type="submit" class="btn btn-primary"><span class="icon fa fa-search"></span>Buscar</button>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </form>
 </div>
