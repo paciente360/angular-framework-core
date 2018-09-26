@@ -54,20 +54,20 @@
             
             if (options.list.enable) {
                 this.state('app.'+settings.route+'.list', {
-                    url: '',
+                    url: '?filter',
                     templateUrl: options.list.templateUrl
                 });
             }
             if (options.new.enable) {
                 this.state('app.'+settings.route+'.new', {
-                    url: '/new',
+                    url: '/new?filter',
                     templateUrl: options.new.templateUrl,
                     controller: options.new.controller
                 });
             }
             if (options.edit.enable) {
                 this.state('app.'+settings.route+'.edit', {
-                    url: '/:id/edit',
+                    url: '/:id/edit?filter',
                     templateUrl: options.edit.templateUrl,
                     controller: options.edit.controller
                 });

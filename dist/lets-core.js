@@ -2103,21 +2103,116 @@
     angular.module('letsAngular')
         .directive('crudList', crudList);
 
-    crudList.$inject = ['$window', 'jQuery', 'Backbone', 'Backgrid', 'appSettings', 'fwObjectService'];
+    crudList.$inject = ['$window', 'jQuery', 'Backbone', 'Backgrid', 'appSettings', 'fwObjectService', '$timeout'];
 
-    function crudList($window, jQuery, Backbone, Backgrid, appSettings, fwObjectService) {
+    function crudList($window, jQuery, Backbone, Backgrid, appSettings, fwObjectService, $timeout) {
         return {
             scope: {
                 crudListSettings: '&',
                 crudListDependenciesData: '&',
                 app: '=',
             },
-            controller: ["$scope", function ($scope) {
+            controller: ["$scope", "$state", function ($scope, $state) {
                 $scope.route = null;
 
-                $scope.$on('refreshGRID', function (event) {
-                    var $scopeFilter = $('div[crud-filter][grid="'+$scope.$el.attr('grid')+'"] input').scope()
-                    $scope.pageableCRUDModel.fetch($scopeFilter.objFilter);
+                $scope.$on('refreshGRID', function (event, start) {
+
+                    $timeout(function(){
+                        var grid = $scope.$el.attr('grid');
+                        var $scopeFilter = $('div[crud-filter][grid="'+grid+'"] input').scope();
+
+                        if(start){
+                            if (grid=="main" && $window.location.search){
+                                var params = {};
+                                decodeURIComponent($window.location.search).replace("?filter=","").split('&').forEach(function(elm, idx){
+                                    var p = elm.split("=");
+
+                                    if (p[0].split("_ini").length > 1){
+
+                                        var attr = p[0].replace("_ini","");
+                                        if(!params[attr]){
+                                            params[attr] = {};
+                                        }
+                                        params[attr].ini = p[1];
+
+                                    }else if (p[0].split("_fim").length > 1){
+
+                                        var attr = p[0].replace("_fim","");
+                                        if(!params[attr]){
+                                            params[attr] = {};
+                                        }
+                                        params[attr].fim = p[1];
+
+                                    }else{
+                                        params[p[0]] = p[1];
+                                    }
+                                });
+
+                                // console.log(params);
+
+                                if (params.q){
+                                    $scopeFilter.data.q = params.q;
+                                    $scopeFilter.objFilter = {data:params};
+                                }else{
+                                    $scopeFilter.showBuscaAvancada = true;
+                                    $scopeFilter.objFilter = {data:{filter:params}};
+
+                                    Object.keys(params).forEach(function(par){
+                                        if(par.split("_label").length > 1){
+                                            $scopeFilter.data[par.replace("_label","")+".label"] = {id:params[par.replace("_label","")], label:params[par]};
+                                        }else{
+                                            if (typeof(params[par])=="object"){
+                                                $scopeFilter.data[par+"_ini"] = new Date(params[par].ini);
+                                                $scopeFilter.data[par+"_fim"] = new Date(params[par].fim);
+                                            }else{
+                                                $scopeFilter.data[par] = params[par];
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+
+                        }else{
+                            if (grid=="main"){
+                                var url="";
+                                if($scopeFilter.objFilter && $scopeFilter.objFilter.data.q){
+                                    url = "q="+$scopeFilter.objFilter.data.q;
+                                }
+
+                                if($scopeFilter.objFilter && $scopeFilter.objFilter.data.filter && Object.keys($scopeFilter.objFilter.data.filter).length>0){
+                                    var str = [];
+                                    for (var key in $scopeFilter.objFilter.data.filter) {
+
+                                        if (typeof($scopeFilter.objFilter.data.filter[key])=="object"){
+                                            if ($scopeFilter.objFilter.data.filter[key].ini){
+                                                str.push(key+"_ini="+$scopeFilter.objFilter.data.filter[key].ini);
+                                            }
+
+                                            if ($scopeFilter.objFilter.data.filter[key].fim){
+                                                str.push(key+"_fim="+$scopeFilter.objFilter.data.filter[key].fim);
+                                            }
+                                        }else{
+                                            str.push(key+"="+$scopeFilter.objFilter.data.filter[key]);
+                                        }
+                                        
+                                    }
+                                    url = str.join("&");
+                                }
+
+                                $state.transitionTo($state.$current.name, {filter: url}, {
+                                    location: true,
+                                    inherit: true,
+                                    relative: $state.$current,
+                                    notify: false
+                                });
+                                
+                            }
+                        }
+
+                        $scope.pageableCRUDModel.fetch( angular.copy($scopeFilter.objFilter) );
+                        
+                    });
+
                 });
             }],
             link: function (scope, $el, attrs) {
@@ -2474,11 +2569,18 @@
                             className: rowClasses.join(' '),
                         });
 
-                        var pageableGrid = new Backgrid.Grid({
+                        // Join default classes and custom classes (headers.tableClass) if exists
+                        var defaultClasses = 'table table-striped table-editable no-margin mb-sm';
+                        
+                        var _tableClass = (scope.$parent.$parent.headers.tableClass)
+                            ? [defaultClasses, scope.$parent.$parent.headers.tableClass].join(' ')
+                            : defaultClasses;
+
+                            var pageableGrid = new Backgrid.Grid({
                             row: ClickableRow,
                             columns: columns,
                             collection: collection,
-                            className: 'table table-striped table-editable no-margin mb-sm'
+                            className: _tableClass
                         });
 
                         var paginator = new Backgrid.Extension.Paginator({
@@ -2527,7 +2629,7 @@
 
                     createBackgrid(pageableCRUDModel);
 
-                    scope.$broadcast('refreshGRID');
+                    scope.$broadcast('refreshGRID', true);
                 }
 
                 var listener = scope.$parent.$watch('headers', function (newValue, oldValue) {
@@ -2630,9 +2732,11 @@
                 route: '&'
             },
             controller: ["$scope", function ($scope) {
-                $scope.data = {};
+                
             }],
             link: function (scope, $el) {
+
+                scope.data = {};
 
                 var fields = angular.copy(scope.fields());
 
@@ -2811,6 +2915,9 @@
 
                             if (scope.data[field.name]){
                                 filterData[field.name] = scope.data[field.name];
+                                if(field.autocomplete){
+                                    filterData[field.name+"_label"] = scope.data[field.name+".label"].label;
+                                }
                             }
                         });
                         scope.objFilter = {data:{filter:filterData}};
@@ -2907,20 +3014,20 @@
             
             if (options.list.enable) {
                 this.state('app.'+settings.route+'.list', {
-                    url: '',
+                    url: '?filter',
                     templateUrl: options.list.templateUrl
                 });
             }
             if (options.new.enable) {
                 this.state('app.'+settings.route+'.new', {
-                    url: '/new',
+                    url: '/new?filter',
                     templateUrl: options.new.templateUrl,
                     controller: options.new.controller
                 });
             }
             if (options.edit.enable) {
                 this.state('app.'+settings.route+'.edit', {
-                    url: '/:id/edit',
+                    url: '/:id/edit?filter',
                     templateUrl: options.edit.templateUrl,
                     controller: options.edit.controller
                 });
@@ -3055,18 +3162,22 @@
         $scope.$broadcast('headers-set');
         $scope.headersReady = true;
 
+        $scope.getFilter = function(){
+            return decodeURIComponent($window.location.search).replace("?filter=","");
+        }
+
         $scope.goNew = function () {
-            $state.go($state.current.name.replace('.list', '.new'));
+            $state.go($state.current.name.replace('.list', '.new'), {filter:$scope.getFilter()});
         };
 
         $scope.goToList = function () {
             if ($state.current.name.indexOf('.list') == -1) {
-                $state.go($state.current.name.replace('.edit', '.list').replace('.new', '.list'));
+                $state.go($state.current.name.replace('.edit', '.list').replace('.new', '.list'), {filter:$scope.getFilter()});
             }
         };
 
         $scope.edit = function (row) {
-            $state.go($state.current.name.replace(/\.list$/, '.edit'), { id: row.id, page: null });
+            $state.go($state.current.name.replace(/\.list$/, '.edit'), { id: row.id, page: null, filter:$scope.getFilter()});
         };
 
         $scope.delete = function (row) {
@@ -3135,7 +3246,7 @@
 
     var module = angular.module('letsAngular');
 
-    module.controller('CRUDEditController', ["$scope", "Restangular", "$stateParams", "$timeout", "$modal", "module", "$state", "$rootScope", "$q", "ngToast", "$http", "Upload", "fwModalService", function ($scope, Restangular, $stateParams, $timeout, $modal, module, $state, $rootScope, $q, ngToast, $http, Upload, fwModalService) {
+    module.controller('CRUDEditController', ["$scope", "Restangular", "$stateParams", "$timeout", "$modal", "module", "$state", "$rootScope", "$q", "ngToast", "$http", "Upload", "fwModalService", "$window", function ($scope, Restangular, $stateParams, $timeout, $modal, module, $state, $rootScope, $q, ngToast, $http, Upload, fwModalService, $window) {
         $scope.data = {};
         $scope.dataLoaded = false;
         $scope.module = module;
@@ -3283,6 +3394,10 @@
             }
         }
 
+        $scope.getFilter = function(){
+            return decodeURIComponent($window.location.search).replace("?filter=","");
+        }
+
         $scope.submit = function () {
             var $_scope = this;
             var err = {};
@@ -3338,7 +3453,7 @@
                     if ($scope.doAfterSave != undefined && typeof $scope.doAfterSave == 'function') {
                         $scope.doAfterSave(resp, typeSave);
                     } else {
-                        $state.go($state.current.name.replace('.edit', '.list').replace('.new', '.list'));
+                        $state.go($state.current.name.replace('.edit', '.list').replace('.new', '.list'), {filter:$scope.getFilter()});
                     }
                 }, function errorCallback(error) {
                     var messages = [];
@@ -3432,7 +3547,7 @@
                         if ($scope.doAfterSave != undefined && typeof $scope.doAfterSave == 'function') {
                             $scope.doAfterSave(resp, typeSave);
                         } else {
-                            $state.go($state.current.name.replace('.edit', '.list').replace('.new', '.list'));
+                            $state.go($state.current.name.replace('.edit', '.list').replace('.new', '.list'), {filter:$scope.getFilter()});
                         }
                     }, function errorCallback(error) {
 
@@ -3497,7 +3612,7 @@
         };
 
         $scope.cancel = function () {
-            $state.go($state.current.name.replace('.edit', '.list').replace('.new', '.list'));
+            $state.go($state.current.name.replace('.edit', '.list').replace('.new', '.list'), {filter:$scope.getFilter()});
         };
 
         $scope.autocompleteModels = {};

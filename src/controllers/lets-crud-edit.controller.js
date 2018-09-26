@@ -3,7 +3,7 @@
 
     var module = angular.module('letsAngular');
 
-    module.controller('CRUDEditController', function ($scope, Restangular, $stateParams, $timeout, $modal, module, $state, $rootScope, $q, ngToast, $http, Upload, fwModalService) {
+    module.controller('CRUDEditController', function ($scope, Restangular, $stateParams, $timeout, $modal, module, $state, $rootScope, $q, ngToast, $http, Upload, fwModalService, $window) {
         $scope.data = {};
         $scope.dataLoaded = false;
         $scope.module = module;
@@ -151,6 +151,10 @@
             }
         }
 
+        $scope.getFilter = function(){
+            return decodeURIComponent($window.location.search).replace("?filter=","");
+        }
+
         $scope.submit = function () {
             var $_scope = this;
             var err = {};
@@ -206,7 +210,7 @@
                     if ($scope.doAfterSave != undefined && typeof $scope.doAfterSave == 'function') {
                         $scope.doAfterSave(resp, typeSave);
                     } else {
-                        $state.go($state.current.name.replace('.edit', '.list').replace('.new', '.list'));
+                        $state.go($state.current.name.replace('.edit', '.list').replace('.new', '.list'), {filter:$scope.getFilter()});
                     }
                 }, function errorCallback(error) {
                     var messages = [];
@@ -300,7 +304,7 @@
                         if ($scope.doAfterSave != undefined && typeof $scope.doAfterSave == 'function') {
                             $scope.doAfterSave(resp, typeSave);
                         } else {
-                            $state.go($state.current.name.replace('.edit', '.list').replace('.new', '.list'));
+                            $state.go($state.current.name.replace('.edit', '.list').replace('.new', '.list'), {filter:$scope.getFilter()});
                         }
                     }, function errorCallback(error) {
 
@@ -365,7 +369,7 @@
         };
 
         $scope.cancel = function () {
-            $state.go($state.current.name.replace('.edit', '.list').replace('.new', '.list'));
+            $state.go($state.current.name.replace('.edit', '.list').replace('.new', '.list'), {filter:$scope.getFilter()});
         };
 
         $scope.autocompleteModels = {};

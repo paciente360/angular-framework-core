@@ -14,9 +14,11 @@
                 route: '&'
             },
             controller: function ($scope) {
-                $scope.data = {};
+                
             },
             link: function (scope, $el) {
+
+                scope.data = {};
 
                 var fields = angular.copy(scope.fields());
 
@@ -195,6 +197,9 @@
 
                             if (scope.data[field.name]){
                                 filterData[field.name] = scope.data[field.name];
+                                if(field.autocomplete){
+                                    filterData[field.name+"_label"] = scope.data[field.name+".label"].label;
+                                }
                             }
                         });
                         scope.objFilter = {data:{filter:filterData}};
