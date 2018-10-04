@@ -214,7 +214,7 @@
                     }
                 }, function errorCallback(error) {
                     var messages = [];
-
+                    
                     function findLabel(name) {
                         for (var _x in $_scope.headers.fields) {
                             var field = $_scope.headers.fields[_x];
@@ -251,21 +251,27 @@
                                 inclusion: 'O campo %s não foi incluído na lista',
                                 exclusion: 'O campo %s não pode ser excluído',
                                 uniqueness: 'O campo %s está repetido com o de outro registro',
+                                'custom.email':'Este email não é válido'
                             }
 
                             // debugger;
                             _.each(codes, function (code, key) {
                                 var _name = findLabel(key);
 
-                                var _message = friendlyErrors[code].replace('%s', _name);
-                                // debugger;
-                                // console.log(code, key);
-                                messages.push(_message);
+                                if(typeof code === 'string'){
+                                    code = [code];
+                                }
+                                
+                                _.each(code, function (type_err, key) {
+                                    var _message = friendlyErrors[type_err].replace('%s', _name);                                
+                                    messages.push(_message);
+                                })
+
                             })
                         }
 
                     }
-
+                    
                     ngToast.warning(messages.join("<br />"));
                 });
             } else {
