@@ -208,7 +208,7 @@
                         scope.objFilter = {data:filterData};
                     }
 
-                    $rootScope.$broadcast('refreshGRID');
+                    $rootScope.$broadcast('refreshGRID', false, true);
                 }
 
                 scope.openBuscaAvancada = function(){

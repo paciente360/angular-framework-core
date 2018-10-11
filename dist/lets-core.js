@@ -2103,116 +2103,20 @@
     angular.module('letsAngular')
         .directive('crudList', crudList);
 
-    crudList.$inject = ['$window', 'jQuery', 'Backbone', 'Backgrid', 'appSettings', 'fwObjectService', '$timeout'];
+    crudList.$inject = ['$window', 'jQuery', 'Backbone', 'Backgrid', 'appSettings', 'fwObjectService', '$timeout', '$state'];
 
-    function crudList($window, jQuery, Backbone, Backgrid, appSettings, fwObjectService, $timeout) {
+    function crudList($window, jQuery, Backbone, Backgrid, appSettings, fwObjectService, $timeout, $state) {
         return {
             scope: {
                 crudListSettings: '&',
                 crudListDependenciesData: '&',
                 app: '=',
             },
-            controller: ["$scope", "$state", function ($scope, $state) {
+            controller: ["$scope", function ($scope) {
                 $scope.route = null;
 
-                $scope.$on('refreshGRID', function (event, start) {
-
-                    $timeout(function(){
-                        var grid = $scope.$el.attr('grid');
-                        var $scopeFilter = $('div[crud-filter][grid="'+grid+'"] input').scope();
-
-                        if(start){
-                            if (grid=="main" && $window.location.search){
-                                var params = {};
-                                decodeURIComponent($window.location.search).replace("?filter=","").split('&').forEach(function(elm, idx){
-                                    var p = elm.split("=");
-
-                                    if (p[0].split("_ini").length > 1){
-
-                                        var attr = p[0].replace("_ini","");
-                                        if(!params[attr]){
-                                            params[attr] = {};
-                                        }
-                                        params[attr].ini = p[1];
-
-                                    }else if (p[0].split("_fim").length > 1){
-
-                                        var attr = p[0].replace("_fim","");
-                                        if(!params[attr]){
-                                            params[attr] = {};
-                                        }
-                                        params[attr].fim = p[1];
-
-                                    }else{
-                                        params[p[0]] = p[1];
-                                    }
-                                });
-
-                                // console.log(params);
-
-                                if (params.q){
-                                    $scopeFilter.data.q = params.q;
-                                    $scopeFilter.objFilter = {data:params};
-                                }else{
-                                    $scopeFilter.showBuscaAvancada = true;
-                                    $scopeFilter.objFilter = {data:{filter:params}};
-
-                                    Object.keys(params).forEach(function(par){
-                                        if(par.split("_label").length > 1){
-                                            $scopeFilter.data[par.replace("_label","")+".label"] = {id:params[par.replace("_label","")], label:params[par]};
-                                        }else{
-                                            if (typeof(params[par])=="object"){
-                                                $scopeFilter.data[par+"_ini"] = new Date(params[par].ini);
-                                                $scopeFilter.data[par+"_fim"] = new Date(params[par].fim);
-                                            }else{
-                                                $scopeFilter.data[par] = params[par];
-                                            }
-                                        }
-                                    });
-                                }
-                            }
-
-                        }else{
-                            if (grid=="main"){
-                                var url="";
-                                if($scopeFilter.objFilter && $scopeFilter.objFilter.data.q){
-                                    url = "q="+$scopeFilter.objFilter.data.q;
-                                }
-
-                                if($scopeFilter.objFilter && $scopeFilter.objFilter.data.filter && Object.keys($scopeFilter.objFilter.data.filter).length>0){
-                                    var str = [];
-                                    for (var key in $scopeFilter.objFilter.data.filter) {
-
-                                        if (typeof($scopeFilter.objFilter.data.filter[key])=="object"){
-                                            if ($scopeFilter.objFilter.data.filter[key].ini){
-                                                str.push(key+"_ini="+$scopeFilter.objFilter.data.filter[key].ini);
-                                            }
-
-                                            if ($scopeFilter.objFilter.data.filter[key].fim){
-                                                str.push(key+"_fim="+$scopeFilter.objFilter.data.filter[key].fim);
-                                            }
-                                        }else{
-                                            str.push(key+"="+$scopeFilter.objFilter.data.filter[key]);
-                                        }
-                                        
-                                    }
-                                    url = str.join("&");
-                                }
-
-                                $state.transitionTo($state.$current.name, {filter: url}, {
-                                    location: true,
-                                    inherit: true,
-                                    relative: $state.$current,
-                                    notify: false
-                                });
-                                
-                            }
-                        }
-
-                        $scope.pageableCRUDModel.fetch( angular.copy($scopeFilter.objFilter) );
-                        
-                    });
-
+                $scope.$on('refreshGRID', function (event, start, filter) {
+                    $scope.pageableCRUDModel.fetch(null, start, filter);
                 });
             }],
             link: function (scope, $el, attrs) {
@@ -2569,14 +2473,14 @@
                             className: rowClasses.join(' '),
                         });
 
-                        // Join default classes and custom classes (headers.tableClass) if exists
-                        var defaultClasses = 'table table-striped table-editable no-margin mb-sm';
-                        
-                        var _tableClass = (scope.$parent.$parent.headers.tableClass)
-                            ? [defaultClasses, scope.$parent.$parent.headers.tableClass].join(' ')
-                            : defaultClasses;
+                        var _tableClass = 'table table-striped table-editable no-margin mb-sm';
 
-                            var pageableGrid = new Backgrid.Grid({
+                        // Join default classes and custom classes (headers.tableClass) if exists
+                        if(settings.tableClass){
+                            _tableClass+=" "+settings.tableClass;
+                        }
+
+                        var pageableGrid = new Backgrid.Grid({
                             row: ClickableRow,
                             columns: columns,
                             collection: collection,
@@ -2612,24 +2516,147 @@
                             }
                         });
 
-                        function _returnPageGridWithSort() {
-                            if (settings.fields[1]) {
-                                if (settings.fields[1].type === 'string') return pageableGrid.render().sort(settings.fields[1].name, 'ascending').$el;
-                                return pageableGrid.render().$el;
-                            }
-                            else return pageableGrid.render().$el;
-                        }
+                        scope.$el.find('.table-container').html('').append(pageableGrid.render().$el).append(paginator.render().$el);
 
-                        scope.$el.find('.table-container').html('').append(_returnPageGridWithSort()).append(paginator.render().$el);
+                        scope.$broadcast('refreshGRID', true);
+                    }
+
+                    var oldFetch = angular.copy(pageableCRUDModel.fetch);
+                    pageableCRUDModel.fetch = function(options, start, filter){
+
+                        $timeout(function(){
+                            if (filter){
+                                pageableCRUDModel.state.currentPage = 1;
+                            }
+
+                            var grid = scope.$el.attr('grid');
+                            var $scopeFilter = $('div[crud-filter][grid="'+grid+'"] input').scope();
+
+                            if(start){
+                                if (grid=="main" && $window.location.search){
+                                    var params = {};
+                                    decodeURIComponent($window.location.search).replace("?filter=","").split('&').forEach(function(elm, idx){
+                                        var p = elm.split("=");
+
+                                        if (p[0].split("_ini").length > 1){
+
+                                            var attr = p[0].replace("_ini","");
+                                            if(!params[attr]){
+                                                params[attr] = {};
+                                            }
+                                            params[attr].ini = p[1];
+
+                                        }else if (p[0].split("_fim").length > 1){
+
+                                            var attr = p[0].replace("_fim","");
+                                            if(!params[attr]){
+                                                params[attr] = {};
+                                            }
+                                            params[attr].fim = p[1];
+
+                                        }else{
+                                            params[p[0]] = p[1];
+                                        }
+                                    });
+
+                                    // console.log(params);
+
+                                    if (params.q){
+                                        $scopeFilter.data.q = params.q;
+                                        $scopeFilter.objFilter = {data:params};
+                                    }else{
+                                        $scopeFilter.showBuscaAvancada = true;
+                                        $scopeFilter.objFilter = {data:{filter:params}};
+
+                                        Object.keys(params).forEach(function(par){
+                                            if(par.split("_label").length > 1){
+                                                $scopeFilter.data[par.replace("_label","")+".label"] = {id:params[par.replace("_label","")], label:params[par]};
+                                            }else{
+                                                if (typeof(params[par])=="object"){
+                                                    $scopeFilter.data[par+"_ini"] = new Date(params[par].ini);
+                                                    $scopeFilter.data[par+"_fim"] = new Date(params[par].fim);
+                                                }else{
+                                                    $scopeFilter.data[par] = params[par];
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+
+                            }else{
+                                if (grid=="main"){
+
+                                    var str = [];
+
+                                    if($scopeFilter.objFilter && $scopeFilter.objFilter.data.q){
+                                        str.push("q="+$scopeFilter.objFilter.data.q);
+                                    }
+
+                                    if($scopeFilter.objFilter && $scopeFilter.objFilter.data.filter && Object.keys($scopeFilter.objFilter.data.filter).length>0){
+                                        for (var key in $scopeFilter.objFilter.data.filter) {
+                                            if (typeof($scopeFilter.objFilter.data.filter[key])=="object"){
+                                                if ($scopeFilter.objFilter.data.filter[key].ini){
+                                                    str.push(key+"_ini="+$scopeFilter.objFilter.data.filter[key].ini);
+                                                }
+
+                                                if ($scopeFilter.objFilter.data.filter[key].fim){
+                                                    str.push(key+"_fim="+$scopeFilter.objFilter.data.filter[key].fim);
+                                                }
+                                            }else{
+                                                if (key!="p"){
+                                                    str.push(key+"="+$scopeFilter.objFilter.data.filter[key]);
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    if(pageableCRUDModel.state && pageableCRUDModel.state.currentPage && pageableCRUDModel.state.currentPage!=1){
+                                        str.push("p="+pageableCRUDModel.state.currentPage);
+                                    }
+
+                                    var url = str.join("&");
+
+                                    $state.transitionTo($state.$current.name, {filter: url}, {
+                                        location: true,
+                                        inherit: true,
+                                        relative: $state.$current,
+                                        notify: false
+                                    });
+                                    
+                                }
+                            }
+
+                            if($scopeFilter.objFilter && $scopeFilter.objFilter.data.q){
+                                options = options || {data:{}};
+                                options.data = options.data || {};
+                                options.data.q = $scopeFilter.objFilter.data.q;
+
+                                if ($scopeFilter.objFilter.data.p && start){
+                                    options.data.page = $scopeFilter.objFilter.data.p;
+                                    pageableCRUDModel.state.currentPage = parseInt($scopeFilter.objFilter.data.p);
+                                }
+                            }
+
+                            if($scopeFilter.objFilter && $scopeFilter.objFilter.data.filter && Object.keys($scopeFilter.objFilter.data.filter).length>0){
+                                options = options || {data:{}};
+                                options.data = options.data || {};
+                                options.data.filter = $scopeFilter.objFilter.data.filter;
+
+                                if ($scopeFilter.objFilter.data.filter.p && start){
+                                    options.data.page = $scopeFilter.objFilter.data.filter.p;
+                                    pageableCRUDModel.state.currentPage = parseInt($scopeFilter.objFilter.data.filter.p);
+                                }
+                            }
+
+                            oldFetch.call(pageableCRUDModel, options);
+                        });
                     }
 
                     jQuery($window).on('sn:resize', function () {
                         createBackgrid(pageableCRUDModel);
                     });
 
-                    createBackgrid(pageableCRUDModel);
-
-                    scope.$broadcast('refreshGRID', true);
+                    createBackgrid(pageableCRUDModel);                    
                 }
 
                 var listener = scope.$parent.$watch('headers', function (newValue, oldValue) {
@@ -2926,7 +2953,7 @@
                         scope.objFilter = {data:filterData};
                     }
 
-                    $rootScope.$broadcast('refreshGRID');
+                    $rootScope.$broadcast('refreshGRID', false, true);
                 }
 
                 scope.openBuscaAvancada = function(){
