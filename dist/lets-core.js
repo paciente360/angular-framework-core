@@ -2544,7 +2544,7 @@
                                             if(!params[attr]){
                                                 params[attr] = {};
                                             }
-                                            params[attr].ini = p[1];
+                                            params[attr].ini = decodeURIComponent(p[1]);
 
                                         }else if (p[0].split("_fim").length > 1){
 
@@ -2552,10 +2552,10 @@
                                             if(!params[attr]){
                                                 params[attr] = {};
                                             }
-                                            params[attr].fim = p[1];
+                                            params[attr].fim = decodeURIComponent(p[1]);
 
                                         }else{
-                                            params[p[0]] = p[1];
+                                            params[p[0]] = decodeURIComponent(p[1]);
                                         }
                                     });
 
@@ -2573,8 +2573,8 @@
                                                 $scopeFilter.data[par.replace("_label","")+".label"] = {id:params[par.replace("_label","")], label:params[par]};
                                             }else{
                                                 if (typeof(params[par])=="object"){
-                                                    $scopeFilter.data[par+"_ini"] = new Date(params[par].ini);
-                                                    $scopeFilter.data[par+"_fim"] = new Date(params[par].fim);
+                                                    $scopeFilter.data[par+"_ini"] = moment(params[par].ini, 'DD/MM/YYYY').toDate();
+                                                    $scopeFilter.data[par+"_fim"] = moment(params[par].fim, 'DD/MM/YYYY').toDate();
                                                 }else{
                                                     $scopeFilter.data[par] = params[par];
                                                 }
@@ -2928,10 +2928,16 @@
 
                                 if (scope.data[field.name+"_ini"]){
                                     values.ini = scope.data[field.name+"_ini"];
+                                    if (field.type=="date"){
+                                        values.ini = scope.getDateFormated(values.ini);
+                                    }
                                 }
 
                                 if (scope.data[field.name+"_fim"]){
                                     values.fim = scope.data[field.name+"_fim"];
+                                    if (field.type=="date"){
+                                        values.fim = scope.getDateFormated(values.fim);
+                                    }
                                 }
 
                                 if (Object.keys(values).length>0){
@@ -2942,6 +2948,11 @@
 
                             if (scope.data[field.name]){
                                 filterData[field.name] = scope.data[field.name];
+
+                                if(field.type=="date"){
+                                    filterData[field.name] = scope.getDateFormated(filterData[field.name])
+                                }
+
                                 if(field.autocomplete){
                                     filterData[field.name+"_label"] = scope.data[field.name+".label"].label;
                                 }
@@ -2959,6 +2970,10 @@
                 scope.openBuscaAvancada = function(){
                     scope.showBuscaAvancada = !scope.showBuscaAvancada;
                     scope.filterData();
+                }
+
+                scope.getDateFormated = function(dt){
+                    return moment(dt).format('DD/MM/YYYY');
                 }
 
             }

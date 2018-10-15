@@ -445,7 +445,7 @@
                                             if(!params[attr]){
                                                 params[attr] = {};
                                             }
-                                            params[attr].ini = p[1];
+                                            params[attr].ini = decodeURIComponent(p[1]);
 
                                         }else if (p[0].split("_fim").length > 1){
 
@@ -453,10 +453,10 @@
                                             if(!params[attr]){
                                                 params[attr] = {};
                                             }
-                                            params[attr].fim = p[1];
+                                            params[attr].fim = decodeURIComponent(p[1]);
 
                                         }else{
-                                            params[p[0]] = p[1];
+                                            params[p[0]] = decodeURIComponent(p[1]);
                                         }
                                     });
 
@@ -474,8 +474,8 @@
                                                 $scopeFilter.data[par.replace("_label","")+".label"] = {id:params[par.replace("_label","")], label:params[par]};
                                             }else{
                                                 if (typeof(params[par])=="object"){
-                                                    $scopeFilter.data[par+"_ini"] = new Date(params[par].ini);
-                                                    $scopeFilter.data[par+"_fim"] = new Date(params[par].fim);
+                                                    $scopeFilter.data[par+"_ini"] = moment(params[par].ini, 'DD/MM/YYYY').toDate();
+                                                    $scopeFilter.data[par+"_fim"] = moment(params[par].fim, 'DD/MM/YYYY').toDate();
                                                 }else{
                                                     $scopeFilter.data[par] = params[par];
                                                 }
