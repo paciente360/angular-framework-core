@@ -44,6 +44,14 @@
                             return resp.data;
                         },
                         parseState: function (resp, queryParams, state, options) {
+
+                            $timeout(function(){
+                                var infoTotal = jQuery("<ul class='pull-right total-records'>");
+                                infoTotal.append(jQuery("<li>").html("Registros na página: "+resp.total_entries+" / "+resp.total_count));
+                                scope.$el.find('.table-container .backgrid-paginator ul.total-records').remove();
+                                scope.$el.find('.table-container .backgrid-paginator').append(infoTotal);
+                            });
+
                             return { totalRecords: resp.total_count };
                         },
                     };

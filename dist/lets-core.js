@@ -2143,6 +2143,14 @@
                             return resp.data;
                         },
                         parseState: function (resp, queryParams, state, options) {
+
+                            $timeout(function(){
+                                var infoTotal = jQuery("<ul class='pull-right total-records'>");
+                                infoTotal.append(jQuery("<li>").html("Registros na página: "+resp.total_entries+" / "+resp.total_count));
+                                scope.$el.find('.table-container .backgrid-paginator ul.total-records').remove();
+                                scope.$el.find('.table-container .backgrid-paginator').append(infoTotal);
+                            });
+
                             return { totalRecords: resp.total_count };
                         },
                     };
@@ -2826,7 +2834,7 @@
                         var deps = field.autocomplete_dependencies;
                         for (var x in deps) {
                             var dep = deps[x];
-                            if (scope.data[dep.field] == undefined || scope.data[dep.field] == null) {
+                            if (scope.data[dep.field] == undefined || scope.data[dep.field] == null || scope.data[dep.field] == "null") {
         
                                 var text = 'Selecione antes o(a) ' + dep.label;
         
@@ -2866,9 +2874,10 @@
                         }
         
                         scope.resource.customGET(route, queries).then(function (data) {
-                            if (field.customOptions.select == true) {
+                            // if (field.customOptions.select == true) {
+                                data.unshift({ id: "null", label: '[Em Branco]' });
                                 data.unshift({ id: null, label: '--- Selecione ---' });
-                            }
+                            // }
                             deferred.resolve(data);
                         }, function errorCallback() {
                             return deferred.reject();
@@ -2879,6 +2888,7 @@
                         var options = angular.copy(field.customOptions.list) || [];
         
                         if (field.customOptions.select == true) {
+                            options.unshift({ id: "null", label: '[Em Branco]' });
                             options.unshift({ id: null, label: '--- Selecione ---' });
                         }
         
