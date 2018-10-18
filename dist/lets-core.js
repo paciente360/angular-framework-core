@@ -1588,7 +1588,7 @@
                         
                         if (field.type == 'date'){
                             if(field.customOptions.hour){
-                                return moment(data[field.name]).format('DD/MM/YYYY HH:MM');                                
+                                return moment(data[field.name]).format('DD/MM/YYYY HH:mm');                                
                             }else{
                                 return moment(data[field.name]).format('DD/MM/YYYY');       
                             }     
