@@ -3,7 +3,7 @@
         <tr>
             <th ng-repeat="field in detail.fields | filter: {viewable: true}" ng-if="detail.modal===true">{{field.label}}</th>
             <th ng-repeat="field in detail.fields | filter: {editable: true}" ng-if="!detail.modal">{{field.label}}</th>
-            <th class="text-center">Ações</th>
+            <th ng-if="detail.settings  === undefined|| (detail.settings.edit || detail.settings.delete)"  class="text-center">Ações</th>
         </tr>
     </thead>
     <tbody>
@@ -17,11 +17,11 @@
                 <fw-input ng-if="!detail.modal" fw-data="detail_data"></fw-input>
             </td>
 
-            <td class="text-center">
-                <button type="button" class="btn btn-edit btn-default" ng-if="detail.modal===true" ng-click="editDetailData('tabs_session', detail_key, detail_data)">
+            <td ng-if="detail.settings  === undefined|| (detail.settings.edit || detail.settings.delete)" class="text-center">                
+                <button type="button" class="btn btn-edit btn-default" ng-if="detail.settings  === undefined || (detail.modal===true && detail.settings.edit)" ng-click="editDetailData('tabs_session', detail_key, detail_data)">
                     <span class="glyphicon glyphicon-pencil"></span>
                 </button>
-                <button type="button" class="btn btn-delete btn-default" ng-click="deleteDetailData(detail_data, detail_key)">
+                <button type="button" class="btn btn-delete btn-default" ng-if="detail.settings  === undefined || detail.settings.delete " ng-click="deleteDetailData(detail_data, detail_key)">
                     <span class="glyphicon glyphicon-remove"></span>
                 </button>
             </td>

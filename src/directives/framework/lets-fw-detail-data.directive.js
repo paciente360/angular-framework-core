@@ -17,9 +17,18 @@
                    
                     scope.formatData = function (data, field) {
 
-                        if (field.autocomplete !== false){
+                        if (field.autocomplete !== false){                            
                             return data[field.name+ '.label'].label || data[field.name+ '.label'];
+                        }                        
+                        
+                        if (field.type == 'date'){
+                            if(field.customOptions.hour){
+                                return moment(data[field.name]).format('DD/MM/YYYY HH:MM');                                
+                            }else{
+                                return moment(data[field.name]).format('DD/MM/YYYY');       
+                            }     
                         }
+
 
                         if (field.type == 'boolean'){
                             if (field.customOptions.statusFalseText && field.customOptions.statusTrueText){
