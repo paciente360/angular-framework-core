@@ -189,15 +189,25 @@
                                     });
                                 }
                                 else if (field.type == 'date') {
+                                    
                                     var format = "DD/MM/YYYY";
+                                    var modelFormat="YYYY/M/D";
+                                    var displayInUTC=true;
+                                    
                                     if (field.customOptions.monthpicker !== undefined) {
                                         format = "MM/YYYY";
                                     }
 
+                                    if (field.customOptions.timestamp) {
+                                        modelFormat="YYYY/M/D HH:mm:ss.SSS";
+                                        displayInUTC=false;
+                                    }
+
                                     cellOptions.cell = Backgrid.Extension.MomentCell.extend({
-                                        modelFormat: "YYYY/M/D",
+                                        modelFormat: modelFormat,
                                         displayLang: "pt-br",
-                                        displayFormat: format
+                                        displayFormat: format,
+                                        displayInUTC: displayInUTC
                                     });
                                 }
                                 else if (field.customOptions.enum != undefined) {
