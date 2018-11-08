@@ -36,6 +36,10 @@
                             });
                         }
 
+                        if (field.type == 'password'){
+                            field.notnull = false;
+                        }
+
                         if (field.customOptions && field.customOptions.file != undefined) {
                             $scope.fileName = data[field.name];
                         }
@@ -533,9 +537,13 @@
         };
         
         $scope.newDetail = function (tab, data, id, route) {
+
+            if (!tab.fixedRoute){
+                tab.fixedRoute = tab.route;
+            }
             
             var parentModel = $scope.headers.parent_route ? $scope.headers.parent_route : $scope.headers.route.toLowerCase();
-            tab.route = (id ? route : module+tab.route);
+            tab.route = (id ? route : $scope.headers.route+tab.fixedRoute);
             tab.id = id ? id : null;
 
             fwModalService.createCRUDModal(tab, null, "CRUDEditDetailController");

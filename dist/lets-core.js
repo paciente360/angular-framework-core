@@ -3350,6 +3350,10 @@
                             });
                         }
 
+                        if (field.type == 'password'){
+                            field.notnull = false;
+                        }
+
                         if (field.customOptions && field.customOptions.file != undefined) {
                             $scope.fileName = data[field.name];
                         }
@@ -3847,9 +3851,13 @@
         };
         
         $scope.newDetail = function (tab, data, id, route) {
+
+            if (!tab.fixedRoute){
+                tab.fixedRoute = tab.route;
+            }
             
             var parentModel = $scope.headers.parent_route ? $scope.headers.parent_route : $scope.headers.route.toLowerCase();
-            tab.route = (id ? route : module+tab.route);
+            tab.route = (id ? route : $scope.headers.route+tab.fixedRoute);
             tab.id = id ? id : null;
 
             fwModalService.createCRUDModal(tab, null, "CRUDEditDetailController");
@@ -3973,6 +3981,10 @@
                         });
                     }
 
+                    if (field.type == 'password'){
+                        field.notnull = false;
+                    }
+
                 }
                 $scope.data = data;
                 if (typeof(window.setProgressFile)=="function"){
@@ -3986,12 +3998,43 @@
             $timeout(function(){
                 $scope.$emit('data-new-detail'); 
             },50);
+
+            for (var y in $scope.headers.fields) {
+                var field = $scope.headers.fields[y];
+                if (field.type == 'boolean') {
+                    $scope.data[field.name] = field.customOptions.default ? field.customOptions.default : false;
+                }
+            }
+        }
+
+        if(headers.modal_id){
+            $rootScope.$emit('open:'+headers.modal_id+'', $scope);
         }
 
         $timeout(function () {
             
             $scope.submit = function () {
-                if (this.crudForm.$valid) {
+
+                var $_scope = this;
+                var err = {};
+                var _data = $_scope.data;
+
+                _.each($_scope.headers.fields, function (field, key) {
+                    if (field.type == 'password' && field.name.indexOf('confirm') != 0) {
+                        if (_data['confirm_' + field.name] != _data[field.name]) {
+                            err.password = 'Os campos "' + field.label + '" e "Confirmar ' + field.label + '" não são iguais';
+                        }
+                    }
+                });
+
+                if (Object.keys(err).length > 0) {
+                    var _messages = new Array();
+                    _.each(err, function (value, key) {
+                        _messages.push(value);
+                    });
+                    ngToast.warning(_messages.join("<br />"));
+                }
+                else if (this.crudForm.$valid) {
                     if (!$scope.data.id) {
                         var response = $scope.resource.customPOST($scope.data, $stateParams.id);
                     } else {
