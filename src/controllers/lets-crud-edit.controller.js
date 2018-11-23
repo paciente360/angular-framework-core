@@ -163,15 +163,19 @@
             var $_scope = this;
             var err = {};
             var _data = $_scope.data;
-
+ 
             _.each($_scope.headers.fields, function (field, key) {
+                if(!_data[field.name] && _data[field.name] != 0 && !field.notnull && field.type === 'number'){
+                    _data[field.name] = null;
+                }
+
                 if (field.type == 'password' && field.name.indexOf('confirm') != 0) {
                     if (_data['confirm_' + field.name] != _data[field.name]) {
                         err.password = 'Os campos "' + field.label + '" e "Confirmar ' + field.label + '" não são iguais';
                     }
                 }
             });
-
+            
             _.each($_scope.data, function (dataValue, key) {
                 if (key.indexOf('.label') !== -1 && _data.id === undefined) {
                     if (typeof dataValue !== 'object' && dataValue !== '') {
