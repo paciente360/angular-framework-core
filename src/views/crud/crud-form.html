@@ -36,7 +36,7 @@
         <tab ng-if="!detail.hide" ng-repeat="(detail_key, detail) in headers.tabs_session" heading="{{detail.label}}">
             <fieldset>
                 <ng-include src="'lets/views/crud/crud-detail-list.html'"></ng-include>
-                <div class="pull-right">
+                <div ng-if="(!detail.settings) || (detail.settings && detail.settings.add)" class="pull-right">
                     <button type="button" class="btn btn-primary button-new" origin="tabs_session" detail="{{detail_key}}" form-modal="{{detail.modal ? true : false}}">
                         <span class="icon fa fa-plus"></span>Novo Registro
                     </button>
