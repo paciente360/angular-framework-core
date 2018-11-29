@@ -16,12 +16,12 @@
                 $scope.alreadySent = false;
                 var controll = true;
 
-                window.setProgressFile = function(){
+                $scope.$on('setProgressFile',function(){                    
                     if ($scope.data[$scope.field.name] != undefined && $scope.data[$scope.field.name] != null && ($scope.fileName && $scope.fileName != 'fileName')) {
                         $scope.defaultProgress = 100;
                         $scope.alreadySent = true;
                     }
-                };
+                });
 
                 $scope.pushName = function () {
                     $timeout(function () {

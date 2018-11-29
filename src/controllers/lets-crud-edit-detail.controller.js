@@ -49,11 +49,11 @@
 
                 }
                 $scope.data = data;
-                if (typeof(window.setProgressFile)=="function"){
-                    $timeout(function(){
-                        window.setProgressFile();
-                    });
-                }
+                
+                $timeout(function(){
+                    $scope.$broadcast('setProgressFile');
+                });
+
                 $scope.$emit('data-loaded-detail');
             });
         }else{

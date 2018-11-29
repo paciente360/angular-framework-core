@@ -48,12 +48,10 @@
 
                     $scope.data = data;
                     $scope.dataLoaded = true;
-
-                    if (typeof(window.setProgressFile)=="function"){
-                        $timeout(function(){
-                            window.setProgressFile();
-                        });
-                    }
+                    
+                    $timeout(function(){
+                        $scope.$broadcast('setProgressFile');
+                    });
 
                     $scope.$emit('data-loaded');
                 });

@@ -41,12 +41,11 @@
         $rootScope.$on('cancel-modal', function (event, res) {
             $modalInstance.dismiss('cancel');
         });
-
+        
         $timeout(function(){
-            if (typeof(window.setProgressFile)=="function"){
-                window.setProgressFile();
-            }
+            $scope.$broadcast('setProgressFile');
         });
+
 
     });
 
