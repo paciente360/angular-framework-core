@@ -1156,12 +1156,12 @@
                 $scope.alreadySent = false;
                 var controll = true;
 
-                window.setProgressFile = function(){
+                $scope.$on('setProgressFile',function(){                    
                     if ($scope.data[$scope.field.name] != undefined && $scope.data[$scope.field.name] != null && ($scope.fileName && $scope.fileName != 'fileName')) {
                         $scope.defaultProgress = 100;
                         $scope.alreadySent = true;
                     }
-                };
+                });
 
                 $scope.pushName = function () {
                     $timeout(function () {
@@ -3302,12 +3302,11 @@
         $rootScope.$on('cancel-modal', function (event, res) {
             $modalInstance.dismiss('cancel');
         });
-
+        
         $timeout(function(){
-            if (typeof(window.setProgressFile)=="function"){
-                window.setProgressFile();
-            }
+            $scope.$broadcast('setProgressFile');
         });
+
 
     }]);
 
@@ -3362,12 +3361,10 @@
 
                     $scope.data = data;
                     $scope.dataLoaded = true;
-
-                    if (typeof(window.setProgressFile)=="function"){
-                        $timeout(function(){
-                            window.setProgressFile();
-                        });
-                    }
+                    
+                    $timeout(function(){
+                        $scope.$broadcast('setProgressFile');
+                    });
 
                     $scope.$emit('data-loaded');
                 });
@@ -3991,11 +3988,11 @@
 
                 }
                 $scope.data = data;
-                if (typeof(window.setProgressFile)=="function"){
-                    $timeout(function(){
-                        window.setProgressFile();
-                    });
-                }
+                
+                $timeout(function(){
+                    $scope.$broadcast('setProgressFile');
+                });
+
                 $scope.$emit('data-loaded-detail');
             });
         }else{
