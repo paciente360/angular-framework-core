@@ -28,6 +28,9 @@
 
                     } else if (scope.field.customOptions.cnpj != undefined) {
                         $el.mask('99.999.999/9999-99');
+                        
+                    } else if (scope.field.customOptions.customMask != undefined) {
+                        $el.mask(scope.field.customOptions.customMask);
 
                     } else if (scope.field.type == 'float') {
                         if (scope.field.customOptions.currency != undefined) {
