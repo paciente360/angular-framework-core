@@ -196,90 +196,103 @@
             }
             else if (this.crudForm.$valid) {
 
-                if($_scope.headers.tabs){
-                    Object.keys($_scope.headers.tabs).forEach(function(tab){
-                        if($_scope.data[tab]){
-                            delete $_scope.data[tab];
+                function next(){
+                    if($_scope.headers.tabs){
+                        Object.keys($_scope.headers.tabs).forEach(function(tab){
+                            if($_scope.data[tab]){
+                                delete $_scope.data[tab];
+                            }
+                        });
+                    }
+
+                    if (!$stateParams.id) {
+                        var response = $scope.$parent.resource.post($scope.data);
+                        var typeSave = "new";
+                    } else {
+                        var response = $scope.data.put();
+                        var typeSave = "edit";
+                    }
+
+                    response.then(function (resp) {
+
+                        function next(){
+                            $state.go($state.current.name.replace('.edit', '.list').replace('.new', '.list'), {filter:$scope.getFilter()});
                         }
+
+                        $scope.$emit('after save', next, resp, typeSave);
+                        if (!$rootScope.$$listenerCount["after save"]){
+                            next();
+                        }
+
+                    }, function errorCallback(error) {
+                        var messages = [];
+                        
+                        function findLabel(name) {
+                            for (var _x in $_scope.headers.fields) {
+                                var field = $_scope.headers.fields[_x];
+
+                                if (field.name == name) {
+                                    return field.label;
+                                }
+                            }
+                        }
+
+                        if (error.status == 422) { //hook for loopback
+                            if (error.data.error.code == 'CANT_SAVE_MODEL') {
+                                messages.push(error.data.error.message);
+                            } else {
+                                var codes = error.data.error.details.codes;
+
+                                var friendlyErrors = {
+                                    presence: 'O campo %s é obrigatório',
+                                    absence: 'O campo %s deve ser nulo',
+                                    'unknown-property': 'O campo %s não foi definido',
+                                    length: {
+                                        min: 'O campo %s é muito curto',
+                                        max: 'O campo %s é muito longo',
+                                        is: 'O campo %s está com tamanho inválido',
+                                    },
+                                    common: {
+                                        blank: 'O campo %s está em branco',
+                                        'null': 'O campo %s está nulo',
+                                    },
+                                    numericality: {
+                                        'int': 'O campo %s não é um número inteiro',
+                                        'number': 'O campo %s não é um número',
+                                    },
+                                    inclusion: 'O campo %s não foi incluído na lista',
+                                    exclusion: 'O campo %s não pode ser excluído',
+                                    uniqueness: 'O campo %s está repetido com o de outro registro',
+                                    'custom.email':'Este email não é válido'
+                                }
+
+                                // debugger;
+                                _.each(codes, function (code, key) {
+                                    var _name = findLabel(key);
+
+                                    if(typeof code === 'string'){
+                                        code = [code];
+                                    }
+                                    
+                                    _.each(code, function (type_err, key) {
+                                        var _message = friendlyErrors[type_err].replace('%s', _name);                                
+                                        messages.push(_message);
+                                    })
+
+                                })
+                            }
+
+                        }
+                        
+                        ngToast.warning(messages.join("<br />"));
                     });
                 }
 
-                if (!$stateParams.id) {
-                    var response = $scope.$parent.resource.post($scope.data);
-                    var typeSave = "new";
-                } else {
-                    var response = $scope.data.put();
-                    var typeSave = "edit";
+                $scope.$emit('before save', next);
+                if (!$rootScope.$$listenerCount["before save"]){
+                    next();
                 }
 
-                response.then(function (resp) {
-                    if ($scope.doAfterSave != undefined && typeof $scope.doAfterSave == 'function') {
-                        $scope.doAfterSave(resp, typeSave);
-                    } else {
-                        $state.go($state.current.name.replace('.edit', '.list').replace('.new', '.list'), {filter:$scope.getFilter()});
-                    }
-                }, function errorCallback(error) {
-                    var messages = [];
-                    
-                    function findLabel(name) {
-                        for (var _x in $_scope.headers.fields) {
-                            var field = $_scope.headers.fields[_x];
-
-                            if (field.name == name) {
-                                return field.label;
-                            }
-                        }
-                    }
-
-                    if (error.status == 422) { //hook for loopback
-                        if (error.data.error.code == 'CANT_SAVE_MODEL') {
-                            messages.push(error.data.error.message);
-                        } else {
-                            var codes = error.data.error.details.codes;
-
-                            var friendlyErrors = {
-                                presence: 'O campo %s é obrigatório',
-                                absence: 'O campo %s deve ser nulo',
-                                'unknown-property': 'O campo %s não foi definido',
-                                length: {
-                                    min: 'O campo %s é muito curto',
-                                    max: 'O campo %s é muito longo',
-                                    is: 'O campo %s está com tamanho inválido',
-                                },
-                                common: {
-                                    blank: 'O campo %s está em branco',
-                                    'null': 'O campo %s está nulo',
-                                },
-                                numericality: {
-                                    'int': 'O campo %s não é um número inteiro',
-                                    'number': 'O campo %s não é um número',
-                                },
-                                inclusion: 'O campo %s não foi incluído na lista',
-                                exclusion: 'O campo %s não pode ser excluído',
-                                uniqueness: 'O campo %s está repetido com o de outro registro',
-                                'custom.email':'Este email não é válido'
-                            }
-
-                            // debugger;
-                            _.each(codes, function (code, key) {
-                                var _name = findLabel(key);
-
-                                if(typeof code === 'string'){
-                                    code = [code];
-                                }
-                                
-                                _.each(code, function (type_err, key) {
-                                    var _message = friendlyErrors[type_err].replace('%s', _name);                                
-                                    messages.push(_message);
-                                })
-
-                            })
-                        }
-
-                    }
-                    
-                    ngToast.warning(messages.join("<br />"));
-                });
             } else {
                 // debugger;
                 var messages = [];
