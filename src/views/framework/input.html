@@ -115,7 +115,7 @@
         <input ng-model-options="{fieldInfo: field}" type="hidden" class="form-control" name="temp_filename" ng-model="$parent.data[field.name]"
           id="{{field.name}}" ng-required="field.notnull" autocomplete="off" />
         <span class="input-group-btn">
-                <button ng-if="alreadySent == false || field.customOptions.only_upload == true" type="file" ngf-select="upload($file, $invalidFiles)" class="btn btn-default btn-upload">
+                <button ng-if="alreadySent == false || field.customOptions.only_upload == true" type="file" accept="{{ field.customOptions.file.acceptedFiles ? field.customOptions.file.acceptedFiles.join(',')  : 'all'}}" ngf-pattern="'{{ field.customOptions.file.acceptedFiles ? field.customOptions.file.acceptedFiles.join('\',\'')  : 'all'}}'" ngf-select="upload($file, $invalidFiles)" class="btn btn-default btn-upload">
                     <i class="glyphicon glyphicon-upload"></i>
                 </button>
                 <button ng-if="alreadySent == true && (field.customOptions.only_upload != true)" ng-click="download(field, data.id)" type="button" class="btn btn-default">
