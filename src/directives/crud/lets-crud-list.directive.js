@@ -368,12 +368,14 @@
                             }
                         });
 
-                        columns.push({
-                            name: "actions",
-                            label: "Ações",
-                            sortable: false,
-                            cell: ActionCell
-                        });
+                        if (settings.settings.edit || settings.settings.delete){
+                            columns.push({
+                                name: "actions",
+                                label: "Ações",
+                                sortable: false,
+                                cell: ActionCell
+                            });
+                        }
 
                         if (scope.$parent.app.helpers.isScreen('xs')) {
 
@@ -484,6 +486,7 @@
                                         $scopeFilter.data.q = params.q;
                                         $scopeFilter.objFilter = {data:params};
                                     }else{
+                                        $scopeFilter = $scopeFilter||{};
                                         $scopeFilter.showBuscaAvancada = true;
                                         $scopeFilter.objFilter = {data:{filter:params}};
 
@@ -545,7 +548,7 @@
                                 }
                             }
 
-                            if($scopeFilter.objFilter && $scopeFilter.objFilter.data.q){
+                            if($scopeFilter && $scopeFilter.objFilter && $scopeFilter.objFilter.data.q){
                                 options = options || {data:{}};
                                 options.data = options.data || {};
                                 options.data.q = $scopeFilter.objFilter.data.q;

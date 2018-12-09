@@ -11,7 +11,8 @@
             replace: true,
             scope: {
                 fields: '&',
-                route: '&'
+                route: '&',
+                search:'&'
             },
             controller: function ($scope) {
                 
@@ -232,6 +233,11 @@
                 scope.getDateFormated = function(dt){
                     return moment(dt).format('DD/MM/YYYY');
                 }
+
+               if(scope.search()=="fixed"){
+                scope.showBuscaAvancada = true;
+                scope.hideInputSearch = true;
+               }
 
             }
         }

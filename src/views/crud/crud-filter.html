@@ -1,6 +1,6 @@
 <div class="filtros">
     <form ng-submit="filterData()">
-        <div class="busca row">
+        <div class="busca row" ng-if="!hideInputSearch">
             <div class="form-group col-sm-3" style="margin-bottom: 10px;">
                 <div class="fw-input-group input-group">
                     <input autocomplete="off" type="text" class="form-control" name="q" ng-model="data['q']" ng-disabled="showBuscaAvancada" placeholder="Buscar por..."/>

@@ -1142,964 +1142,6 @@
     'use strict';
 
     angular.module('letsAngular')
-        .directive('crudTabList', crudTabList);
-
-    crudTabList.$inject = ['jQuery'];
-
-    function crudTabList(jQuery) {
-        return {
-            scope: {
-                crudTabListData: '=',
-                crudTabListSettings: '&',
-                parentData: '='
-            },
-            templateUrl: 'lets/views/crud/crud-tab-list.html',
-            link: function (scope, $el) {
-    
-                setTimeout(function () {
-                    var settings = scope.crudTabListSettings();
-    
-                    scope.data = scope.parentData;
-                    scope.type = settings.type;
-                    scope.headers = settings.headers;
-                    scope.app = scope.$parent.app;
-                    if (scope.crudTabListData) {
-                        scope.extraData = scope.crudTabListData;
-                    }
-                }, 1000);
-            }
-        }
-    }
-})();
-
-
-
-(function () {
-    'use strict';
-
-    angular.module('letsAngular')
-        .directive('crudList', crudList);
-
-    crudList.$inject = ['$window', 'jQuery', 'Backbone', 'Backgrid', 'appSettings', 'fwObjectService', '$timeout', '$state'];
-
-    function crudList($window, jQuery, Backbone, Backgrid, appSettings, fwObjectService, $timeout, $state) {
-        return {
-            scope: {
-                crudListSettings: '&',
-                crudListDependenciesData: '&',
-                app: '=',
-            },
-            controller: ["$scope", function ($scope) {
-                $scope.route = null;
-
-                $scope.$on('refreshGRID', function (event, start, filter) {
-                    $scope.pageableCRUDModel.fetch(null, start, filter);
-                });
-            }],
-            link: function (scope, $el, attrs) {
-
-                scope.$el = $el;
-
-                function render() {
-                    var settings = scope.crudListSettings();
-                    settings.route = appSettings.API_URL + settings.url;
-                    scope.route = settings.route;
-
-                    Backgrid.InputCellEditor.prototype.attributes.class = 'form-control input-sm';
-
-                    var CRUDModel = Backbone.Model.extend({});
-
-                    var paramsPageable = {
-                        model: CRUDModel,
-                        url: settings.route + (!settings.pagerGeneral ? '/pager' : '/pagerGeneral'),
-                        state: {
-                            pageSize: 20
-                        },
-                        mode: 'server',
-                        parseRecords: function (resp, options) {
-                            return resp.data;
-                        },
-                        parseState: function (resp, queryParams, state, options) {
-
-                            $timeout(function(){
-                                var infoTotal = jQuery("<ul class='pull-right total-records'>");
-                                infoTotal.append(jQuery("<li>").html("Registros na página: "+resp.total_entries+" / "+resp.total_count));
-                                scope.$el.find('.table-container .backgrid-paginator ul.total-records').remove();
-                                scope.$el.find('.table-container .backgrid-paginator').append(infoTotal);
-                            });
-
-                            return { totalRecords: resp.total_count };
-                        },
-                    };
-                    
-                    if (settings.filterScope){
-                        paramsPageable.queryParams = {
-                            scope: settings.filterScope
-                        };
-                    }
-
-                    if (settings.sort){
-                        paramsPageable.state.sortKey = settings.sort.sortKey;
-                        if (settings.sort.order && settings.sort.order=="desc"){
-                            paramsPageable.state.order = 1;
-                        }
-                    }
-
-                    var PageableCRUDModel = Backbone.PageableCollection.extend(paramsPageable);
-
-                    var pageableCRUDModel = new PageableCRUDModel(),
-                        initialCRUDModel = pageableCRUDModel;
-
-                    scope.pageableCRUDModel = pageableCRUDModel;
-
-                    function createBackgrid(collection) {
-                        var columns = [];
-
-                        var StringFormatter = function () {};
-                        StringFormatter.prototype = new Backgrid.StringFormatter();
-
-                        _.extend(StringFormatter.prototype, {
-                            fromRaw: function (rawValue, b, c, d, e) {
-                                return rawValue;
-                            }
-                        });
-
-                        _.each(settings.fields, function (field, idx) {
-
-                            if (field.viewable) {
-                                var cellOptions = {
-                                    name: field.name,
-                                    label: field.label,
-                                    cell: 'string',
-                                    editable: false,
-                                    headers: field
-                                };
-
-                                if (field.type == 'boolean') {
-                                    cellOptions.sortable = false;
-                                    cellOptions.cell = Backgrid.Cell.extend({
-                                        className: "custom-situation-cell",
-                                        formatter: {
-                                            fromRaw: function (rawData, model) {
-                                                return rawData ? field.customOptions.statusTrueText : field.customOptions.statusFalseText;
-                                            },
-                                            toRaw: function (formattedData, model) {
-                                                return 'down';
-                                            }
-                                        }
-
-                                    });
-                                }
-                                else if (field.type == 'simplecolor') {
-                                    cellOptions.sortable = false;
-                                    cellOptions.cell = Backgrid.Cell.extend({
-                                        className: "custom-situation-cell",
-                                        initialize: function () {
-                                            Backgrid.Cell.prototype.initialize.apply(this, arguments);
-                                        },
-                                        render: function () {
-                                            this.$el.empty();
-                                            var formattedValue = '<cp-color class="color-picker" style="background-color: ' + this.model.attributes.cor + '"></cp-color>';
-                                            this.$el.append(formattedValue);
-                                            this.delegateEvents();
-                                            return this;
-                                        }
-                                    });
-                                }
-                                else if (field.type == 'custom') {
-                                    var customFormatter = {
-                                        fromRaw: field.toString,
-                                        toRaw: function (formattedData, model) {
-                                            return 'down';
-                                        }
-                                    };
-
-                                    cellOptions.sortable = false;
-                                    var _backgridCellExtend = Backgrid.Cell.extend({
-                                        className: "custom-cell",
-                                        formatter: customFormatter
-                                    });
-
-                                    _backgridCellExtend.initialize = function () {
-                                        Backgrid.Cell.prototype.initialize.apply(this, arguments);
-                                    };
-                                    _backgridCellExtend.render = function () {
-                                        this.$el.empty();
-                                        this.$el.data('model', this.model);
-                                        var formattedValue = customFormatter.fromRaw(this.model);
-                                        this.$el.append(formattedValue);
-                                        this.delegateEvents();
-                                        return this;
-                                    };
-
-                                    cellOptions.cell = Backgrid.Cell.extend(_backgridCellExtend);
-                                }
-                                else if (field.type == 'address') {
-                                    var addressFormatter = {
-                                        fromRaw: function (rawData, model) {
-                                            try {
-                                                return rawData.city + ' - ' + rawData.state;
-                                            } catch (err) {
-                                                return '';
-                                            }
-
-                                        },
-                                        toRaw: function (formattedData, model) {
-                                            return 'down';
-                                        }
-                                    };
-
-                                    var AddressCell = Backgrid.Cell.extend({
-                                        className: "address-cell",
-                                        formatter: addressFormatter
-
-                                    });
-
-                                    cellOptions.cell = AddressCell;
-
-                                }
-                                else if (field.type == 'float') {
-                                    cellOptions.cell = Backgrid.NumberCell.extend({
-                                        decimalSeparator: ',',
-                                        orderSeparator: '.'
-                                    });
-                                }
-                                else if (field.type == 'date') {
-                                    
-                                    var format = "DD/MM/YYYY";
-                                    var modelFormat="YYYY/M/D";
-                                    var displayInUTC=true;
-                                    
-                                    if (field.customOptions.monthpicker !== undefined) {
-                                        format = "MM/YYYY";
-                                    }
-
-                                    if (field.customOptions.timestamp) {
-                                        modelFormat="YYYY/M/D HH:mm:ss.SSS";
-                                        displayInUTC=false;
-                                    }
-
-                                    cellOptions.cell = Backgrid.Extension.MomentCell.extend({
-                                        modelFormat: modelFormat,
-                                        displayLang: "pt-br",
-                                        displayFormat: format,
-                                        displayInUTC: displayInUTC
-                                    });
-                                }
-                                else if (field.customOptions.enum != undefined) {
-
-                                    var enumOptions = [];
-                                    for (var _idx in field.customOptions.enum) {
-                                        var opt = field.customOptions.enum[_idx];
-                                        enumOptions.push([opt, _idx]);
-                                    }
-
-                                    cellOptions.cell = Backgrid.SelectCell.extend({
-                                        optionValues: enumOptions
-                                    });
-
-                                }
-                                else if (field.autocomplete == true) {
-
-                                    if (field.customOptions && field.customOptions.list!=undefined) {
-
-                                        cellOptions.cell = Backgrid.Cell.extend({
-                                            className: "custom-situation-cell-select",
-                                            formatter: {
-                                                fromRaw: function (rawData, model) {
-
-                                                    var label="";
-                                                    field.customOptions.list.forEach(function(item){
-                                                        if (item.id==rawData){
-                                                            label = item.label;
-                                                        }
-                                                    });
-
-                                                    return label;
-
-                                                },
-                                                toRaw: function (formattedData, model) {
-                                                    return 'down';
-                                                }
-                                            }
-    
-                                        });
-
-
-                                    }else{
-                                        cellOptions.name = cellOptions.name + '.label';
-                                    }
-                                    
-                                }
-
-                                columns.push(cellOptions);
-                            }
-                        });
-
-                        var ActionCell = Backgrid.Cell.extend({
-                            className: 'text-right btn-column' + (settings.tab == true ? ' detail' : ''),
-                            template: function () {
-                                var _buttons = [];
-                                if (!settings.tab) {
-                                    if (settings.settings.edit) {
-                                        _buttons.push(jQuery('<button type="button" class="btn btn-default btn-edit"><span class="glyphicon glyphicon-pencil"></span></button>'));
-                                    }
-                                    if (settings.settings.delete) {
-                                        _buttons.push(jQuery('<button type="button" class="btn btn-default btn-delete"><span class="glyphicon glyphicon-remove"></span></button>'));
-                                    }
-                                } else {
-                                    if (settings.settings) {
-                                        if (settings.settings.edit) {
-                                            var _btnEditDetail = jQuery('<button type="button" class="btn btn-default btn-edit-detail"><span class="glyphicon glyphicon-pencil"></span></button>');
-                                            _btnEditDetail.attr('data-route', settings.url);
-                                            _buttons.push(_btnEditDetail);
-                                        }
-                                        if (settings.settings.delete) {
-                                            var _btnDeleteDetail = jQuery('<button type="button" class="btn btn-default btn-delete-detail"><span class="glyphicon glyphicon-remove"></span></button>');
-                                            _btnDeleteDetail.attr('data-route', settings.url);
-                                            _buttons.push(_btnDeleteDetail);
-                                        }
-                                    } else {
-                                        var _btnDeleteDetail = jQuery('<button type="button" class="btn btn-default btn-delete-detail"><span class="glyphicon glyphicon-remove"></span></button>');
-                                        _btnDeleteDetail.attr('data-route', settings.url);
-                                        _buttons.push(_btnDeleteDetail);
-                                    }
-                                }
-
-                                var _group = jQuery('<div class="btn-group" role="group">');
-                                _group.append(_buttons);
-
-                                return _group;
-                            },
-                            events: {
-                               
-                            },
-                            editRow: function (e) {
-                                e.preventDefault();
-                            },
-                            render: function () {
-                                var _html = this.template(this.model.toJSON());
-                                this.$el.html(_html);
-                                this.$el.data('model', this.model);
-                                this.$el.find('button.btn-edit').click(function (e) {
-                                    e.stopPropagation();
-
-                                    var $scope = angular.element(this).scope();
-                                    if (settings.tab) {
-                                        $scope.$parent.edit($(this).closest('td').data('model').attributes);
-                                    } else {
-                                        $scope.edit($(this).closest('td').data('model').attributes);
-                                    }
-
-
-                                });
-
-                                this.$el.find('button.btn-delete').click(function (e) {
-                                    e.stopPropagation();
-
-                                    var _confirm = window.confirm('Deseja realmente excluir esse registro?');
-
-                                    if (_confirm) {
-                                        var $scope = angular.element(this).scope();
-                                        if (settings.tab) {
-                                            $scope.$parent.delete($(this).closest('td').data('model').attributes);
-                                        } else {
-                                            $scope.delete($(this).closest('td').data('model').attributes);
-                                        }
-                                    }
-
-                                });
-
-                                this.$el.find('button.btn-delete-detail').click(function (e) {
-                                    e.stopPropagation();
-
-                                    var _confirm = window.confirm('Deseja realmente excluir esse registro?');
-
-                                    if (_confirm) {
-                                        var $scope = angular.element(this).scope();
-                                        var route = jQuery(this).attr('data-route');
-
-                                        if (settings.tab) {
-                                            $scope.$parent.deleteDetail(route, $(this).closest('td').data('model').attributes);
-                                        } else {
-                                            $scope.deleteDetail(route, $(this).closest('td').data('model').attributes);
-                                        }
-                                    }
-                                    
-                                });
-
-                                this.$el.find('button.btn-edit-detail').click(function (e) {
-                                    e.stopPropagation();
-                  
-                                    var $scope = angular.element(this).scope();
-                                    var tab = $.parseJSON($(this).closest('.table-container').attr('tab-config'));
-                                    var row = $(this).closest('td').data('model').attributes;
-                                    var route = $(this).attr('data-route');
-                  
-                                    $scope.newDetail(tab, $scope.data, row.id, route);
-                                });
-                               
-                                this.delegateEvents();
-                                return this;
-                            }
-                        });
-
-                        columns.push({
-                            name: "actions",
-                            label: "Ações",
-                            sortable: false,
-                            cell: ActionCell
-                        });
-
-                        if (scope.$parent.app.helpers.isScreen('xs')) {
-
-                            columns.splice(3, 1);
-                        }
-
-                        var rowClasses = [];
-                        if (settings.tab == true) {
-                            rowClasses.push('detail');
-                        }
-                        if (settings.settings != undefined && !settings.settings.edit) {
-                            rowClasses.push('cant-edit');
-                        }
-
-                        var ClickableRow = Backgrid.Row.extend({
-                            className: rowClasses.join(' '),
-                        });
-
-                        var _tableClass = 'table table-striped table-editable no-margin mb-sm';
-
-                        // Join default classes and custom classes (headers.tableClass) if exists
-                        if(settings.tableClass){
-                            _tableClass+=" "+settings.tableClass;
-                        }
-
-                        var pageableGrid = new Backgrid.Grid({
-                            row: ClickableRow,
-                            columns: columns,
-                            collection: collection,
-                            className: _tableClass
-                        });
-
-                        var paginator = new Backgrid.Extension.Paginator({
-
-                            slideScale: 0.25, // Default is 0.5
-
-                            // Whether sorting should go back to the first page
-                            goBackFirstOnSort: false, // Default is true
-
-                            collection: collection,
-
-                            controls: {
-                                rewind: {
-                                    label: '<i class="fa fa-angle-double-left fa-lg"></i>',
-                                    title: 'First'
-                                },
-                                back: {
-                                    label: '<i class="fa fa-angle-left fa-lg"></i>',
-                                    title: 'Previous'
-                                },
-                                forward: {
-                                    label: '<i class="fa fa-angle-right fa-lg"></i>',
-                                    title: 'Next'
-                                },
-                                fastForward: {
-                                    label: '<i class="fa fa-angle-double-right fa-lg"></i>',
-                                    title: 'Last'
-                                }
-                            }
-                        });
-
-                        scope.$el.find('.table-container').html('').append(pageableGrid.render().$el).append(paginator.render().$el);
-
-                        scope.$broadcast('refreshGRID', true);
-                    }
-
-                    var oldFetch = angular.copy(pageableCRUDModel.fetch);
-                    pageableCRUDModel.fetch = function(options, start, filter){
-
-                        $timeout(function(){
-                            if (filter){
-                                pageableCRUDModel.state.currentPage = 1;
-                            }
-
-                            var grid = scope.$el.attr('grid');
-                            var $scopeFilter = $('div[crud-filter][grid="'+grid+'"] input').scope();
-
-                            if(start){
-                                if (grid=="main" && $window.location.search){
-                                    var params = {};
-                                    decodeURIComponent($window.location.search).replace("?filter=","").split('&').forEach(function(elm, idx){
-                                        var p = elm.split("=");
-
-                                        if (p[0].split("_ini").length > 1){
-
-                                            var attr = p[0].replace("_ini","");
-                                            if(!params[attr]){
-                                                params[attr] = {};
-                                            }
-                                            params[attr].ini = decodeURIComponent(p[1]);
-
-                                        }else if (p[0].split("_fim").length > 1){
-
-                                            var attr = p[0].replace("_fim","");
-                                            if(!params[attr]){
-                                                params[attr] = {};
-                                            }
-                                            params[attr].fim = decodeURIComponent(p[1]);
-
-                                        }else{
-                                            params[p[0]] = decodeURIComponent(p[1]);
-                                        }
-                                    });
-
-                                    // console.log(params);
-
-                                    if (params.q){
-                                        $scopeFilter.data.q = params.q;
-                                        $scopeFilter.objFilter = {data:params};
-                                    }else{
-                                        $scopeFilter.showBuscaAvancada = true;
-                                        $scopeFilter.objFilter = {data:{filter:params}};
-
-                                        Object.keys(params).forEach(function(par){
-                                            if(par.split("_label").length > 1){
-                                                $scopeFilter.data[par.replace("_label","")+".label"] = {id:params[par.replace("_label","")], label:params[par]};
-                                            }else{
-                                                if (typeof(params[par])=="object"){
-                                                    $scopeFilter.data[par+"_ini"] = moment(params[par].ini, 'DD/MM/YYYY').toDate();
-                                                    $scopeFilter.data[par+"_fim"] = moment(params[par].fim, 'DD/MM/YYYY').toDate();
-                                                }else{
-                                                    $scopeFilter.data[par] = params[par];
-                                                }
-                                            }
-                                        });
-                                    }
-                                }
-
-                            }else{
-                                if (grid=="main"){
-
-                                    var str = [];
-
-                                    if($scopeFilter.objFilter && $scopeFilter.objFilter.data.q){
-                                        str.push("q="+$scopeFilter.objFilter.data.q);
-                                    }
-
-                                    if($scopeFilter.objFilter && $scopeFilter.objFilter.data.filter && Object.keys($scopeFilter.objFilter.data.filter).length>0){
-                                        for (var key in $scopeFilter.objFilter.data.filter) {
-                                            if (typeof($scopeFilter.objFilter.data.filter[key])=="object"){
-                                                if ($scopeFilter.objFilter.data.filter[key].ini){
-                                                    str.push(key+"_ini="+$scopeFilter.objFilter.data.filter[key].ini);
-                                                }
-
-                                                if ($scopeFilter.objFilter.data.filter[key].fim){
-                                                    str.push(key+"_fim="+$scopeFilter.objFilter.data.filter[key].fim);
-                                                }
-                                            }else{
-                                                if (key!="p"){
-                                                    str.push(key+"="+$scopeFilter.objFilter.data.filter[key]);
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    if(pageableCRUDModel.state && pageableCRUDModel.state.currentPage && pageableCRUDModel.state.currentPage!=1){
-                                        str.push("p="+pageableCRUDModel.state.currentPage);
-                                    }
-
-                                    var url = str.join("&");
-
-                                    $state.transitionTo($state.$current.name, {filter: url}, {
-                                        location: true,
-                                        inherit: true,
-                                        relative: $state.$current,
-                                        notify: false
-                                    });
-                                    
-                                }
-                            }
-
-                            if($scopeFilter.objFilter && $scopeFilter.objFilter.data.q){
-                                options = options || {data:{}};
-                                options.data = options.data || {};
-                                options.data.q = $scopeFilter.objFilter.data.q;
-
-                                if ($scopeFilter.objFilter.data.p && start){
-                                    options.data.page = $scopeFilter.objFilter.data.p;
-                                    pageableCRUDModel.state.currentPage = parseInt($scopeFilter.objFilter.data.p);
-                                }
-                            }
-
-                            if($scopeFilter.objFilter && $scopeFilter.objFilter.data.filter && Object.keys($scopeFilter.objFilter.data.filter).length>0){
-                                options = options || {data:{}};
-                                options.data = options.data || {};
-                                options.data.filter = $scopeFilter.objFilter.data.filter;
-
-                                if ($scopeFilter.objFilter.data.filter.p && start){
-                                    options.data.page = $scopeFilter.objFilter.data.filter.p;
-                                    pageableCRUDModel.state.currentPage = parseInt($scopeFilter.objFilter.data.filter.p);
-                                }
-                            }
-
-                            oldFetch.call(pageableCRUDModel, options);
-                        });
-                    }
-
-                    jQuery($window).on('sn:resize', function () {
-                        createBackgrid(pageableCRUDModel);
-                    });
-
-                    createBackgrid(pageableCRUDModel);                    
-                }
-
-                var listener = scope.$parent.$watch('headers', function (newValue, oldValue) {
-                    if (newValue != null) {
-                        var settings = scope.crudListSettings();
-                        if (settings.tab == true) {
-                            var listenerData = scope.$parent.$watch('data', function (newValue, oldValue) {
-                                  if (newValue.id != undefined) {
-                                      render();
-                                      listenerData();
-                                      listener();
-                                  }
-                            });
-                        } else {
-                            render();
-                            listener();
-                        }
-
-                    }
-                });
-            }
-        }
-    }
-})();
-
-(function () {
-    'use strict';
-
-    angular.module('letsAngular')
-        .directive('crudForm', crudForm);
-
-    crudForm.$inject = ['jQuery', '$timeout', 'appSettings'];
-
-    function crudForm(jQuery, $timeout, appSettings) {
-        return {
-            replace: false,
-            link: function (scope, $el) {
-
-                /* Dropzone */
-                //Set options for dropzone
-                for (var y in scope.headers.fields) {
-                    var field = scope.headers.fields[y];
-                    if (field.customOptions.file) {
-                        scope.dzOptions = {
-                            url: appSettings.API_URL + 'upload/' + field.customOptions.file.container + '/upload',
-                            acceptedFiles: field.customOptions.file.acceptedFiles,
-                            maxFilesize: '25',
-                            maxFiles: '1',
-                            uploadMultiple: false,
-                            addRemoveLinks: true,
-                        };
-                    }
-                }
-                //Apply methods for dropzone
-                scope.dzMethods = {};
-                scope.removeNewFile = function () {
-                    scope.dzMethods.removeFile(scope.newFile); //We got $scope.newFile from 'addedfile' event callback
-                }
-                /* Dropzone */
-
-
-                jQuery($el).on('click', '.button-new', function () {
-                    var detail = jQuery(this).attr('detail');
-                    var origin = jQuery(this).attr('origin');
-                    var modal = jQuery(this).attr('form-modal')=="true";
-
-                    scope.newDetailData(origin, detail, modal);
-                });
-
-                $timeout(function () {
-                    $el.find('.tab-group .nav-tabs li:first').find('a').click();
-                    $el.find(':input[type!="hidden"]:first').focus();
-                }, 500);
-
-                $($el).parsley({
-                    priorityEnabled: false,
-                    errorsContainer: function (el) {
-                        return el.$element.closest(".input-container");
-                    }
-                });
-
-            }
-        }
-    }
-})();
-
-(function () {
-    'use strict';
-
-    angular.module('letsAngular').directive('crudFilter', crudFilter);
-
-    crudFilter.$inject = ['$q','Restangular', '$timeout', '$rootScope'];
-
-    function crudFilter($q, Restangular, $timeout, $rootScope) {
-        return {
-            templateUrl: 'lets/views/crud/crud-filter.html',
-            replace: true,
-            scope: {
-                fields: '&',
-                route: '&'
-            },
-            controller: ["$scope", function ($scope) {
-                
-            }],
-            link: function (scope, $el) {
-
-                scope.data = {};
-
-                var fields = angular.copy(scope.fields());
-
-                scope.fieldsFilter = [];
-                fields.forEach(function(field, idx){
-                    if (!field.filter)return;
-
-                    field.disabled = false;
-                    field.notnull = false;
-                    field.name = field.name;
-
-                    if (field.customOptions.file){
-                        delete field.customOptions.file;
-                    }
-
-                    if (field.type=="text"){
-                        field.type = "string";
-                    }
-                    else if (field.type=="boolean"){
-                        field.type = "number";
-                        field.autocomplete = true;
-                        field.customOptions = {
-                            "list":[
-                                {"id":"false",  "label":field.customOptions.statusFalseText},
-                                {"id":"true",  "label":field.customOptions.statusTrueText}
-                            ],
-                            "select":true
-                        };
-                    }
-                    else if (field.type=="date"){
-                        
-                        if (typeof(field.filter)=="object" && field.filter.range===true){
-                            
-                            var _ini = angular.copy(field);
-                            _ini.name +="_ini";
-                            _ini.label +=" (início)";
-                            scope.fieldsFilter.push(_ini);
-
-                            var _fim = angular.copy(field);
-                            _fim.name +="_fim";
-                            _fim.label +=" (Fim)";
-                            scope.fieldsFilter.push(_fim);
-
-                            return;
-                        }
-
-                    }
-
-                    scope.fieldsFilter.push(field);
-                });
-
-                scope.autocomplete = function (field, val) {
-                    scope.resource = Restangular.all(scope.route());
-
-                    var queries = [];
-        
-                    var deferred = $q.defer();
-        
-                    if (field.autocomplete_dependencies.length > 0) {
-                        var deps = field.autocomplete_dependencies;
-                        for (var x in deps) {
-                            var dep = deps[x];
-                            if (scope.data[dep.field] == undefined || scope.data[dep.field] == null || scope.data[dep.field] == "null") {
-        
-                                var text = 'Selecione antes o(a) ' + dep.label;
-        
-                                var data = [];
-                                data.push({ id: null, label: text });
-        
-                                deferred.resolve(data);
-        
-                                return deferred.promise;
-                            } else {
-                                queries[dep.field] = scope.data[dep.field];
-                            }
-                        }
-                    }
-        
-                    val = val.trim();
-                    if (val.length == 0 || field.customOptions.select == true) {
-                        val = '[blank]';
-                    }
-        
-                    if (field.customOptions.general !== undefined) {
-                        
-                        scope.resource.customGET('general/autocomplete/' + field.customOptions.general + '/' + val, queries).then(function (data) {
-                            deferred.resolve(data);
-                        }, function errorCallback() {
-                            return deferred.reject();
-                        });
-
-                    } else if (field.customOptions.list == undefined) {
-                        
-                        var route = 'autocomplete/' + field.name+ '/' + val;
-        
-                        if (field.customOptions.select == true){
-                            queries["limit"] = 0;
-                        }else{
-                            queries["limit"] = 20;
-                        }
-        
-                        scope.resource.customGET(route, queries).then(function (data) {
-                            // if (field.customOptions.select == true) {
-                                data.unshift({ id: "null", label: '[Em Branco]' });
-                                data.unshift({ id: null, label: '--- Selecione ---' });
-                            // }
-                            deferred.resolve(data);
-                        }, function errorCallback() {
-                            return deferred.reject();
-                        });
-
-                    } else {
-        
-                        var options = angular.copy(field.customOptions.list) || [];
-        
-                        if (field.customOptions.select == true) {
-                            options.unshift({ id: "null", label: '[Em Branco]' });
-                            options.unshift({ id: null, label: '--- Selecione ---' });
-                        }
-        
-                        deferred.resolve(options);
-                    }
-                    return deferred.promise;
-                }
-
-                scope.autocompleteSelect = function ($item, $model, $label) {
-            
-                    var _data = this.data;
-        
-                    if (_data==undefined){
-                        _data = {};
-                    }
-        
-                    if ($item.id != null && typeof $item.id != 'integer' || (typeof $item.id == 'integer' && $item.id > 0)) {
-                        _data[this.field.name] = $item.id;
-                    }
-                    else if ($item.id == null) {
-                        _data[this.field.name] = _data[this.field.name + '.label'] = null;
-                    }
-                    else {
-                        _data[this.field.name + '.label'] = null;
-                        return false;
-                    }
-        
-                    this.data = _data;
-        
-                    var field = this.field;
-                    $timeout(function(){
-                        jQuery('#'+field.name).trigger('keyup');
-                    });
-                }
-
-                scope.filterData = function(){
-
-                    scope.objFilter = undefined;
-
-                    var filterData = {};
-                    if (scope.showBuscaAvancada){
-                        fields.forEach(function(field, idx){
-
-                            if (typeof(field.filter)=="object" && field.filter.range===true){
-
-                                var values = {};
-
-                                if (scope.data[field.name+"_ini"]){
-                                    values.ini = scope.data[field.name+"_ini"];
-                                    if (field.type=="date"){
-                                        values.ini = scope.getDateFormated(values.ini);
-                                    }
-                                }
-
-                                if (scope.data[field.name+"_fim"]){
-                                    values.fim = scope.data[field.name+"_fim"];
-                                    if (field.type=="date"){
-                                        values.fim = scope.getDateFormated(values.fim);
-                                    }
-                                }
-
-                                if (Object.keys(values).length>0){
-                                    filterData[field.name] = values;
-                                }
-                                
-                            }
-
-                            if (scope.data[field.name]){
-                                filterData[field.name] = scope.data[field.name];
-
-                                if(field.type=="date"){
-                                    filterData[field.name] = scope.getDateFormated(filterData[field.name])
-                                }
-
-                                if(field.autocomplete){
-                                    filterData[field.name+"_label"] = scope.data[field.name+".label"].label;
-                                }
-                            }
-                        });
-                        scope.objFilter = {data:{filter:filterData}};
-                    }else{
-                        filterData.q = scope.data.q;
-                        scope.objFilter = {data:filterData};
-                    }
-
-                    $rootScope.$broadcast('refreshGRID', false, true);
-                }
-
-                scope.openBuscaAvancada = function(){
-                    scope.showBuscaAvancada = !scope.showBuscaAvancada;
-                    scope.filterData();
-                }
-
-                scope.getDateFormated = function(dt){
-                    return moment(dt).format('DD/MM/YYYY');
-                }
-
-            }
-        }
-    }
-})();
-(function () {
-    'use strict';
-
-    angular.module('letsAngular')
-        .directive('crudBreadcrumb', crudBreadcrumb);
-
-    crudBreadcrumb.$inject = [];
-
-    function crudBreadcrumb() {
-        return {
-            restrict: 'E',
-            templateUrl: 'lets/views/framework/breadcrumb.html',
-            replace: true,
-            link: function (scope, $el) {
-
-            }
-        }
-    }
-})();
-(function () {
-    'use strict';
-
-    angular.module('letsAngular')
         .directive('fwUpload', fwUpload);
 
     fwUpload.$inject = ['$timeout'];
@@ -3031,6 +2073,973 @@
     }
 })();
 
+(function () {
+    'use strict';
+
+    angular.module('letsAngular')
+        .directive('crudTabList', crudTabList);
+
+    crudTabList.$inject = ['jQuery'];
+
+    function crudTabList(jQuery) {
+        return {
+            scope: {
+                crudTabListData: '=',
+                crudTabListSettings: '&',
+                parentData: '='
+            },
+            templateUrl: 'lets/views/crud/crud-tab-list.html',
+            link: function (scope, $el) {
+    
+                setTimeout(function () {
+                    var settings = scope.crudTabListSettings();
+    
+                    scope.data = scope.parentData;
+                    scope.type = settings.type;
+                    scope.headers = settings.headers;
+                    scope.app = scope.$parent.app;
+                    if (scope.crudTabListData) {
+                        scope.extraData = scope.crudTabListData;
+                    }
+                }, 1000);
+            }
+        }
+    }
+})();
+
+
+
+(function () {
+    'use strict';
+
+    angular.module('letsAngular')
+        .directive('crudList', crudList);
+
+    crudList.$inject = ['$window', 'jQuery', 'Backbone', 'Backgrid', 'appSettings', 'fwObjectService', '$timeout', '$state'];
+
+    function crudList($window, jQuery, Backbone, Backgrid, appSettings, fwObjectService, $timeout, $state) {
+        return {
+            scope: {
+                crudListSettings: '&',
+                crudListDependenciesData: '&',
+                app: '=',
+            },
+            controller: ["$scope", function ($scope) {
+                $scope.route = null;
+
+                $scope.$on('refreshGRID', function (event, start, filter) {
+                    $scope.pageableCRUDModel.fetch(null, start, filter);
+                });
+            }],
+            link: function (scope, $el, attrs) {
+
+                scope.$el = $el;
+
+                function render() {
+                    var settings = scope.crudListSettings();
+                    settings.route = appSettings.API_URL + settings.url;
+                    scope.route = settings.route;
+
+                    Backgrid.InputCellEditor.prototype.attributes.class = 'form-control input-sm';
+
+                    var CRUDModel = Backbone.Model.extend({});
+
+                    var paramsPageable = {
+                        model: CRUDModel,
+                        url: settings.route + (!settings.pagerGeneral ? '/pager' : '/pagerGeneral'),
+                        state: {
+                            pageSize: 20
+                        },
+                        mode: 'server',
+                        parseRecords: function (resp, options) {
+                            return resp.data;
+                        },
+                        parseState: function (resp, queryParams, state, options) {
+
+                            $timeout(function(){
+                                var infoTotal = jQuery("<ul class='pull-right total-records'>");
+                                infoTotal.append(jQuery("<li>").html("Registros na página: "+resp.total_entries+" / "+resp.total_count));
+                                scope.$el.find('.table-container .backgrid-paginator ul.total-records').remove();
+                                scope.$el.find('.table-container .backgrid-paginator').append(infoTotal);
+                            });
+
+                            return { totalRecords: resp.total_count };
+                        },
+                    };
+                    
+                    if (settings.filterScope){
+                        paramsPageable.queryParams = {
+                            scope: settings.filterScope
+                        };
+                    }
+
+                    if (settings.sort){
+                        paramsPageable.state.sortKey = settings.sort.sortKey;
+                        if (settings.sort.order && settings.sort.order=="desc"){
+                            paramsPageable.state.order = 1;
+                        }
+                    }
+
+                    var PageableCRUDModel = Backbone.PageableCollection.extend(paramsPageable);
+
+                    var pageableCRUDModel = new PageableCRUDModel(),
+                        initialCRUDModel = pageableCRUDModel;
+
+                    scope.pageableCRUDModel = pageableCRUDModel;
+
+                    function createBackgrid(collection) {
+                        var columns = [];
+
+                        var StringFormatter = function () {};
+                        StringFormatter.prototype = new Backgrid.StringFormatter();
+
+                        _.extend(StringFormatter.prototype, {
+                            fromRaw: function (rawValue, b, c, d, e) {
+                                return rawValue;
+                            }
+                        });
+
+                        _.each(settings.fields, function (field, idx) {
+
+                            if (field.viewable) {
+                                var cellOptions = {
+                                    name: field.name,
+                                    label: field.label,
+                                    cell: 'string',
+                                    editable: false,
+                                    headers: field
+                                };
+
+                                if (field.type == 'boolean') {
+                                    cellOptions.sortable = false;
+                                    cellOptions.cell = Backgrid.Cell.extend({
+                                        className: "custom-situation-cell",
+                                        formatter: {
+                                            fromRaw: function (rawData, model) {
+                                                return rawData ? field.customOptions.statusTrueText : field.customOptions.statusFalseText;
+                                            },
+                                            toRaw: function (formattedData, model) {
+                                                return 'down';
+                                            }
+                                        }
+
+                                    });
+                                }
+                                else if (field.type == 'simplecolor') {
+                                    cellOptions.sortable = false;
+                                    cellOptions.cell = Backgrid.Cell.extend({
+                                        className: "custom-situation-cell",
+                                        initialize: function () {
+                                            Backgrid.Cell.prototype.initialize.apply(this, arguments);
+                                        },
+                                        render: function () {
+                                            this.$el.empty();
+                                            var formattedValue = '<cp-color class="color-picker" style="background-color: ' + this.model.attributes.cor + '"></cp-color>';
+                                            this.$el.append(formattedValue);
+                                            this.delegateEvents();
+                                            return this;
+                                        }
+                                    });
+                                }
+                                else if (field.type == 'custom') {
+                                    var customFormatter = {
+                                        fromRaw: field.toString,
+                                        toRaw: function (formattedData, model) {
+                                            return 'down';
+                                        }
+                                    };
+
+                                    cellOptions.sortable = false;
+                                    var _backgridCellExtend = Backgrid.Cell.extend({
+                                        className: "custom-cell",
+                                        formatter: customFormatter
+                                    });
+
+                                    _backgridCellExtend.initialize = function () {
+                                        Backgrid.Cell.prototype.initialize.apply(this, arguments);
+                                    };
+                                    _backgridCellExtend.render = function () {
+                                        this.$el.empty();
+                                        this.$el.data('model', this.model);
+                                        var formattedValue = customFormatter.fromRaw(this.model);
+                                        this.$el.append(formattedValue);
+                                        this.delegateEvents();
+                                        return this;
+                                    };
+
+                                    cellOptions.cell = Backgrid.Cell.extend(_backgridCellExtend);
+                                }
+                                else if (field.type == 'address') {
+                                    var addressFormatter = {
+                                        fromRaw: function (rawData, model) {
+                                            try {
+                                                return rawData.city + ' - ' + rawData.state;
+                                            } catch (err) {
+                                                return '';
+                                            }
+
+                                        },
+                                        toRaw: function (formattedData, model) {
+                                            return 'down';
+                                        }
+                                    };
+
+                                    var AddressCell = Backgrid.Cell.extend({
+                                        className: "address-cell",
+                                        formatter: addressFormatter
+
+                                    });
+
+                                    cellOptions.cell = AddressCell;
+
+                                }
+                                else if (field.type == 'float') {
+                                    cellOptions.cell = Backgrid.NumberCell.extend({
+                                        decimalSeparator: ',',
+                                        orderSeparator: '.'
+                                    });
+                                }
+                                else if (field.type == 'date') {
+                                    
+                                    var format = "DD/MM/YYYY";
+                                    var modelFormat="YYYY/M/D";
+                                    var displayInUTC=true;
+                                    
+                                    if (field.customOptions.monthpicker !== undefined) {
+                                        format = "MM/YYYY";
+                                    }
+
+                                    if (field.customOptions.timestamp) {
+                                        modelFormat="YYYY/M/D HH:mm:ss.SSS";
+                                        displayInUTC=false;
+                                    }
+
+                                    cellOptions.cell = Backgrid.Extension.MomentCell.extend({
+                                        modelFormat: modelFormat,
+                                        displayLang: "pt-br",
+                                        displayFormat: format,
+                                        displayInUTC: displayInUTC
+                                    });
+                                }
+                                else if (field.customOptions.enum != undefined) {
+
+                                    var enumOptions = [];
+                                    for (var _idx in field.customOptions.enum) {
+                                        var opt = field.customOptions.enum[_idx];
+                                        enumOptions.push([opt, _idx]);
+                                    }
+
+                                    cellOptions.cell = Backgrid.SelectCell.extend({
+                                        optionValues: enumOptions
+                                    });
+
+                                }
+                                else if (field.autocomplete == true) {
+
+                                    if (field.customOptions && field.customOptions.list!=undefined) {
+
+                                        cellOptions.cell = Backgrid.Cell.extend({
+                                            className: "custom-situation-cell-select",
+                                            formatter: {
+                                                fromRaw: function (rawData, model) {
+
+                                                    var label="";
+                                                    field.customOptions.list.forEach(function(item){
+                                                        if (item.id==rawData){
+                                                            label = item.label;
+                                                        }
+                                                    });
+
+                                                    return label;
+
+                                                },
+                                                toRaw: function (formattedData, model) {
+                                                    return 'down';
+                                                }
+                                            }
+    
+                                        });
+
+
+                                    }else{
+                                        cellOptions.name = cellOptions.name + '.label';
+                                    }
+                                    
+                                }
+
+                                columns.push(cellOptions);
+                            }
+                        });
+
+                        var ActionCell = Backgrid.Cell.extend({
+                            className: 'text-right btn-column' + (settings.tab == true ? ' detail' : ''),
+                            template: function () {
+                                var _buttons = [];
+                                if (!settings.tab) {
+                                    if (settings.settings.edit) {
+                                        _buttons.push(jQuery('<button type="button" class="btn btn-default btn-edit"><span class="glyphicon glyphicon-pencil"></span></button>'));
+                                    }
+                                    if (settings.settings.delete) {
+                                        _buttons.push(jQuery('<button type="button" class="btn btn-default btn-delete"><span class="glyphicon glyphicon-remove"></span></button>'));
+                                    }
+                                } else {
+                                    if (settings.settings) {
+                                        if (settings.settings.edit) {
+                                            var _btnEditDetail = jQuery('<button type="button" class="btn btn-default btn-edit-detail"><span class="glyphicon glyphicon-pencil"></span></button>');
+                                            _btnEditDetail.attr('data-route', settings.url);
+                                            _buttons.push(_btnEditDetail);
+                                        }
+                                        if (settings.settings.delete) {
+                                            var _btnDeleteDetail = jQuery('<button type="button" class="btn btn-default btn-delete-detail"><span class="glyphicon glyphicon-remove"></span></button>');
+                                            _btnDeleteDetail.attr('data-route', settings.url);
+                                            _buttons.push(_btnDeleteDetail);
+                                        }
+                                    } else {
+                                        var _btnDeleteDetail = jQuery('<button type="button" class="btn btn-default btn-delete-detail"><span class="glyphicon glyphicon-remove"></span></button>');
+                                        _btnDeleteDetail.attr('data-route', settings.url);
+                                        _buttons.push(_btnDeleteDetail);
+                                    }
+                                }
+
+                                var _group = jQuery('<div class="btn-group" role="group">');
+                                _group.append(_buttons);
+
+                                return _group;
+                            },
+                            events: {
+                               
+                            },
+                            editRow: function (e) {
+                                e.preventDefault();
+                            },
+                            render: function () {
+                                var _html = this.template(this.model.toJSON());
+                                this.$el.html(_html);
+                                this.$el.data('model', this.model);
+                                this.$el.find('button.btn-edit').click(function (e) {
+                                    e.stopPropagation();
+
+                                    var $scope = angular.element(this).scope();
+                                    if (settings.tab) {
+                                        $scope.$parent.edit($(this).closest('td').data('model').attributes);
+                                    } else {
+                                        $scope.edit($(this).closest('td').data('model').attributes);
+                                    }
+
+
+                                });
+
+                                this.$el.find('button.btn-delete').click(function (e) {
+                                    e.stopPropagation();
+
+                                    var _confirm = window.confirm('Deseja realmente excluir esse registro?');
+
+                                    if (_confirm) {
+                                        var $scope = angular.element(this).scope();
+                                        if (settings.tab) {
+                                            $scope.$parent.delete($(this).closest('td').data('model').attributes);
+                                        } else {
+                                            $scope.delete($(this).closest('td').data('model').attributes);
+                                        }
+                                    }
+
+                                });
+
+                                this.$el.find('button.btn-delete-detail').click(function (e) {
+                                    e.stopPropagation();
+
+                                    var _confirm = window.confirm('Deseja realmente excluir esse registro?');
+
+                                    if (_confirm) {
+                                        var $scope = angular.element(this).scope();
+                                        var route = jQuery(this).attr('data-route');
+
+                                        if (settings.tab) {
+                                            $scope.$parent.deleteDetail(route, $(this).closest('td').data('model').attributes);
+                                        } else {
+                                            $scope.deleteDetail(route, $(this).closest('td').data('model').attributes);
+                                        }
+                                    }
+                                    
+                                });
+
+                                this.$el.find('button.btn-edit-detail').click(function (e) {
+                                    e.stopPropagation();
+                  
+                                    var $scope = angular.element(this).scope();
+                                    var tab = $.parseJSON($(this).closest('.table-container').attr('tab-config'));
+                                    var row = $(this).closest('td').data('model').attributes;
+                                    var route = $(this).attr('data-route');
+                  
+                                    $scope.newDetail(tab, $scope.data, row.id, route);
+                                });
+                               
+                                this.delegateEvents();
+                                return this;
+                            }
+                        });
+
+                        if (settings.settings.edit || settings.settings.delete){
+                            columns.push({
+                                name: "actions",
+                                label: "Ações",
+                                sortable: false,
+                                cell: ActionCell
+                            });
+                        }
+
+                        if (scope.$parent.app.helpers.isScreen('xs')) {
+
+                            columns.splice(3, 1);
+                        }
+
+                        var rowClasses = [];
+                        if (settings.tab == true) {
+                            rowClasses.push('detail');
+                        }
+                        if (settings.settings != undefined && !settings.settings.edit) {
+                            rowClasses.push('cant-edit');
+                        }
+
+                        var ClickableRow = Backgrid.Row.extend({
+                            className: rowClasses.join(' '),
+                        });
+
+                        var _tableClass = 'table table-striped table-editable no-margin mb-sm';
+
+                        // Join default classes and custom classes (headers.tableClass) if exists
+                        if(settings.tableClass){
+                            _tableClass+=" "+settings.tableClass;
+                        }
+
+                        var pageableGrid = new Backgrid.Grid({
+                            row: ClickableRow,
+                            columns: columns,
+                            collection: collection,
+                            className: _tableClass
+                        });
+
+                        var paginator = new Backgrid.Extension.Paginator({
+
+                            slideScale: 0.25, // Default is 0.5
+
+                            // Whether sorting should go back to the first page
+                            goBackFirstOnSort: false, // Default is true
+
+                            collection: collection,
+
+                            controls: {
+                                rewind: {
+                                    label: '<i class="fa fa-angle-double-left fa-lg"></i>',
+                                    title: 'First'
+                                },
+                                back: {
+                                    label: '<i class="fa fa-angle-left fa-lg"></i>',
+                                    title: 'Previous'
+                                },
+                                forward: {
+                                    label: '<i class="fa fa-angle-right fa-lg"></i>',
+                                    title: 'Next'
+                                },
+                                fastForward: {
+                                    label: '<i class="fa fa-angle-double-right fa-lg"></i>',
+                                    title: 'Last'
+                                }
+                            }
+                        });
+
+                        scope.$el.find('.table-container').html('').append(pageableGrid.render().$el).append(paginator.render().$el);
+
+                        scope.$broadcast('refreshGRID', true);
+                    }
+
+                    var oldFetch = angular.copy(pageableCRUDModel.fetch);
+                    pageableCRUDModel.fetch = function(options, start, filter){
+
+                        $timeout(function(){
+                            if (filter){
+                                pageableCRUDModel.state.currentPage = 1;
+                            }
+
+                            var grid = scope.$el.attr('grid');
+                            var $scopeFilter = $('div[crud-filter][grid="'+grid+'"] input').scope();
+
+                            if(start){
+                                if (grid=="main" && $window.location.search){
+                                    var params = {};
+                                    decodeURIComponent($window.location.search).replace("?filter=","").split('&').forEach(function(elm, idx){
+                                        var p = elm.split("=");
+
+                                        if (p[0].split("_ini").length > 1){
+
+                                            var attr = p[0].replace("_ini","");
+                                            if(!params[attr]){
+                                                params[attr] = {};
+                                            }
+                                            params[attr].ini = decodeURIComponent(p[1]);
+
+                                        }else if (p[0].split("_fim").length > 1){
+
+                                            var attr = p[0].replace("_fim","");
+                                            if(!params[attr]){
+                                                params[attr] = {};
+                                            }
+                                            params[attr].fim = decodeURIComponent(p[1]);
+
+                                        }else{
+                                            params[p[0]] = decodeURIComponent(p[1]);
+                                        }
+                                    });
+
+                                    // console.log(params);
+
+                                    if (params.q){
+                                        $scopeFilter.data.q = params.q;
+                                        $scopeFilter.objFilter = {data:params};
+                                    }else{
+                                        $scopeFilter = $scopeFilter||{};
+                                        $scopeFilter.showBuscaAvancada = true;
+                                        $scopeFilter.objFilter = {data:{filter:params}};
+
+                                        Object.keys(params).forEach(function(par){
+                                            if(par.split("_label").length > 1){
+                                                $scopeFilter.data[par.replace("_label","")+".label"] = {id:params[par.replace("_label","")], label:params[par]};
+                                            }else{
+                                                if (typeof(params[par])=="object"){
+                                                    $scopeFilter.data[par+"_ini"] = moment(params[par].ini, 'DD/MM/YYYY').toDate();
+                                                    $scopeFilter.data[par+"_fim"] = moment(params[par].fim, 'DD/MM/YYYY').toDate();
+                                                }else{
+                                                    $scopeFilter.data[par] = params[par];
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+
+                            }else{
+                                if (grid=="main"){
+
+                                    var str = [];
+
+                                    if($scopeFilter.objFilter && $scopeFilter.objFilter.data.q){
+                                        str.push("q="+$scopeFilter.objFilter.data.q);
+                                    }
+
+                                    if($scopeFilter.objFilter && $scopeFilter.objFilter.data.filter && Object.keys($scopeFilter.objFilter.data.filter).length>0){
+                                        for (var key in $scopeFilter.objFilter.data.filter) {
+                                            if (typeof($scopeFilter.objFilter.data.filter[key])=="object"){
+                                                if ($scopeFilter.objFilter.data.filter[key].ini){
+                                                    str.push(key+"_ini="+$scopeFilter.objFilter.data.filter[key].ini);
+                                                }
+
+                                                if ($scopeFilter.objFilter.data.filter[key].fim){
+                                                    str.push(key+"_fim="+$scopeFilter.objFilter.data.filter[key].fim);
+                                                }
+                                            }else{
+                                                if (key!="p"){
+                                                    str.push(key+"="+$scopeFilter.objFilter.data.filter[key]);
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    if(pageableCRUDModel.state && pageableCRUDModel.state.currentPage && pageableCRUDModel.state.currentPage!=1){
+                                        str.push("p="+pageableCRUDModel.state.currentPage);
+                                    }
+
+                                    var url = str.join("&");
+
+                                    $state.transitionTo($state.$current.name, {filter: url}, {
+                                        location: true,
+                                        inherit: true,
+                                        relative: $state.$current,
+                                        notify: false
+                                    });
+                                    
+                                }
+                            }
+
+                            if($scopeFilter && $scopeFilter.objFilter && $scopeFilter.objFilter.data.q){
+                                options = options || {data:{}};
+                                options.data = options.data || {};
+                                options.data.q = $scopeFilter.objFilter.data.q;
+
+                                if ($scopeFilter.objFilter.data.p && start){
+                                    options.data.page = $scopeFilter.objFilter.data.p;
+                                    pageableCRUDModel.state.currentPage = parseInt($scopeFilter.objFilter.data.p);
+                                }
+                            }
+
+                            if($scopeFilter.objFilter && $scopeFilter.objFilter.data.filter && Object.keys($scopeFilter.objFilter.data.filter).length>0){
+                                options = options || {data:{}};
+                                options.data = options.data || {};
+                                options.data.filter = $scopeFilter.objFilter.data.filter;
+
+                                if ($scopeFilter.objFilter.data.filter.p && start){
+                                    options.data.page = $scopeFilter.objFilter.data.filter.p;
+                                    pageableCRUDModel.state.currentPage = parseInt($scopeFilter.objFilter.data.filter.p);
+                                }
+                            }
+
+                            oldFetch.call(pageableCRUDModel, options);
+                        });
+                    }
+
+                    jQuery($window).on('sn:resize', function () {
+                        createBackgrid(pageableCRUDModel);
+                    });
+
+                    createBackgrid(pageableCRUDModel);                    
+                }
+
+                var listener = scope.$parent.$watch('headers', function (newValue, oldValue) {
+                    if (newValue != null) {
+                        var settings = scope.crudListSettings();
+                        if (settings.tab == true) {
+                            var listenerData = scope.$parent.$watch('data', function (newValue, oldValue) {
+                                  if (newValue.id != undefined) {
+                                      render();
+                                      listenerData();
+                                      listener();
+                                  }
+                            });
+                        } else {
+                            render();
+                            listener();
+                        }
+
+                    }
+                });
+            }
+        }
+    }
+})();
+
+(function () {
+    'use strict';
+
+    angular.module('letsAngular')
+        .directive('crudForm', crudForm);
+
+    crudForm.$inject = ['jQuery', '$timeout', 'appSettings'];
+
+    function crudForm(jQuery, $timeout, appSettings) {
+        return {
+            replace: false,
+            link: function (scope, $el) {
+
+                /* Dropzone */
+                //Set options for dropzone
+                for (var y in scope.headers.fields) {
+                    var field = scope.headers.fields[y];
+                    if (field.customOptions.file) {
+                        scope.dzOptions = {
+                            url: appSettings.API_URL + 'upload/' + field.customOptions.file.container + '/upload',
+                            acceptedFiles: field.customOptions.file.acceptedFiles,
+                            maxFilesize: '25',
+                            maxFiles: '1',
+                            uploadMultiple: false,
+                            addRemoveLinks: true,
+                        };
+                    }
+                }
+                //Apply methods for dropzone
+                scope.dzMethods = {};
+                scope.removeNewFile = function () {
+                    scope.dzMethods.removeFile(scope.newFile); //We got $scope.newFile from 'addedfile' event callback
+                }
+                /* Dropzone */
+
+
+                jQuery($el).on('click', '.button-new', function () {
+                    var detail = jQuery(this).attr('detail');
+                    var origin = jQuery(this).attr('origin');
+                    var modal = jQuery(this).attr('form-modal')=="true";
+
+                    scope.newDetailData(origin, detail, modal);
+                });
+
+                $timeout(function () {
+                    $el.find('.tab-group .nav-tabs li:first').find('a').click();
+                    $el.find(':input[type!="hidden"]:first').focus();
+                }, 500);
+
+                $($el).parsley({
+                    priorityEnabled: false,
+                    errorsContainer: function (el) {
+                        return el.$element.closest(".input-container");
+                    }
+                });
+
+            }
+        }
+    }
+})();
+
+(function () {
+    'use strict';
+
+    angular.module('letsAngular').directive('crudFilter', crudFilter);
+
+    crudFilter.$inject = ['$q','Restangular', '$timeout', '$rootScope'];
+
+    function crudFilter($q, Restangular, $timeout, $rootScope) {
+        return {
+            templateUrl: 'lets/views/crud/crud-filter.html',
+            replace: true,
+            scope: {
+                fields: '&',
+                route: '&',
+                search:'&'
+            },
+            controller: ["$scope", function ($scope) {
+                
+            }],
+            link: function (scope, $el) {
+
+                scope.data = {};
+
+                var fields = angular.copy(scope.fields());
+
+                scope.fieldsFilter = [];
+                fields.forEach(function(field, idx){
+                    if (!field.filter)return;
+
+                    field.disabled = false;
+                    field.notnull = false;
+                    field.name = field.name;
+
+                    if (field.customOptions.file){
+                        delete field.customOptions.file;
+                    }
+
+                    if (field.type=="text"){
+                        field.type = "string";
+                    }
+                    else if (field.type=="boolean"){
+                        field.type = "number";
+                        field.autocomplete = true;
+                        field.customOptions = {
+                            "list":[
+                                {"id":"false",  "label":field.customOptions.statusFalseText},
+                                {"id":"true",  "label":field.customOptions.statusTrueText}
+                            ],
+                            "select":true
+                        };
+                    }
+                    else if (field.type=="date"){
+                        
+                        if (typeof(field.filter)=="object" && field.filter.range===true){
+                            
+                            var _ini = angular.copy(field);
+                            _ini.name +="_ini";
+                            _ini.label +=" (início)";
+                            scope.fieldsFilter.push(_ini);
+
+                            var _fim = angular.copy(field);
+                            _fim.name +="_fim";
+                            _fim.label +=" (Fim)";
+                            scope.fieldsFilter.push(_fim);
+
+                            return;
+                        }
+
+                    }
+
+                    scope.fieldsFilter.push(field);
+                });
+
+                scope.autocomplete = function (field, val) {
+                    scope.resource = Restangular.all(scope.route());
+
+                    var queries = [];
+        
+                    var deferred = $q.defer();
+        
+                    if (field.autocomplete_dependencies.length > 0) {
+                        var deps = field.autocomplete_dependencies;
+                        for (var x in deps) {
+                            var dep = deps[x];
+                            if (scope.data[dep.field] == undefined || scope.data[dep.field] == null || scope.data[dep.field] == "null") {
+        
+                                var text = 'Selecione antes o(a) ' + dep.label;
+        
+                                var data = [];
+                                data.push({ id: null, label: text });
+        
+                                deferred.resolve(data);
+        
+                                return deferred.promise;
+                            } else {
+                                queries[dep.field] = scope.data[dep.field];
+                            }
+                        }
+                    }
+        
+                    val = val.trim();
+                    if (val.length == 0 || field.customOptions.select == true) {
+                        val = '[blank]';
+                    }
+        
+                    if (field.customOptions.general !== undefined) {
+                        
+                        scope.resource.customGET('general/autocomplete/' + field.customOptions.general + '/' + val, queries).then(function (data) {
+                            deferred.resolve(data);
+                        }, function errorCallback() {
+                            return deferred.reject();
+                        });
+
+                    } else if (field.customOptions.list == undefined) {
+                        
+                        var route = 'autocomplete/' + field.name+ '/' + val;
+        
+                        if (field.customOptions.select == true){
+                            queries["limit"] = 0;
+                        }else{
+                            queries["limit"] = 20;
+                        }
+        
+                        scope.resource.customGET(route, queries).then(function (data) {
+                            // if (field.customOptions.select == true) {
+                                data.unshift({ id: "null", label: '[Em Branco]' });
+                                data.unshift({ id: null, label: '--- Selecione ---' });
+                            // }
+                            deferred.resolve(data);
+                        }, function errorCallback() {
+                            return deferred.reject();
+                        });
+
+                    } else {
+        
+                        var options = angular.copy(field.customOptions.list) || [];
+        
+                        if (field.customOptions.select == true) {
+                            options.unshift({ id: "null", label: '[Em Branco]' });
+                            options.unshift({ id: null, label: '--- Selecione ---' });
+                        }
+        
+                        deferred.resolve(options);
+                    }
+                    return deferred.promise;
+                }
+
+                scope.autocompleteSelect = function ($item, $model, $label) {
+            
+                    var _data = this.data;
+        
+                    if (_data==undefined){
+                        _data = {};
+                    }
+        
+                    if ($item.id != null && typeof $item.id != 'integer' || (typeof $item.id == 'integer' && $item.id > 0)) {
+                        _data[this.field.name] = $item.id;
+                    }
+                    else if ($item.id == null) {
+                        _data[this.field.name] = _data[this.field.name + '.label'] = null;
+                    }
+                    else {
+                        _data[this.field.name + '.label'] = null;
+                        return false;
+                    }
+        
+                    this.data = _data;
+        
+                    var field = this.field;
+                    $timeout(function(){
+                        jQuery('#'+field.name).trigger('keyup');
+                    });
+                }
+
+                scope.filterData = function(){
+
+                    scope.objFilter = undefined;
+
+                    var filterData = {};
+                    if (scope.showBuscaAvancada){
+                        fields.forEach(function(field, idx){
+
+                            if (typeof(field.filter)=="object" && field.filter.range===true){
+
+                                var values = {};
+
+                                if (scope.data[field.name+"_ini"]){
+                                    values.ini = scope.data[field.name+"_ini"];
+                                    if (field.type=="date"){
+                                        values.ini = scope.getDateFormated(values.ini);
+                                    }
+                                }
+
+                                if (scope.data[field.name+"_fim"]){
+                                    values.fim = scope.data[field.name+"_fim"];
+                                    if (field.type=="date"){
+                                        values.fim = scope.getDateFormated(values.fim);
+                                    }
+                                }
+
+                                if (Object.keys(values).length>0){
+                                    filterData[field.name] = values;
+                                }
+                                
+                            }
+
+                            if (scope.data[field.name]){
+                                filterData[field.name] = scope.data[field.name];
+
+                                if(field.type=="date"){
+                                    filterData[field.name] = scope.getDateFormated(filterData[field.name])
+                                }
+
+                                if(field.autocomplete){
+                                    filterData[field.name+"_label"] = scope.data[field.name+".label"].label;
+                                }
+                            }
+                        });
+                        scope.objFilter = {data:{filter:filterData}};
+                    }else{
+                        filterData.q = scope.data.q;
+                        scope.objFilter = {data:filterData};
+                    }
+
+                    $rootScope.$broadcast('refreshGRID', false, true);
+                }
+
+                scope.openBuscaAvancada = function(){
+                    scope.showBuscaAvancada = !scope.showBuscaAvancada;
+                    scope.filterData();
+                }
+
+                scope.getDateFormated = function(dt){
+                    return moment(dt).format('DD/MM/YYYY');
+                }
+
+               if(scope.search()=="fixed"){
+                scope.showBuscaAvancada = true;
+                scope.hideInputSearch = true;
+               }
+
+            }
+        }
+    }
+})();
+(function () {
+    'use strict';
+
+    angular.module('letsAngular')
+        .directive('crudBreadcrumb', crudBreadcrumb);
+
+    crudBreadcrumb.$inject = [];
+
+    function crudBreadcrumb() {
+        return {
+            restrict: 'E',
+            templateUrl: 'lets/views/framework/breadcrumb.html',
+            replace: true,
+            link: function (scope, $el) {
+
+            }
+        }
+    }
+})();
 (function () {
     'use strict';
     fwStateProvider.$inject = ["$stateProvider"];
