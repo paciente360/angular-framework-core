@@ -484,11 +484,10 @@
 
                                     if (params.q){
                                         $scopeFilter.data.q = params.q;
-                                        $scopeFilter.objFilter = {data:params};
+                                        // $scopeFilter.objFilter = {data:params};
                                     }else{
                                         $scopeFilter = $scopeFilter||{};
                                         $scopeFilter.showBuscaAvancada = true;
-                                        $scopeFilter.objFilter = {data:{filter:params}};
 
                                         Object.keys(params).forEach(function(par){
                                             if(par.split("_label").length > 1){
@@ -502,7 +501,11 @@
                                                 }
                                             }
                                         });
+
+                                        // $scopeFilter.objFilter = {data:{filter:params}};
                                     }
+
+                                    $scopeFilter.filterData();
                                 }
 
                             }else{
