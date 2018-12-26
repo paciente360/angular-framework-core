@@ -88,9 +88,9 @@
     <!-- Time -->
     <div ng-if="field.type == 'time'">
       <timepicker ng-model="$parent.data[field.name]" ng-disabled="field.disabled"
-                  hour-step="field.customoptions.timepicker.hstep || 1"
-                  minute-step="field.customoptions.timepicker.mstep || 1"
-                  show-meridian="field.customoptions.timepicker.meridian"></timepicker>
+                  hour-step="field.customOptions.timepicker.hstep || 1"
+                  minute-step="field.customOptions.timepicker.mstep || 1"
+                  show-meridian="field.customOptions.timepicker.meridian"></timepicker>
       
       <ul class="parsley-errors-list filled" ng-if="field.error">
         <li class="parsley-required">O horário informado é inválido.</li>

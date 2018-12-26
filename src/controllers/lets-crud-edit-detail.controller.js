@@ -99,13 +99,23 @@
                 else if (this.crudForm.$valid) {
                     if (!$scope.data.id) {
                         var response = $scope.resource.customPOST($scope.data, $stateParams.id);
+                        var typeSave = "new";
                     } else {
                         var response = $scope.resource.customPUT($scope.data, $scope.data.id);
+                        var typeSave = "edit";
                     }
 
-                    response.then(function () {
-                        $rootScope.$broadcast('refreshGRID');
-                        $modalInstance.dismiss('success');
+                    response.then(function (resp) {
+
+                        function next(){
+                            $rootScope.$broadcast('refreshGRID');
+                            $modalInstance.dismiss('success');
+                        }
+
+                        $scope.$emit('after save', next, resp, typeSave);
+                        if (!$rootScope.$$listenerCount["after save"]){
+                            next();
+                        }
 
                     }, function errorCallback(error) {
                         var messages = [];
