@@ -97,36 +97,44 @@
                     ngToast.warning(_messages.join("<br />"));
                 }
                 else if (this.crudForm.$valid) {
-                    if (!$scope.data.id) {
-                        var response = $scope.resource.customPOST($scope.data, $stateParams.id);
-                        var typeSave = "new";
-                    } else {
-                        var response = $scope.resource.customPUT($scope.data, $scope.data.id);
-                        var typeSave = "edit";
+
+                    function next(){
+                        if (!$scope.data.id) {
+                            var response = $scope.resource.customPOST($scope.data, $stateParams.id);
+                            var typeSave = "new";
+                        } else {
+                            var response = $scope.resource.customPUT($scope.data, $scope.data.id);
+                            var typeSave = "edit";
+                        }
+
+                        response.then(function (resp) {
+
+                            function next(){
+                                $rootScope.$broadcast('refreshGRID');
+                                $modalInstance.dismiss('success');
+                            }
+
+                            $scope.$emit('after save', next, resp, typeSave);
+                            if (!$rootScope.$$listenerCount["after save"]){
+                                next();
+                            }
+
+                        }, function errorCallback(error) {
+                            var messages = [];
+
+                            for (var name in error.data) {
+                                for (var idx in error.data[name]) {
+                                    messages.push(error.data[name][idx]);
+                                }
+                            }
+                            ngToast.warning(messages.join("<br />"));
+                        });
                     }
 
-                    response.then(function (resp) {
-
-                        function next(){
-                            $rootScope.$broadcast('refreshGRID');
-                            $modalInstance.dismiss('success');
-                        }
-
-                        $scope.$emit('after save', next, resp, typeSave);
-                        if (!$rootScope.$$listenerCount["after save"]){
-                            next();
-                        }
-
-                    }, function errorCallback(error) {
-                        var messages = [];
-
-                        for (var name in error.data) {
-                            for (var idx in error.data[name]) {
-                                messages.push(error.data[name][idx]);
-                            }
-                        }
-                        ngToast.warning(messages.join("<br />"));
-                    });
+                    $scope.$emit('before save', next);
+                    if (!$rootScope.$$listenerCount["before save"]){
+                        next();
+                    }
                 }
             };
 
