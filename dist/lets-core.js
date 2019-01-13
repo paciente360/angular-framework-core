@@ -1704,9 +1704,9 @@
                     });
 
 
-                    element.find('input').focus(function (e) {
-                        scope.vm.openPopup(e);
-                    });
+                    // element.find('input').focus(function (e) {
+                    //     scope.vm.openPopup(e);
+                    // });
 
                     scope.datepickerOptions = options;
 
@@ -3050,6 +3050,34 @@
 })();
 (function () {
     'use strict';
+
+    angular.module('letsAngular')
+        .factory('Backgrid', BackgridFactory);
+
+    BackgridFactory.$inject = ['$window'];
+
+    function BackgridFactory($window) {
+        return $window.Backgrid;
+    }
+
+})();
+
+(function () {
+    'use strict';
+
+    angular.module('letsAngular')
+        .factory('Backbone', BackboneFactory);
+
+    BackboneFactory.$inject = ['$window'];
+
+    function BackboneFactory($window) {
+        return $window.Backbone;
+    }
+
+})();
+
+(function () {
+    'use strict';
     fwStateProvider.$inject = ["$stateProvider"];
     angular
         .module('letsAngular')
@@ -3070,7 +3098,8 @@
                 },
                 list: {
                     enable: true,
-                    templateUrl: 'lets/views/crud/crud-list.html'
+                    templateUrl: 'lets/views/crud/crud-list.html',
+                    controller: 'CRUDController'
                 },
                 edit: {
                     enable: true,
@@ -3106,7 +3135,8 @@
             if (options.list.enable) {
                 this.state('app.'+settings.route+'.list', {
                     url: '?filter',
-                    templateUrl: options.list.templateUrl
+                    templateUrl: options.list.templateUrl,
+                    controller: options.list.controller
                 });
             }
             if (options.new.enable) {
@@ -3166,69 +3196,6 @@
     }
 })();
   
-(function () {
-    'use strict';
-
-    fwAgeMonth.$inject = ["birthday"];
-    angular.module('letsAngular')
-        .filter('fwAgeMonth', fwAgeMonth);
-
-    /**
-     * Calculate age from birthday
-     * @param {String of Date} birthday 
-     */
-    function fwAgeMonth (birthday) {
-        if (birthday != null) {
-
-            if (typeof birthday == 'string') {
-                birthday = new Date(birthday);
-            }
-
-            var _birthType = ' meses';
-            var _birthMoment = moment(birthday);
-            var _age = moment().diff(_birthMoment, 'months');
-            if (!_age) {
-                _birthType = ' dias';
-                _age = moment().diff(_birthMoment, 'days');
-            }
-            else if (_age > 12) {
-                _birthType = ' anos';
-                _age = moment().diff(_birthMoment, 'years');
-            }
-
-            return _age + _birthType;
-        }
-    }
-})();
-
-(function () {
-    'use strict';
-
-    angular.module('letsAngular')
-        .factory('Backgrid', BackgridFactory);
-
-    BackgridFactory.$inject = ['$window'];
-
-    function BackgridFactory($window) {
-        return $window.Backgrid;
-    }
-
-})();
-
-(function () {
-    'use strict';
-
-    angular.module('letsAngular')
-        .factory('Backbone', BackboneFactory);
-
-    BackboneFactory.$inject = ['$window'];
-
-    function BackboneFactory($window) {
-        return $window.Backbone;
-    }
-
-})();
-
 (function () {
     'use strict';
 
@@ -4311,4 +4278,38 @@
 
     }]);
 
+})();
+(function () {
+    'use strict';
+
+    fwAgeMonth.$inject = ["birthday"];
+    angular.module('letsAngular')
+        .filter('fwAgeMonth', fwAgeMonth);
+
+    /**
+     * Calculate age from birthday
+     * @param {String of Date} birthday 
+     */
+    function fwAgeMonth (birthday) {
+        if (birthday != null) {
+
+            if (typeof birthday == 'string') {
+                birthday = new Date(birthday);
+            }
+
+            var _birthType = ' meses';
+            var _birthMoment = moment(birthday);
+            var _age = moment().diff(_birthMoment, 'months');
+            if (!_age) {
+                _birthType = ' dias';
+                _age = moment().diff(_birthMoment, 'days');
+            }
+            else if (_age > 12) {
+                _birthType = ' anos';
+                _age = moment().diff(_birthMoment, 'years');
+            }
+
+            return _age + _birthType;
+        }
+    }
 })();

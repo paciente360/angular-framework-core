@@ -84,9 +84,9 @@
                     });
 
 
-                    element.find('input').focus(function (e) {
-                        scope.vm.openPopup(e);
-                    });
+                    // element.find('input').focus(function (e) {
+                    //     scope.vm.openPopup(e);
+                    // });
 
                     scope.datepickerOptions = options;
 
