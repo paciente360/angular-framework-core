@@ -222,7 +222,7 @@
                         }
 
                         $scope.$emit('after save', next, resp, typeSave);
-                        if (!$rootScope.$$listenerCount["after save"]){
+                        if (!$scope.$$listeners["after save"]){
                             next();
                         }
 
@@ -291,7 +291,7 @@
                 }
 
                 $scope.$emit('before save', next);
-                if (!$rootScope.$$listenerCount["before save"]){
+                if (!$scope.$$listeners["before save"]){
                     next();
                 }
 
