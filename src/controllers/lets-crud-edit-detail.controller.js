@@ -12,6 +12,10 @@
         $scope.doafterAutoCompleteSelect = {};
         $scope.$http = $http;
 
+        if(headers.modal_id){
+            $rootScope.$emit('open:'+headers.modal_id+'', $scope);
+        }
+
         $scope.datepickers = {};
         $scope.datepickerToggle = function (name) {
             if ($scope.datepickers[name] == undefined) {
@@ -67,10 +71,6 @@
                     $scope.data[field.name] = field.customOptions.default ? field.customOptions.default : false;
                 }
             }
-        }
-
-        if(headers.modal_id){
-            $rootScope.$emit('open:'+headers.modal_id+'', $scope);
         }
 
         $timeout(function () {
