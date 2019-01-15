@@ -1706,6 +1706,11 @@
                         }
                     });
 
+
+                    // element.find('input').focus(function (e) {
+                    //     scope.vm.openPopup(e);
+                    // });
+
                     scope.datepickerOptions = options;
 
                     $compile(element)(scope);
@@ -2482,12 +2487,14 @@
                             }
                         });
 
-                        columns.push({
-                            name: "actions",
-                            label: "Ações",
-                            sortable: false,
-                            cell: ActionCell
-                        });
+                        if (settings.settings.edit || settings.settings.delete){
+                            columns.push({
+                                name: "actions",
+                                label: "Ações",
+                                sortable: false,
+                                cell: ActionCell
+                            });
+                        }
 
                         if (scope.$parent.app.helpers.isScreen('xs')) {
 
@@ -2596,10 +2603,10 @@
 
                                     if (params.q){
                                         $scopeFilter.data.q = params.q;
-                                        $scopeFilter.objFilter = {data:params};
+                                        // $scopeFilter.objFilter = {data:params};
                                     }else{
+                                        $scopeFilter = $scopeFilter||{};
                                         $scopeFilter.showBuscaAvancada = true;
-                                        $scopeFilter.objFilter = {data:{filter:params}};
 
                                         Object.keys(params).forEach(function(par){
                                             if(par.split("_label").length > 1){
@@ -2613,7 +2620,11 @@
                                                 }
                                             }
                                         });
+
+                                        // $scopeFilter.objFilter = {data:{filter:params}};
                                     }
+
+                                    $scopeFilter.filterData();
                                 }
 
                             }else{
@@ -2659,7 +2670,7 @@
                                 }
                             }
 
-                            if($scopeFilter.objFilter && $scopeFilter.objFilter.data.q){
+                            if($scopeFilter && $scopeFilter.objFilter && $scopeFilter.objFilter.data.q){
                                 options = options || {data:{}};
                                 options.data = options.data || {};
                                 options.data.q = $scopeFilter.objFilter.data.q;
@@ -2789,7 +2800,8 @@
             replace: true,
             scope: {
                 fields: '&',
-                route: '&'
+                route: '&',
+                search:'&'
             },
             controller: ["$scope", function ($scope) {
                 
@@ -3011,6 +3023,11 @@
                     return moment(dt).format('DD/MM/YYYY');
                 }
 
+               if(scope.search()=="fixed"){
+                scope.showBuscaAvancada = true;
+                scope.hideInputSearch = true;
+               }
+
             }
         }
     }
@@ -3036,34 +3053,6 @@
 })();
 (function () {
     'use strict';
-
-    angular.module('letsAngular')
-        .factory('Backgrid', BackgridFactory);
-
-    BackgridFactory.$inject = ['$window'];
-
-    function BackgridFactory($window) {
-        return $window.Backgrid;
-    }
-
-})();
-
-(function () {
-    'use strict';
-
-    angular.module('letsAngular')
-        .factory('Backbone', BackboneFactory);
-
-    BackboneFactory.$inject = ['$window'];
-
-    function BackboneFactory($window) {
-        return $window.Backbone;
-    }
-
-})();
-
-(function () {
-    'use strict';
     fwStateProvider.$inject = ["$stateProvider"];
     angular
         .module('letsAngular')
@@ -3084,7 +3073,8 @@
                 },
                 list: {
                     enable: true,
-                    templateUrl: 'lets/views/crud/crud-list.html'
+                    templateUrl: 'lets/views/crud/crud-list.html',
+                    controller: 'CRUDController'
                 },
                 edit: {
                     enable: true,
@@ -3120,7 +3110,8 @@
             if (options.list.enable) {
                 this.state('app.'+settings.route+'.list', {
                     url: '?filter',
-                    templateUrl: options.list.templateUrl
+                    templateUrl: options.list.templateUrl,
+                    controller: options.list.controller
                 });
             }
             if (options.new.enable) {
@@ -3213,6 +3204,34 @@
             return _age + _birthType;
         }
     }
+})();
+
+(function () {
+    'use strict';
+
+    angular.module('letsAngular')
+        .factory('Backgrid', BackgridFactory);
+
+    BackgridFactory.$inject = ['$window'];
+
+    function BackgridFactory($window) {
+        return $window.Backgrid;
+    }
+
+})();
+
+(function () {
+    'use strict';
+
+    angular.module('letsAngular')
+        .factory('Backbone', BackboneFactory);
+
+    BackboneFactory.$inject = ['$window'];
+
+    function BackboneFactory($window) {
+        return $window.Backbone;
+    }
+
 })();
 
 (function () {
@@ -3344,7 +3363,9 @@
                     for (var y in $scope.headers.fields) {
                         var field = $scope.headers.fields[y];
                         if (field.type == 'date' && (data[field.name] != undefined && data[field.name] != null)) {
-                            data[field.name] = new Date(data[field.name]);
+                            var dt = new Date(data[field.name]);
+                            dt.setHours(dt.getHours() + (dt.getTimezoneOffset()/60) );
+                            data[field.name] = dt;
                         }
 
                         if (field.customOptions && field.customOptions.list!=undefined) {
@@ -3545,7 +3566,7 @@
                         }
 
                         $scope.$emit('after save', next, resp, typeSave);
-                        if (!$rootScope.$$listenerCount["after save"]){
+                        if (!$scope.$$listeners["after save"]){
                             next();
                         }
 
@@ -3614,7 +3635,7 @@
                 }
 
                 $scope.$emit('before save', next);
-                if (!$rootScope.$$listenerCount["before save"]){
+                if (!$scope.$$listeners["before save"]){
                     next();
                 }
 
@@ -3976,6 +3997,10 @@
         $scope.doafterAutoCompleteSelect = {};
         $scope.$http = $http;
 
+        if(headers.modal_id){
+            $rootScope.$emit('open:'+headers.modal_id+'', $scope);
+        }
+
         $scope.datepickers = {};
         $scope.datepickerToggle = function (name) {
             if ($scope.datepickers[name] == undefined) {
@@ -4033,10 +4058,6 @@
             }
         }
 
-        if(headers.modal_id){
-            $rootScope.$emit('open:'+headers.modal_id+'', $scope);
-        }
-
         $timeout(function () {
             
             $scope.submit = function () {
@@ -4061,26 +4082,44 @@
                     ngToast.warning(_messages.join("<br />"));
                 }
                 else if (this.crudForm.$valid) {
-                    if (!$scope.data.id) {
-                        var response = $scope.resource.customPOST($scope.data, $stateParams.id);
-                    } else {
-                        var response = $scope.resource.customPUT($scope.data, $scope.data.id);
+
+                    function next(){
+                        if (!$scope.data.id) {
+                            var response = $scope.resource.customPOST($scope.data, $stateParams.id);
+                            var typeSave = "new";
+                        } else {
+                            var response = $scope.resource.customPUT($scope.data, $scope.data.id);
+                            var typeSave = "edit";
+                        }
+
+                        response.then(function (resp) {
+
+                            function next(){
+                                $rootScope.$broadcast('refreshGRID');
+                                $modalInstance.dismiss('success');
+                            }
+
+                            $scope.$emit('after save', next, resp, typeSave);
+                            if (!$scope.$$listeners["after save"]){
+                                next();
+                            }
+
+                        }, function errorCallback(error) {
+                            var messages = [];
+
+                            for (var name in error.data) {
+                                for (var idx in error.data[name]) {
+                                    messages.push(error.data[name][idx]);
+                                }
+                            }
+                            ngToast.warning(messages.join("<br />"));
+                        });
                     }
 
-                    response.then(function () {
-                        $rootScope.$broadcast('refreshGRID');
-                        $modalInstance.dismiss('success');
-
-                    }, function errorCallback(error) {
-                        var messages = [];
-
-                        for (var name in error.data) {
-                            for (var idx in error.data[name]) {
-                                messages.push(error.data[name][idx]);
-                            }
-                        }
-                        ngToast.warning(messages.join("<br />"));
-                    });
+                    $scope.$emit('before save', next);
+                    if (!$scope.$$listeners["before save"]){
+                        next();
+                    }
                 }
             };
 

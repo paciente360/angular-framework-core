@@ -12,6 +12,10 @@
         $scope.doafterAutoCompleteSelect = {};
         $scope.$http = $http;
 
+        if(headers.modal_id){
+            $rootScope.$emit('open:'+headers.modal_id+'', $scope);
+        }
+
         $scope.datepickers = {};
         $scope.datepickerToggle = function (name) {
             if ($scope.datepickers[name] == undefined) {
@@ -69,10 +73,6 @@
             }
         }
 
-        if(headers.modal_id){
-            $rootScope.$emit('open:'+headers.modal_id+'', $scope);
-        }
-
         $timeout(function () {
             
             $scope.submit = function () {
@@ -97,26 +97,44 @@
                     ngToast.warning(_messages.join("<br />"));
                 }
                 else if (this.crudForm.$valid) {
-                    if (!$scope.data.id) {
-                        var response = $scope.resource.customPOST($scope.data, $stateParams.id);
-                    } else {
-                        var response = $scope.resource.customPUT($scope.data, $scope.data.id);
+
+                    function next(){
+                        if (!$scope.data.id) {
+                            var response = $scope.resource.customPOST($scope.data, $stateParams.id);
+                            var typeSave = "new";
+                        } else {
+                            var response = $scope.resource.customPUT($scope.data, $scope.data.id);
+                            var typeSave = "edit";
+                        }
+
+                        response.then(function (resp) {
+
+                            function next(){
+                                $rootScope.$broadcast('refreshGRID');
+                                $modalInstance.dismiss('success');
+                            }
+
+                            $scope.$emit('after save', next, resp, typeSave);
+                            if (!$scope.$$listeners["after save"]){
+                                next();
+                            }
+
+                        }, function errorCallback(error) {
+                            var messages = [];
+
+                            for (var name in error.data) {
+                                for (var idx in error.data[name]) {
+                                    messages.push(error.data[name][idx]);
+                                }
+                            }
+                            ngToast.warning(messages.join("<br />"));
+                        });
                     }
 
-                    response.then(function () {
-                        $rootScope.$broadcast('refreshGRID');
-                        $modalInstance.dismiss('success');
-
-                    }, function errorCallback(error) {
-                        var messages = [];
-
-                        for (var name in error.data) {
-                            for (var idx in error.data[name]) {
-                                messages.push(error.data[name][idx]);
-                            }
-                        }
-                        ngToast.warning(messages.join("<br />"));
-                    });
+                    $scope.$emit('before save', next);
+                    if (!$scope.$$listeners["before save"]){
+                        next();
+                    }
                 }
             };
 

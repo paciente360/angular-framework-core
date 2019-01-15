@@ -368,12 +368,14 @@
                             }
                         });
 
-                        columns.push({
-                            name: "actions",
-                            label: "Ações",
-                            sortable: false,
-                            cell: ActionCell
-                        });
+                        if (settings.settings.edit || settings.settings.delete){
+                            columns.push({
+                                name: "actions",
+                                label: "Ações",
+                                sortable: false,
+                                cell: ActionCell
+                            });
+                        }
 
                         if (scope.$parent.app.helpers.isScreen('xs')) {
 
@@ -482,10 +484,10 @@
 
                                     if (params.q){
                                         $scopeFilter.data.q = params.q;
-                                        $scopeFilter.objFilter = {data:params};
+                                        // $scopeFilter.objFilter = {data:params};
                                     }else{
+                                        $scopeFilter = $scopeFilter||{};
                                         $scopeFilter.showBuscaAvancada = true;
-                                        $scopeFilter.objFilter = {data:{filter:params}};
 
                                         Object.keys(params).forEach(function(par){
                                             if(par.split("_label").length > 1){
@@ -499,7 +501,11 @@
                                                 }
                                             }
                                         });
+
+                                        // $scopeFilter.objFilter = {data:{filter:params}};
                                     }
+
+                                    $scopeFilter.filterData();
                                 }
 
                             }else{
@@ -545,7 +551,7 @@
                                 }
                             }
 
-                            if($scopeFilter.objFilter && $scopeFilter.objFilter.data.q){
+                            if($scopeFilter && $scopeFilter.objFilter && $scopeFilter.objFilter.data.q){
                                 options = options || {data:{}};
                                 options.data = options.data || {};
                                 options.data.q = $scopeFilter.objFilter.data.q;

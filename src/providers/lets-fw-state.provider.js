@@ -19,7 +19,8 @@
                 },
                 list: {
                     enable: true,
-                    templateUrl: 'lets/views/crud/crud-list.html'
+                    templateUrl: 'lets/views/crud/crud-list.html',
+                    controller: 'CRUDController'
                 },
                 edit: {
                     enable: true,
@@ -55,7 +56,8 @@
             if (options.list.enable) {
                 this.state('app.'+settings.route+'.list', {
                     url: '?filter',
-                    templateUrl: options.list.templateUrl
+                    templateUrl: options.list.templateUrl,
+                    controller: options.list.controller
                 });
             }
             if (options.new.enable) {

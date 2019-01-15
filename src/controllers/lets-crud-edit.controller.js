@@ -25,7 +25,9 @@
                     for (var y in $scope.headers.fields) {
                         var field = $scope.headers.fields[y];
                         if (field.type == 'date' && (data[field.name] != undefined && data[field.name] != null)) {
-                            data[field.name] = new Date(data[field.name]);
+                            var dt = new Date(data[field.name]);
+                            dt.setHours(dt.getHours() + (dt.getTimezoneOffset()/60) );
+                            data[field.name] = dt;
                         }
 
                         if (field.customOptions && field.customOptions.list!=undefined) {
@@ -226,7 +228,7 @@
                         }
 
                         $scope.$emit('after save', next, resp, typeSave);
-                        if (!$rootScope.$$listenerCount["after save"]){
+                        if (!$scope.$$listeners["after save"]){
                             next();
                         }
 
@@ -295,7 +297,7 @@
                 }
 
                 $scope.$emit('before save', next);
-                if (!$rootScope.$$listenerCount["before save"]){
+                if (!$scope.$$listeners["before save"]){
                     next();
                 }
 

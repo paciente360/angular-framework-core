@@ -83,6 +83,11 @@
                         }
                     });
 
+
+                    // element.find('input').focus(function (e) {
+                    //     scope.vm.openPopup(e);
+                    // });
+
                     scope.datepickerOptions = options;
 
                     $compile(element)(scope);
