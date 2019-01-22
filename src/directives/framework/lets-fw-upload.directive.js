@@ -10,7 +10,7 @@
         return {
             restrict: 'A',
             scope: true,
-            link: function ($scope, element) {
+            link: function ($scope, $rootScope, element) {
 
                 $scope.defaultProgress = 0;
                 $scope.alreadySent = false;
@@ -53,11 +53,14 @@
                         file.upload = $scope._upload($scope.field, file);
 
                         file.upload.then(function (response) {
+                            //console.log(response);
+                            $scope.$emit('upload-complete', response);
+
                             $timeout(function () {
                                 file.result = response.data;
                                 var _input = element.find('input[type="hidden"]');
 
-                                file.newName = response.data.result.files.file[0].name;
+                                file.newName = response.data.result ? response.data.result.files.file[0].name : '';
 
                                 _input.controller('ngModel').$setViewValue(file.newName);
 

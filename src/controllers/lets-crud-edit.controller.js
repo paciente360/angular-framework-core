@@ -84,10 +84,16 @@
         });
 
         $scope._upload = function (field, file) {
-            var _url = $rootScope.appSettings.API_URL + 'upload';
+            var _url = $rootScope.appSettings.API_URL;
 
-            if (field.customOptions.file.container != undefined) {
-                _url += '/' + field.customOptions.file.container + '/upload'
+            if(field.customOptions.file.url != undefined && field.customOptions.file.container == undefined){
+                _url += field.customOptions.file.url;
+            }else 
+                if (field.customOptions.file.url == undefined && field.customOptions.file.container != undefined) {
+                _url += 'upload/' + field.customOptions.file.container + '/upload'
+            }else 
+                if (field.customOptions.file.url != undefined && field.customOptions.file.container != undefined) {
+                _url += 'upload/' + field.customOptions.file.container + '/' + field.customOptions.file.url
             }
 
             return Upload.upload({
