@@ -67,6 +67,24 @@
                         }
 
                     }
+                    else if (field.type == "number" || field.type == "integer" || field.type == "float" || field.type == "bigint"){
+                        
+                        if (typeof(field.filter)=="object" && field.filter.range===true){
+                            
+                            var _ini = angular.copy(field);
+                            _ini.name +="_ini";
+                            _ini.label +=" (início)";
+                            scope.fieldsFilter.push(_ini);
+
+                            var _fim = angular.copy(field);
+                            _fim.name +="_fim";
+                            _fim.label +=" (Fim)";
+                            scope.fieldsFilter.push(_fim);
+
+                            return;
+                        }
+
+                    }
 
                     scope.fieldsFilter.push(field);
                 });
