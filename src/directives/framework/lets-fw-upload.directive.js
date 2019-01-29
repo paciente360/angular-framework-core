@@ -58,7 +58,11 @@
 
                             $timeout(function () {
                                 file.result = response.data;
-                                var _input = element.find('input[type="hidden"]');
+                                if(element.$$element){
+                                    var _input = element.$$element.find('input[type="hidden"]');
+                                }else{
+                                    var _input = element.find('input[type="hidden"]');
+                                }
 
                                 file.newName = response.data.result ? response.data.result.files.file[0].name : '';
 
