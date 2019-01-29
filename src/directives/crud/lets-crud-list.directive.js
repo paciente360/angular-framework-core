@@ -449,10 +449,10 @@
                             if (filter){
                                 pageableCRUDModel.state.currentPage = 1;
                             }
-
+                            
                             var grid = scope.$el.attr('grid');
                             var $scopeFilter = $('div[crud-filter][grid="'+grid+'"] input').scope();
-
+                            
                             if(start){
                                 if (grid=="main" && $window.location.search){
                                     var params = {};
@@ -481,6 +481,10 @@
                                     });
 
                                     // console.log(params);
+                                    if (params.p){
+                                        $scopeFilter.data.p = params.p;
+                                        pageableCRUDModel.state.currentPage = parseInt(params.p);
+                                    }
 
                                     if (params.q){
                                         $scopeFilter.data.q = params.q;
@@ -505,7 +509,7 @@
                                         // $scopeFilter.objFilter = {data:{filter:params}};
                                     }
 
-                                    $scopeFilter.filterData();
+                                    $scopeFilter.filterData(false); //Estava sendo recursivo isso 
                                 }
 
                             }else{
@@ -572,7 +576,7 @@
                                     pageableCRUDModel.state.currentPage = parseInt($scopeFilter.objFilter.data.filter.p);
                                 }
                             }
-
+                            
                             oldFetch.call(pageableCRUDModel, options);
                         });
                     }

@@ -190,7 +190,7 @@
                     });
                 }
 
-                scope.filterData = function(){
+                scope.filterData = function(start){
 
                     scope.objFilter = undefined;
 
@@ -237,15 +237,17 @@
                         scope.objFilter = {data:{filter:filterData}};
                     }else{
                         filterData.q = scope.data.q;
+                        filterData.p = scope.data.p;
                         scope.objFilter = {data:filterData};
                     }
-
-                    $rootScope.$broadcast('refreshGRID', false, true);
+                    if(start){
+                        $rootScope.$broadcast('refreshGRID', false, true);
+                    }
                 }
 
                 scope.openBuscaAvancada = function(){
                     scope.showBuscaAvancada = !scope.showBuscaAvancada;
-                    scope.filterData();
+                    scope.filterData(true);
                 }
 
                 scope.getDateFormated = function(dt){
