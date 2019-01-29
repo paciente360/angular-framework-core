@@ -178,8 +178,7 @@
           aria-autocomplete="none" autocomplete="off" typeahead-min-length="0" typeahead="row as row.label for row in autocomplete(field, $viewValue)"
           type="text" class="form-control" name="{{field.name}}" ng-required="field.notnull" ng-model="$parent.data[field.name + '.label']"
           size="{{field.length}}" placeholder="{{field.label}}" ng-disabled="field.disabled"
-          ng-readonly="field.customOptions.select == true"
-          ng-class="{'fieldSelect': field.customOptions.select == true}"
+          ng-readonly="field.customOptions.select == true"          
           />
         <span class="input-group-btn">
           <button type="button" class="btn btn-default" ng-disabled="field.disabled">

@@ -15,7 +15,7 @@
         </div>
         
         <div class="busca-avancada row" collapse="!showBuscaAvancada">
-            <div class="form-group" style="margin-bottom: 10px;" ng-repeat="field in fieldsFilter" ng-class="field.filter.range===true ? 'col-sm-2' : 'col-sm-3'">
+            <div class="form-group" style="margin-bottom: 10px;" ng-repeat="field in fieldsFilter | orderBy: 'label'" ng-class="field.filter.range===true ? 'col-sm-2' : 'col-sm-3'">
                 <label for="{{field.name}}" class="control-label" style="font-size:12px; margin-bottom: 0px;">{{field.label}}</label>
                 <fw-input fw-data="data"></fw-input>
             </div>
