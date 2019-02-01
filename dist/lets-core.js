@@ -3560,7 +3560,7 @@
             }
             else if (this.crudForm.$valid) {
 
-                function next(){
+                function nextBefore(){
                     if($_scope.headers.tabs){
                         Object.keys($_scope.headers.tabs).forEach(function(tab){
                             if($_scope.data[tab]){
@@ -3579,13 +3579,13 @@
 
                     response.then(function (resp) {
 
-                        function next(){
+                        function nextAfter(){
                             $state.go($state.current.name.replace('.edit', '.list').replace('.new', '.list'), {filter:$scope.getFilter()});
                         }
 
-                        $scope.$emit('after save', next, resp, typeSave);
+                        $scope.$emit('after save', nextAfter, resp, typeSave);
                         if (!$scope.$$listeners["after save"]){
-                            next();
+                            nextAfter();
                         }
 
                     }, function errorCallback(error) {
@@ -3649,12 +3649,15 @@
                         }
                         
                         ngToast.warning(messages.join("<br />"));
+
+                        $scope.$emit('error save', error);
+
                     });
                 }
 
-                $scope.$emit('before save', next);
+                $scope.$emit('before save', nextBefore);
                 if (!$scope.$$listeners["before save"]){
-                    next();
+                    nextBefore();
                 }
 
             } else {
@@ -4101,7 +4104,7 @@
                 }
                 else if (this.crudForm.$valid) {
 
-                    function next(){
+                    function nextBefore(){
                         if (!$scope.data.id) {
                             var response = $scope.resource.customPOST($scope.data, $stateParams.id);
                             var typeSave = "new";
@@ -4112,31 +4115,26 @@
 
                         response.then(function (resp) {
 
-                            function next(){
+                            function nextAfter(){
                                 $rootScope.$broadcast('refreshGRID');
                                 $modalInstance.dismiss('success');
                             }
 
-                            $scope.$emit('after save', next, resp, typeSave);
+                            $scope.$emit('after save', nextAfter, resp, typeSave);
                             if (!$scope.$$listeners["after save"]){
-                                next();
+                                nextAfter();
                             }
 
                         }, function errorCallback(error) {
-                            var messages = [];
-
-                            for (var name in error.data) {
-                                for (var idx in error.data[name]) {
-                                    messages.push(error.data[name][idx]);
-                                }
-                            }
-                            ngToast.warning(messages.join("<br />"));
+                            error.isError = true;
+                            ngToast.warning(error.data.error.message);
+                            $scope.$emit('error save', error);
                         });
                     }
 
-                    $scope.$emit('before save', next);
+                    $scope.$emit('before save', nextBefore);
                     if (!$scope.$$listeners["before save"]){
-                        next();
+                        nextBefore();
                     }
                 }
             };
