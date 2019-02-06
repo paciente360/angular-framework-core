@@ -1156,7 +1156,7 @@
                 $scope.alreadySent = false;
                 var controll = true;
 
-                $scope.$on('setProgressFile',function(){                    
+                $scope.$on('setProgressFile', function () {
                     if ($scope.data[$scope.field.name] != undefined && $scope.data[$scope.field.name] != null && ($scope.fileName && $scope.fileName != 'fileName')) {
                         $scope.defaultProgress = 100;
                         $scope.alreadySent = true;
@@ -1188,19 +1188,16 @@
                 $scope.upload = function (file, errFiles) {
                     $scope.f = file;
                     $scope.errFile = errFiles && errFiles[0];
-
                     if (file) {
+
                         file.upload = $scope._upload($scope.field, file);
-
-                        file.upload.then(function (response) {
-                            //console.log(response);
+                        file.upload.then(function (response, err) {
                             $scope.$emit('upload-complete', response);
-
                             $timeout(function () {
                                 file.result = response.data;
-                                if(element.$$element){
+                                if (element.$$element) {
                                     var _input = element.$$element.find('input[type="hidden"]');
-                                }else{
+                                } else {
                                     var _input = element.find('input[type="hidden"]');
                                 }
 
@@ -1210,15 +1207,21 @@
 
                             });
                         }, function (response) {
-                            if (response.status > 0)
+                            console.log(response);
+                            
+                            if (response.status > 0) {
                                 $scope.errorMsg = response.status + ': ' + response.data;
+                                $scope.$emit('upload-error', response);
+                            } else {
+                                $scope.$emit('upload-error', response);
+                            }
                         }, function (evt) {
                             file.progress = Math.min(100, parseInt(100.0 *
                                 evt.loaded / evt.total));
-                        });
+                        })
                     }
                 };
-                
+
             }
         }
     }
