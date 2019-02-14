@@ -1187,8 +1187,8 @@
 
                 $scope.upload = function (file, errFiles) {
                     $scope.f = file;
-                    $scope.errFile = errFiles && errFiles[0];
-
+                    $scope.errFile = errFiles && errFiles[0];                    
+                    
                     if (file) {
                         file.upload = $scope._upload($scope.field, file);
 
@@ -1198,9 +1198,14 @@
 
                             $timeout(function () {
                                 file.result = response.data;
-                                var _input = element.find('input[type="hidden"]');
+                                
+                                if(element.$$element){
+                                    var _input = element.$$element.find('input[type="hidden"]');
+                                }else{
+                                    var _input = element.find('input[type="hidden"]');
+                                }                                
 
-                                file.newName = response.data.result ? response.data.result.files.file[0].name : '';
+                                file.newName = response.data.result.files.file[0].name;
 
                                 _input.controller('ngModel').$setViewValue(file.newName);
 
@@ -1560,6 +1565,8 @@
                                 $scope.data[map.district] = response.bairro;
                                 $scope.data[map.city] = response.localidade;
                                 $scope.data[map.state] = response.uf;
+                                $scope.data[map.ibge] = response.ibge;
+                                $scope.data[map.gia] = response.gia;
                             });
                         });
                     }
@@ -3071,69 +3078,6 @@
 })();
 (function () {
     'use strict';
-
-    angular.module('letsAngular')
-        .factory('Backgrid', BackgridFactory);
-
-    BackgridFactory.$inject = ['$window'];
-
-    function BackgridFactory($window) {
-        return $window.Backgrid;
-    }
-
-})();
-
-(function () {
-    'use strict';
-
-    angular.module('letsAngular')
-        .factory('Backbone', BackboneFactory);
-
-    BackboneFactory.$inject = ['$window'];
-
-    function BackboneFactory($window) {
-        return $window.Backbone;
-    }
-
-})();
-
-(function () {
-    'use strict';
-
-    fwAgeMonth.$inject = ["birthday"];
-    angular.module('letsAngular')
-        .filter('fwAgeMonth', fwAgeMonth);
-
-    /**
-     * Calculate age from birthday
-     * @param {String of Date} birthday 
-     */
-    function fwAgeMonth (birthday) {
-        if (birthday != null) {
-
-            if (typeof birthday == 'string') {
-                birthday = new Date(birthday);
-            }
-
-            var _birthType = ' meses';
-            var _birthMoment = moment(birthday);
-            var _age = moment().diff(_birthMoment, 'months');
-            if (!_age) {
-                _birthType = ' dias';
-                _age = moment().diff(_birthMoment, 'days');
-            }
-            else if (_age > 12) {
-                _birthType = ' anos';
-                _age = moment().diff(_birthMoment, 'years');
-            }
-
-            return _age + _birthType;
-        }
-    }
-})();
-
-(function () {
-    'use strict';
     fwStateProvider.$inject = ["$stateProvider"];
     angular
         .module('letsAngular')
@@ -3252,6 +3196,69 @@
     }
 })();
   
+(function () {
+    'use strict';
+
+    fwAgeMonth.$inject = ["birthday"];
+    angular.module('letsAngular')
+        .filter('fwAgeMonth', fwAgeMonth);
+
+    /**
+     * Calculate age from birthday
+     * @param {String of Date} birthday 
+     */
+    function fwAgeMonth (birthday) {
+        if (birthday != null) {
+
+            if (typeof birthday == 'string') {
+                birthday = new Date(birthday);
+            }
+
+            var _birthType = ' meses';
+            var _birthMoment = moment(birthday);
+            var _age = moment().diff(_birthMoment, 'months');
+            if (!_age) {
+                _birthType = ' dias';
+                _age = moment().diff(_birthMoment, 'days');
+            }
+            else if (_age > 12) {
+                _birthType = ' anos';
+                _age = moment().diff(_birthMoment, 'years');
+            }
+
+            return _age + _birthType;
+        }
+    }
+})();
+
+(function () {
+    'use strict';
+
+    angular.module('letsAngular')
+        .factory('Backgrid', BackgridFactory);
+
+    BackgridFactory.$inject = ['$window'];
+
+    function BackgridFactory($window) {
+        return $window.Backgrid;
+    }
+
+})();
+
+(function () {
+    'use strict';
+
+    angular.module('letsAngular')
+        .factory('Backbone', BackboneFactory);
+
+    BackboneFactory.$inject = ['$window'];
+
+    function BackboneFactory($window) {
+        return $window.Backbone;
+    }
+
+})();
+
 (function () {
     'use strict';
 

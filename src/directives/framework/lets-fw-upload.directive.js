@@ -47,8 +47,8 @@
 
                 $scope.upload = function (file, errFiles) {
                     $scope.f = file;
-                    $scope.errFile = errFiles && errFiles[0];
-
+                    $scope.errFile = errFiles && errFiles[0];                    
+                    
                     if (file) {
                         file.upload = $scope._upload($scope.field, file);
 
@@ -58,9 +58,14 @@
 
                             $timeout(function () {
                                 file.result = response.data;
-                                var _input = element.find('input[type="hidden"]');
+                                
+                                if(element.$$element){
+                                    var _input = element.$$element.find('input[type="hidden"]');
+                                }else{
+                                    var _input = element.find('input[type="hidden"]');
+                                }                                
 
-                                file.newName = response.data.result ? response.data.result.files.file[0].name : '';
+                                file.newName = response.data.result.files.file[0].name;
 
                                 _input.controller('ngModel').$setViewValue(file.newName);
 
