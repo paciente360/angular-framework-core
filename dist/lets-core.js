@@ -71,439 +71,6 @@
 
     };
 })();
-(function () {
-    'use strict';
-    fwModalService.$inject = ["$modal", "jQuery", "$rootScope"];
-    angular
-        .module('letsAngular')
-        .service('fwModalService', fwModalService);
-  
-    fwModalService.inject = ['$modal', 'jQuery', '$rootScope'];
-  
-    function fwModalService($modal, jQuery, $rootScope) {
-  
-        var self = this;
-    
-        self._createModal = function (config) {
-            return $modal.open(config).result;
-        };
-    
-        self.createCRUDModal = function (headers, data, ctrl, template) {
-            return self._createModal({
-                animation: true,
-                templateUrl: template || 'lets/views/crud/crud-modal.html',
-                controller: ctrl || 'CRUDFormModalController',
-                resolve: {
-                    headers: function() { return headers; },
-                    data: function() {
-                        try {
-                            var _data = angular.copy(data);
-                        } catch(error) {
-                            var _data = jQuery.extend({}, data);
-                        }
-                        return _data;
-                    }
-                },
-                size: 'lg',
-                backdrop: 'static',
-                keyboard: false
-            });
-        };
-    
-        self.hide = function () {
-            $rootScope.$emit('cancel-modal');
-        };
-    
-        return {
-            createModal: self._createModal,
-            createCRUDModal: self.createCRUDModal,
-            hide: self.hide
-        };
-    }
-  
-})();
-  
-(function () {
-    'use strict';
-    fwErrorService.$inject = ["ngToast"];
-    angular
-        .module('letsAngular')
-        .service('fwErrorService', fwErrorService);
-
-    fwErrorService.inject = ['ngToast'];
-
-    function fwErrorService (ngToast) {
-
-        var self = this;
-
-        self.emitFormErrors = function (crudForm) {
-            var messages = [];
-            var errorTypes = Object.keys(crudForm.$error);
-            var pattern = /^([0-9]{2})\/([0-9]{2})\/([0-9]{4})$/;
-
-            for (var t in errorTypes) {
-                var type = crudForm.$error[errorTypes[t]];
-
-                for (var _x in type) {
-                    var label = type[_x].$options.fieldInfo.label;
-                    if (errorTypes[t] == 'required') {
-                        messages.push('O campo ' + label + ' é obrigatório');
-                    } else if (errorTypes[t] == 'date' && pattern.test(type[_x].$viewValue) == false) {
-                        messages.push('O campo ' + label + ' está com uma data inválida');
-                    }
-                }
-            }
-
-            if (messages.length > 0) ngToast.warning(messages.join("<br />"));
-        };
-
-        return {
-            emitFormErrors: self.emitFormErrors
-        };
-    }
-
-})();
-
-(function () {
-    'use strict';
-    angular
-        .module('letsAngular')
-        .service('fwChartService', fwChartService);
-  
-    fwChartService.inject = [];
-  
-    function fwChartService() {
-  
-        var self = this;
-    
-        self.configD3chart = function (type, colors, limits) {
-            var _config = null;
-            var _margins = {left: 40, bottom: 28, right: 28, top: 28};
-    
-            if (!limits) {
-            limits = { x: [], y: [0, 150] };
-            }
-    
-            if (type === 'multibar') {
-            _config = nv.models.multiBarChart()
-                // .useInteractiveGuideline(true)
-                .margin(_margins)
-                .color(colors)
-                .yDomain(limits.y);
-            } else {
-            _config = nv.models.lineChart()
-                // .useInteractiveGuideline(true)
-                .margin(_margins)
-                .color(colors)
-                .xDomain(limits.x)
-                .yDomain(limits.y);
-            }
-    
-            _config.xAxis
-            .showMaxMin(false)
-            .tickFormat(function(d) { return d3.time.format('%d/%m/%y')(new Date(d)); });
-            _config.xScale(d3.time.scale());
-            _config.yAxis
-            .showMaxMin(false)
-            .tickFormat(d3.format(',f'));
-    
-            _config.tooltip.enabled(false);
-    
-            return _config;
-        };
-        self.configD3chartData = function (areaStatus, key, data) {
-            var _values = [];
-    
-            data.forEach(function (_data) {
-            var _value = {
-                x: new Date(moment(_data.data).format('MM/DD/YYYY')),
-                y: _data.valor
-            };
-            _values.push(_value);
-            });
-    
-            return [{
-            area: areaStatus,
-            key: key,
-            values: _values
-            }];
-        };
-        self.getMockD3chartsData = function (areaStatus) {
-            if (!areaStatus) areaStatus = false;
-            return {
-            glicemiaCapilar: [
-                {
-                area: areaStatus,
-                key: "Valor",
-                values: [
-                    { x: new Date('06/10/2017').getTime(), y: 77 },
-                    { x: new Date('06/17/2017').getTime(), y: 70 },
-                    { x: new Date('07/01/2017').getTime(), y: 121 },
-                    { x: new Date('07/08/2017').getTime(), y: 84 },
-                    { x: new Date('07/15/2017').getTime(), y: 75 },
-                    { x: new Date('07/22/2017').getTime(), y: 80 },
-                    { x: new Date('07/29/2017').getTime(), y: 76 },
-                    { x: new Date('08/05/2017').getTime(), y: 120 },
-                    { x: new Date('08/12/2017').getTime(), y: 77 },
-                    { x: new Date('08/19/2017').getTime(), y: 85 }
-                ]
-                }
-            ],
-            pressao: [
-            {
-                area: areaStatus,
-                key: "Sistólica",
-                values: [
-                { x: new Date('06/10/2017').getTime(), y: 125 },
-                { x: new Date('06/17/2017').getTime(), y: 139 },
-                { x: new Date('07/01/2017').getTime(), y: 129 },
-                { x: new Date('07/08/2017').getTime(), y: 133 },
-                { x: new Date('07/15/2017').getTime(), y: 134 },
-                { x: new Date('07/22/2017').getTime(), y: 133 },
-                { x: new Date('07/29/2017').getTime(), y: 143 },
-                { x: new Date('08/05/2017').getTime(), y: 148 },
-                { x: new Date('08/12/2017').getTime(), y: 139 },
-                { x: new Date('08/19/2017').getTime(), y: 134 }
-                ]
-            },
-            {
-                area: areaStatus,
-                key: "Diastólica",
-                values: [
-                { x: new Date('06/10/2017').getTime(), y: 78 },
-                { x: new Date('06/17/2017').getTime(), y: 75 },
-                { x: new Date('07/01/2017').getTime(), y: 83 },
-                { x: new Date('07/08/2017').getTime(), y: 80 },
-                { x: new Date('07/15/2017').getTime(), y: 77 },
-                { x: new Date('07/22/2017').getTime(), y: 79 },
-                { x: new Date('07/29/2017').getTime(), y: 83 },
-                { x: new Date('08/05/2017').getTime(), y: 81 },
-                { x: new Date('08/12/2017').getTime(), y: 74 },
-                { x: new Date('08/19/2017').getTime(), y: 81 }
-                ]
-            }
-            ],
-            peso: [
-            {
-                area: areaStatus,
-                key: "Quilos",
-                values: [
-                { x: new Date('06/10/2017').getTime(), y: 89 },
-                { x: new Date('06/17/2017').getTime(), y: 90 },
-                { x: new Date('07/01/2017').getTime(), y: 89 },
-                { x: new Date('07/08/2017').getTime(), y: 92 },
-                { x: new Date('07/15/2017').getTime(), y: 93 },
-                { x: new Date('07/22/2017').getTime(), y: 94 },
-                { x: new Date('07/29/2017').getTime(), y: 93 },
-                { x: new Date('08/05/2017').getTime(), y: 93 },
-                { x: new Date('08/12/2017').getTime(), y: 93 },
-                { x: new Date('08/19/2017').getTime(), y: 92 }
-                ]
-            }
-            ],
-            altura: [
-            {
-                area: areaStatus,
-                key: "Metros",
-                values: [
-                { x: new Date('06/10/2017').getTime(), y: 1.76 },
-                { x: new Date('06/17/2017').getTime(), y: 1.76 },
-                { x: new Date('07/01/2017').getTime(), y: 1.76 },
-                { x: new Date('07/08/2017').getTime(), y: 1.76 },
-                { x: new Date('07/15/2017').getTime(), y: 1.76 },
-                { x: new Date('07/22/2017').getTime(), y: 1.76 },
-                { x: new Date('07/29/2017').getTime(), y: 1.76 },
-                { x: new Date('08/05/2017').getTime(), y: 1.76 },
-                { x: new Date('08/12/2017').getTime(), y: 1.76 },
-                { x: new Date('08/19/2017').getTime(), y: 1.76 }
-                ]
-            }
-            ],
-            imc: [
-            {
-                area: areaStatus,
-                key: "Valor",
-                values: [
-                { x: new Date('06/10/2017').getTime(), y: 15.3 },
-                { x: new Date('06/17/2017').getTime(), y: 15.5 },
-                { x: new Date('07/01/2017').getTime(), y: 15.3 },
-                { x: new Date('07/08/2017').getTime(), y: 15.8 },
-                { x: new Date('07/15/2017').getTime(), y: 16.0 },
-                { x: new Date('07/22/2017').getTime(), y: 16.2 },
-                { x: new Date('07/29/2017').getTime(), y: 16.0 },
-                { x: new Date('08/05/2017').getTime(), y: 16.0 },
-                { x: new Date('08/12/2017').getTime(), y: 16.0 },
-                { x: new Date('08/19/2017').getTime(), y: 15.8 }
-                ]
-            }
-            ],
-            hdlLdl: [
-                {
-                area: areaStatus,
-                key: "HDL",
-                values: [
-                    { x: new Date('06/10/2017').getTime(), y: 43 },
-                    { x: new Date('06/17/2017').getTime(), y: 41 },
-                    { x: new Date('07/01/2017').getTime(), y: 42 },
-                    { x: new Date('07/08/2017').getTime(), y: 45 },
-                    { x: new Date('07/15/2017').getTime(), y: 46 },
-                    { x: new Date('07/22/2017').getTime(), y: 48 },
-                    { x: new Date('07/29/2017').getTime(), y: 44 },
-                    { x: new Date('08/05/2017').getTime(), y: 41 },
-                    { x: new Date('08/12/2017').getTime(), y: 42 },
-                    { x: new Date('08/19/2017').getTime(), y: 40 }
-                ]
-                },
-                {
-                area: areaStatus,
-                key: "LDL",
-                values: [
-                    { x: new Date('06/10/2017').getTime(), y: 121 },
-                    { x: new Date('06/17/2017').getTime(), y: 130 },
-                    { x: new Date('07/01/2017').getTime(), y: 137 },
-                    { x: new Date('07/08/2017').getTime(), y: 138 },
-                    { x: new Date('07/15/2017').getTime(), y: 120 },
-                    { x: new Date('07/22/2017').getTime(), y: 122 },
-                    { x: new Date('07/29/2017').getTime(), y: 123 },
-                    { x: new Date('08/05/2017').getTime(), y: 124 },
-                    { x: new Date('08/12/2017').getTime(), y: 122 },
-                    { x: new Date('08/19/2017').getTime(), y: 120 }
-                ]
-                }
-            ]
-            };
-        };
-        self.getMockD3chartsConfig = function () {
-            return {
-            glicemiaCapilar: self.configD3chart('line', ['#092e64'], { x: [new Date('06/10/2017'), new Date('08/09/2017')], y: [50, 130] }),
-            pressao: self.configD3chart('line', ['#092e64', '#008df5'], { x: [new Date('06/10/2017'), new Date('08/09/2017')], y: [50, 150] }),
-            peso: self.configD3chart('line', ['#092e64'], { x: [new Date('06/10/2017'), new Date('08/09/2017')], y: [80, 100] }),
-            altura: self.configD3chart('line', ['#092e64'], { x: [new Date('06/10/2017'), new Date('08/09/2017')], y: [0, 2] }),
-            imc: self.configD3chart('line', ['#092e64'], { x: [new Date('06/10/2017'), new Date('08/09/2017')], y: [12, 20] }),
-            hdlLdl: self.configD3chart('line', ['#092e64', '#008df5'], { x: [new Date('06/10/2017'), new Date('08/09/2017')], y: [30, 150] })
-            };
-        };
-    
-        return {
-            getMockD3chartsData: self.getMockD3chartsData,
-            getMockD3chartsConfig: self.getMockD3chartsConfig,
-            configD3chart: self.configD3chart,
-            configD3chartData: self.configD3chartData
-        };
-  
-    }
-  
-})();
-  
-(function () {
-    'use strict';
-    fwAuthService.$inject = ["$window", "LoopBackAuth", "Usuario", "$state", "$auth", "appSettings", "$http", "$q"];
-    angular
-        .module('letsAngular')
-        .service('fwAuthService', fwAuthService);
-  
-    fwAuthService.inject = ['$window', 'LoopBackAuth', 'Usuario', '$state', '$auth', 'appSettings', '$http'];
-  
-    function fwAuthService($window, LoopBackAuth, Usuario, $state, $auth, appSettings, $http, $q) {
-        var SERVER_URL = appSettings.API_URL;
-        var self = this;
-    
-        self.updateLocalStorage = function (item, i) {
-            var user = self.getUser();
-            user[item] = i;
-            self.setUserInfo(user);
-        }
-    
-        self.setUserLb = function (accessToken) {
-            // console.log(LoopBackAuth);
-            LoopBackAuth.setUser(accessToken.id, accessToken.userId, accessToken.user);
-            LoopBackAuth.rememberMe = true;
-            LoopBackAuth.save();
-        }
-    
-        self.setUserInfo = function (user) {
-            window.localStorage['user'] = angular.toJson(user);
-        }
-    
-        self.getUser = function () {
-            if (window.localStorage['user']) {
-                return JSON.parse(window.localStorage['user']);
-            }
-            return false;
-        }
-    
-        self.isAuthenticated = function () {
-            return LoopBackAuth.currentUserId != null;
-        }
-    
-        //Autenticacao Provider
-        self.authenticate = function (provider) {
-            // self.count++;
-            return $auth.authenticate(provider)
-                .then(function (response) {
-                    var obj = { accessToken: response.access_token }
-                    return $http.post(SERVER_URL + 'users/facebook/token', obj);
-                })
-                .then(function (response) {
-                    // console.log(response);
-                    var accessToken = {
-                        id: response.data.id,
-                        userId: response.data.user.id,
-                        user: response.data.user
-                    }
-                    self.setUserLb(accessToken);
-                    self.setUserInfo(response.data.user);
-                    self.removeSatellizer();
-                    //$auth.setToken(response.data.id);
-                    // window.localStorage['user'] = angular.toJson(response.data.user);
-                    // window.localStorage['$LoopBack$accessTokenId'] = window.localStorage.getItem('satellizer_token');
-                    // window.localStorage['$LoopBack$currentUserId'] = JSON.parse(window.localStorage.getItem('user')).id;
-                    // window.localStorage['$LoopBack$rememberMe'] = true;
-                    $state.go('main.search');
-                })
-                .catch(function (err) {
-                    console.debug(err);
-                })
-            // .finally(function () {
-            //      self.count--;
-            // })
-        }
-    
-        self.logout = function (token) {
-            Usuario.userLogout({ 'accessToken': token })
-                .$promise
-                .then(function (success) {
-                    LoopBackAuth.clearUser();
-                    LoopBackAuth.clearStorage();
-                    $window.localStorage.removeItem('user');
-                    $state.go('login');
-                })
-                .catch(function (err) {
-                    // console.log('err');
-                    // console.log(err);
-                    LoopBackAuth.clearUser();
-                    LoopBackAuth.clearStorage();
-                    $window.localStorage.removeItem('user');
-                    $state.go('login');
-                });
-        }
-    
-        self.getCurrentUserId = function () {
-            return LoopBackAuth.currentUserId;
-        }
-    
-        self.getCurrentUserToken = function () {
-            return LoopBackAuth.accessTokenId;
-        }
-    
-        self.removeSatellizer = function () {
-            if ($window.localStorage.getItem('satellizer_token')) {
-                $window.localStorage.removeItem('satellizer_token');
-            }
-        }
-    }
-})();
-  
 /*global angular*/
 /*jslint plusplus: true*/
 /*!
@@ -1140,6 +707,439 @@
   
 (function () {
     'use strict';
+    fwModalService.$inject = ["$modal", "jQuery", "$rootScope"];
+    angular
+        .module('letsAngular')
+        .service('fwModalService', fwModalService);
+  
+    fwModalService.inject = ['$modal', 'jQuery', '$rootScope'];
+  
+    function fwModalService($modal, jQuery, $rootScope) {
+  
+        var self = this;
+    
+        self._createModal = function (config) {
+            return $modal.open(config).result;
+        };
+    
+        self.createCRUDModal = function (headers, data, ctrl, template) {
+            return self._createModal({
+                animation: true,
+                templateUrl: template || 'lets/views/crud/crud-modal.html',
+                controller: ctrl || 'CRUDFormModalController',
+                resolve: {
+                    headers: function() { return headers; },
+                    data: function() {
+                        try {
+                            var _data = angular.copy(data);
+                        } catch(error) {
+                            var _data = jQuery.extend({}, data);
+                        }
+                        return _data;
+                    }
+                },
+                size: 'lg',
+                backdrop: 'static',
+                keyboard: false
+            });
+        };
+    
+        self.hide = function () {
+            $rootScope.$emit('cancel-modal');
+        };
+    
+        return {
+            createModal: self._createModal,
+            createCRUDModal: self.createCRUDModal,
+            hide: self.hide
+        };
+    }
+  
+})();
+  
+(function () {
+    'use strict';
+    fwErrorService.$inject = ["ngToast"];
+    angular
+        .module('letsAngular')
+        .service('fwErrorService', fwErrorService);
+
+    fwErrorService.inject = ['ngToast'];
+
+    function fwErrorService (ngToast) {
+
+        var self = this;
+
+        self.emitFormErrors = function (crudForm) {
+            var messages = [];
+            var errorTypes = Object.keys(crudForm.$error);
+            var pattern = /^([0-9]{2})\/([0-9]{2})\/([0-9]{4})$/;
+
+            for (var t in errorTypes) {
+                var type = crudForm.$error[errorTypes[t]];
+
+                for (var _x in type) {
+                    var label = type[_x].$options.fieldInfo.label;
+                    if (errorTypes[t] == 'required') {
+                        messages.push('O campo ' + label + ' é obrigatório');
+                    } else if (errorTypes[t] == 'date' && pattern.test(type[_x].$viewValue) == false) {
+                        messages.push('O campo ' + label + ' está com uma data inválida');
+                    }
+                }
+            }
+
+            if (messages.length > 0) ngToast.warning(messages.join("<br />"));
+        };
+
+        return {
+            emitFormErrors: self.emitFormErrors
+        };
+    }
+
+})();
+
+(function () {
+    'use strict';
+    angular
+        .module('letsAngular')
+        .service('fwChartService', fwChartService);
+  
+    fwChartService.inject = [];
+  
+    function fwChartService() {
+  
+        var self = this;
+    
+        self.configD3chart = function (type, colors, limits) {
+            var _config = null;
+            var _margins = {left: 40, bottom: 28, right: 28, top: 28};
+    
+            if (!limits) {
+            limits = { x: [], y: [0, 150] };
+            }
+    
+            if (type === 'multibar') {
+            _config = nv.models.multiBarChart()
+                // .useInteractiveGuideline(true)
+                .margin(_margins)
+                .color(colors)
+                .yDomain(limits.y);
+            } else {
+            _config = nv.models.lineChart()
+                // .useInteractiveGuideline(true)
+                .margin(_margins)
+                .color(colors)
+                .xDomain(limits.x)
+                .yDomain(limits.y);
+            }
+    
+            _config.xAxis
+            .showMaxMin(false)
+            .tickFormat(function(d) { return d3.time.format('%d/%m/%y')(new Date(d)); });
+            _config.xScale(d3.time.scale());
+            _config.yAxis
+            .showMaxMin(false)
+            .tickFormat(d3.format(',f'));
+    
+            _config.tooltip.enabled(false);
+    
+            return _config;
+        };
+        self.configD3chartData = function (areaStatus, key, data) {
+            var _values = [];
+    
+            data.forEach(function (_data) {
+            var _value = {
+                x: new Date(moment(_data.data).format('MM/DD/YYYY')),
+                y: _data.valor
+            };
+            _values.push(_value);
+            });
+    
+            return [{
+            area: areaStatus,
+            key: key,
+            values: _values
+            }];
+        };
+        self.getMockD3chartsData = function (areaStatus) {
+            if (!areaStatus) areaStatus = false;
+            return {
+            glicemiaCapilar: [
+                {
+                area: areaStatus,
+                key: "Valor",
+                values: [
+                    { x: new Date('06/10/2017').getTime(), y: 77 },
+                    { x: new Date('06/17/2017').getTime(), y: 70 },
+                    { x: new Date('07/01/2017').getTime(), y: 121 },
+                    { x: new Date('07/08/2017').getTime(), y: 84 },
+                    { x: new Date('07/15/2017').getTime(), y: 75 },
+                    { x: new Date('07/22/2017').getTime(), y: 80 },
+                    { x: new Date('07/29/2017').getTime(), y: 76 },
+                    { x: new Date('08/05/2017').getTime(), y: 120 },
+                    { x: new Date('08/12/2017').getTime(), y: 77 },
+                    { x: new Date('08/19/2017').getTime(), y: 85 }
+                ]
+                }
+            ],
+            pressao: [
+            {
+                area: areaStatus,
+                key: "Sistólica",
+                values: [
+                { x: new Date('06/10/2017').getTime(), y: 125 },
+                { x: new Date('06/17/2017').getTime(), y: 139 },
+                { x: new Date('07/01/2017').getTime(), y: 129 },
+                { x: new Date('07/08/2017').getTime(), y: 133 },
+                { x: new Date('07/15/2017').getTime(), y: 134 },
+                { x: new Date('07/22/2017').getTime(), y: 133 },
+                { x: new Date('07/29/2017').getTime(), y: 143 },
+                { x: new Date('08/05/2017').getTime(), y: 148 },
+                { x: new Date('08/12/2017').getTime(), y: 139 },
+                { x: new Date('08/19/2017').getTime(), y: 134 }
+                ]
+            },
+            {
+                area: areaStatus,
+                key: "Diastólica",
+                values: [
+                { x: new Date('06/10/2017').getTime(), y: 78 },
+                { x: new Date('06/17/2017').getTime(), y: 75 },
+                { x: new Date('07/01/2017').getTime(), y: 83 },
+                { x: new Date('07/08/2017').getTime(), y: 80 },
+                { x: new Date('07/15/2017').getTime(), y: 77 },
+                { x: new Date('07/22/2017').getTime(), y: 79 },
+                { x: new Date('07/29/2017').getTime(), y: 83 },
+                { x: new Date('08/05/2017').getTime(), y: 81 },
+                { x: new Date('08/12/2017').getTime(), y: 74 },
+                { x: new Date('08/19/2017').getTime(), y: 81 }
+                ]
+            }
+            ],
+            peso: [
+            {
+                area: areaStatus,
+                key: "Quilos",
+                values: [
+                { x: new Date('06/10/2017').getTime(), y: 89 },
+                { x: new Date('06/17/2017').getTime(), y: 90 },
+                { x: new Date('07/01/2017').getTime(), y: 89 },
+                { x: new Date('07/08/2017').getTime(), y: 92 },
+                { x: new Date('07/15/2017').getTime(), y: 93 },
+                { x: new Date('07/22/2017').getTime(), y: 94 },
+                { x: new Date('07/29/2017').getTime(), y: 93 },
+                { x: new Date('08/05/2017').getTime(), y: 93 },
+                { x: new Date('08/12/2017').getTime(), y: 93 },
+                { x: new Date('08/19/2017').getTime(), y: 92 }
+                ]
+            }
+            ],
+            altura: [
+            {
+                area: areaStatus,
+                key: "Metros",
+                values: [
+                { x: new Date('06/10/2017').getTime(), y: 1.76 },
+                { x: new Date('06/17/2017').getTime(), y: 1.76 },
+                { x: new Date('07/01/2017').getTime(), y: 1.76 },
+                { x: new Date('07/08/2017').getTime(), y: 1.76 },
+                { x: new Date('07/15/2017').getTime(), y: 1.76 },
+                { x: new Date('07/22/2017').getTime(), y: 1.76 },
+                { x: new Date('07/29/2017').getTime(), y: 1.76 },
+                { x: new Date('08/05/2017').getTime(), y: 1.76 },
+                { x: new Date('08/12/2017').getTime(), y: 1.76 },
+                { x: new Date('08/19/2017').getTime(), y: 1.76 }
+                ]
+            }
+            ],
+            imc: [
+            {
+                area: areaStatus,
+                key: "Valor",
+                values: [
+                { x: new Date('06/10/2017').getTime(), y: 15.3 },
+                { x: new Date('06/17/2017').getTime(), y: 15.5 },
+                { x: new Date('07/01/2017').getTime(), y: 15.3 },
+                { x: new Date('07/08/2017').getTime(), y: 15.8 },
+                { x: new Date('07/15/2017').getTime(), y: 16.0 },
+                { x: new Date('07/22/2017').getTime(), y: 16.2 },
+                { x: new Date('07/29/2017').getTime(), y: 16.0 },
+                { x: new Date('08/05/2017').getTime(), y: 16.0 },
+                { x: new Date('08/12/2017').getTime(), y: 16.0 },
+                { x: new Date('08/19/2017').getTime(), y: 15.8 }
+                ]
+            }
+            ],
+            hdlLdl: [
+                {
+                area: areaStatus,
+                key: "HDL",
+                values: [
+                    { x: new Date('06/10/2017').getTime(), y: 43 },
+                    { x: new Date('06/17/2017').getTime(), y: 41 },
+                    { x: new Date('07/01/2017').getTime(), y: 42 },
+                    { x: new Date('07/08/2017').getTime(), y: 45 },
+                    { x: new Date('07/15/2017').getTime(), y: 46 },
+                    { x: new Date('07/22/2017').getTime(), y: 48 },
+                    { x: new Date('07/29/2017').getTime(), y: 44 },
+                    { x: new Date('08/05/2017').getTime(), y: 41 },
+                    { x: new Date('08/12/2017').getTime(), y: 42 },
+                    { x: new Date('08/19/2017').getTime(), y: 40 }
+                ]
+                },
+                {
+                area: areaStatus,
+                key: "LDL",
+                values: [
+                    { x: new Date('06/10/2017').getTime(), y: 121 },
+                    { x: new Date('06/17/2017').getTime(), y: 130 },
+                    { x: new Date('07/01/2017').getTime(), y: 137 },
+                    { x: new Date('07/08/2017').getTime(), y: 138 },
+                    { x: new Date('07/15/2017').getTime(), y: 120 },
+                    { x: new Date('07/22/2017').getTime(), y: 122 },
+                    { x: new Date('07/29/2017').getTime(), y: 123 },
+                    { x: new Date('08/05/2017').getTime(), y: 124 },
+                    { x: new Date('08/12/2017').getTime(), y: 122 },
+                    { x: new Date('08/19/2017').getTime(), y: 120 }
+                ]
+                }
+            ]
+            };
+        };
+        self.getMockD3chartsConfig = function () {
+            return {
+            glicemiaCapilar: self.configD3chart('line', ['#092e64'], { x: [new Date('06/10/2017'), new Date('08/09/2017')], y: [50, 130] }),
+            pressao: self.configD3chart('line', ['#092e64', '#008df5'], { x: [new Date('06/10/2017'), new Date('08/09/2017')], y: [50, 150] }),
+            peso: self.configD3chart('line', ['#092e64'], { x: [new Date('06/10/2017'), new Date('08/09/2017')], y: [80, 100] }),
+            altura: self.configD3chart('line', ['#092e64'], { x: [new Date('06/10/2017'), new Date('08/09/2017')], y: [0, 2] }),
+            imc: self.configD3chart('line', ['#092e64'], { x: [new Date('06/10/2017'), new Date('08/09/2017')], y: [12, 20] }),
+            hdlLdl: self.configD3chart('line', ['#092e64', '#008df5'], { x: [new Date('06/10/2017'), new Date('08/09/2017')], y: [30, 150] })
+            };
+        };
+    
+        return {
+            getMockD3chartsData: self.getMockD3chartsData,
+            getMockD3chartsConfig: self.getMockD3chartsConfig,
+            configD3chart: self.configD3chart,
+            configD3chartData: self.configD3chartData
+        };
+  
+    }
+  
+})();
+  
+(function () {
+    'use strict';
+    fwAuthService.$inject = ["$window", "LoopBackAuth", "Usuario", "$state", "$auth", "appSettings", "$http", "$q"];
+    angular
+        .module('letsAngular')
+        .service('fwAuthService', fwAuthService);
+  
+    fwAuthService.inject = ['$window', 'LoopBackAuth', 'Usuario', '$state', '$auth', 'appSettings', '$http'];
+  
+    function fwAuthService($window, LoopBackAuth, Usuario, $state, $auth, appSettings, $http, $q) {
+        var SERVER_URL = appSettings.API_URL;
+        var self = this;
+    
+        self.updateLocalStorage = function (item, i) {
+            var user = self.getUser();
+            user[item] = i;
+            self.setUserInfo(user);
+        }
+    
+        self.setUserLb = function (accessToken) {
+            // console.log(LoopBackAuth);
+            LoopBackAuth.setUser(accessToken.id, accessToken.userId, accessToken.user);
+            LoopBackAuth.rememberMe = true;
+            LoopBackAuth.save();
+        }
+    
+        self.setUserInfo = function (user) {
+            window.localStorage['user'] = angular.toJson(user);
+        }
+    
+        self.getUser = function () {
+            if (window.localStorage['user']) {
+                return JSON.parse(window.localStorage['user']);
+            }
+            return false;
+        }
+    
+        self.isAuthenticated = function () {
+            return LoopBackAuth.currentUserId != null;
+        }
+    
+        //Autenticacao Provider
+        self.authenticate = function (provider) {
+            // self.count++;
+            return $auth.authenticate(provider)
+                .then(function (response) {
+                    var obj = { accessToken: response.access_token }
+                    return $http.post(SERVER_URL + 'users/facebook/token', obj);
+                })
+                .then(function (response) {
+                    // console.log(response);
+                    var accessToken = {
+                        id: response.data.id,
+                        userId: response.data.user.id,
+                        user: response.data.user
+                    }
+                    self.setUserLb(accessToken);
+                    self.setUserInfo(response.data.user);
+                    self.removeSatellizer();
+                    //$auth.setToken(response.data.id);
+                    // window.localStorage['user'] = angular.toJson(response.data.user);
+                    // window.localStorage['$LoopBack$accessTokenId'] = window.localStorage.getItem('satellizer_token');
+                    // window.localStorage['$LoopBack$currentUserId'] = JSON.parse(window.localStorage.getItem('user')).id;
+                    // window.localStorage['$LoopBack$rememberMe'] = true;
+                    $state.go('main.search');
+                })
+                .catch(function (err) {
+                    console.debug(err);
+                })
+            // .finally(function () {
+            //      self.count--;
+            // })
+        }
+    
+        self.logout = function (token) {
+            Usuario.userLogout({ 'accessToken': token })
+                .$promise
+                .then(function (success) {
+                    LoopBackAuth.clearUser();
+                    LoopBackAuth.clearStorage();
+                    $window.localStorage.removeItem('user');
+                    $state.go('login');
+                })
+                .catch(function (err) {
+                    // console.log('err');
+                    // console.log(err);
+                    LoopBackAuth.clearUser();
+                    LoopBackAuth.clearStorage();
+                    $window.localStorage.removeItem('user');
+                    $state.go('login');
+                });
+        }
+    
+        self.getCurrentUserId = function () {
+            return LoopBackAuth.currentUserId;
+        }
+    
+        self.getCurrentUserToken = function () {
+            return LoopBackAuth.accessTokenId;
+        }
+    
+        self.removeSatellizer = function () {
+            if ($window.localStorage.getItem('satellizer_token')) {
+                $window.localStorage.removeItem('satellizer_token');
+            }
+        }
+    }
+})();
+  
+(function () {
+    'use strict';
 
     angular.module('letsAngular')
         .directive('fwUpload', fwUpload);
@@ -1596,19 +1596,21 @@
                     scope.formatData = function (data, field) {
 
                         if (field.autocomplete !== false) {
-                            return data[field.name + '.label'].label || data[field.name + '.label'];
-                        }
 
-                        if (field.type == 'date') {
+                            return data[field.name + '.label'].label || data[field.name + '.label'];
+
+                        }
+                        else if (field.type == 'date') {
+
                             if (field.customOptions.hour) {
                                 return moment(data[field.name]).format('DD/MM/YYYY HH:mm');
                             } else {
                                 return moment(data[field.name]).format('DD/MM/YYYY');
                             }
+
                         }
+                        else  if (field.type == 'boolean') {
 
-
-                        if (field.type == 'boolean') {
                             if (field.customOptions.statusFalseText && field.customOptions.statusTrueText) {
                                 if (data[field.name]) {
                                     return field.customOptions.statusTrueText;
@@ -1616,16 +1618,28 @@
                                     return field.customOptions.statusFalseText;
                                 }
                             }
+
                         }
+                        else if (field.type == 'string' && field.customOptions.file) {
 
-
-                        if (field.type == 'string' && field.customOptions.file) {
                             var url = $rootScope.appSettings.API_URL + 'upload/' + field.customOptions.file.container + '/download/' + data[field.name];
                             return $sce.trustAsHtml('<a target="_blank" href="' + url + '" class="btn btn-default ng-scope" style=""><i class="glyphicon glyphicon-download"></i></a>');
+                           
+                            
+                        }else if (field.type == 'float') {
+
+                            if( field.customOptions && field.customOptions.currency ){
+                                var rawData = data[field.name];                                
+                                var rawData = rawData.toFixed(2).split('.');
+                                rawData[0] = "R$ " + rawData[0].split(/(?=(?:...)*$)/).join('.');
+                                return rawData.join(',');
+                            }else{
+                                return data[field.name];
+                            }
+
+                        }else{
+                            return data[field.name];
                         }
-
-
-                        return data[field.name];
 
                     }
 
@@ -2316,10 +2330,24 @@
 
                                 }
                                 else if (field.type == 'float') {
-                                    cellOptions.cell = Backgrid.NumberCell.extend({
-                                        decimalSeparator: ',',
-                                        orderSeparator: '.'
-                                    });
+
+                                    if( field.customOptions && field.customOptions.currency ){
+                                        cellOptions.cell = Backgrid.Cell.extend({
+                                            formatter: {
+                                                fromRaw: function (rawData, model) {
+                                                    var rawData = rawData.toFixed(2).split('.');
+                                                    rawData[0] = "R$ " + rawData[0].split(/(?=(?:...)*$)/).join('.');
+                                                    return rawData.join(',');
+                                                }
+                                            }
+                                        });
+                                    }else{
+                                        cellOptions.cell = Backgrid.NumberCell.extend({
+                                            decimalSeparator: ',',
+                                            orderSeparator: '.'
+                                        });
+                                    }
+                                    
                                 }
                                 else if (field.type == 'date') {
                                     
@@ -3085,41 +3113,6 @@
 })();
 (function () {
     'use strict';
-
-    fwAgeMonth.$inject = ["birthday"];
-    angular.module('letsAngular')
-        .filter('fwAgeMonth', fwAgeMonth);
-
-    /**
-     * Calculate age from birthday
-     * @param {String of Date} birthday 
-     */
-    function fwAgeMonth (birthday) {
-        if (birthday != null) {
-
-            if (typeof birthday == 'string') {
-                birthday = new Date(birthday);
-            }
-
-            var _birthType = ' meses';
-            var _birthMoment = moment(birthday);
-            var _age = moment().diff(_birthMoment, 'months');
-            if (!_age) {
-                _birthType = ' dias';
-                _age = moment().diff(_birthMoment, 'days');
-            }
-            else if (_age > 12) {
-                _birthType = ' anos';
-                _age = moment().diff(_birthMoment, 'years');
-            }
-
-            return _age + _birthType;
-        }
-    }
-})();
-
-(function () {
-    'use strict';
     fwStateProvider.$inject = ["$stateProvider"];
     angular
         .module('letsAngular')
@@ -3238,6 +3231,41 @@
     }
 })();
   
+(function () {
+    'use strict';
+
+    fwAgeMonth.$inject = ["birthday"];
+    angular.module('letsAngular')
+        .filter('fwAgeMonth', fwAgeMonth);
+
+    /**
+     * Calculate age from birthday
+     * @param {String of Date} birthday 
+     */
+    function fwAgeMonth (birthday) {
+        if (birthday != null) {
+
+            if (typeof birthday == 'string') {
+                birthday = new Date(birthday);
+            }
+
+            var _birthType = ' meses';
+            var _birthMoment = moment(birthday);
+            var _age = moment().diff(_birthMoment, 'months');
+            if (!_age) {
+                _birthType = ' dias';
+                _age = moment().diff(_birthMoment, 'days');
+            }
+            else if (_age > 12) {
+                _birthType = ' anos';
+                _age = moment().diff(_birthMoment, 'years');
+            }
+
+            return _age + _birthType;
+        }
+    }
+})();
+
 (function () {
     'use strict';
 
