@@ -1201,7 +1201,7 @@
                                     var _input = element.find('input[type="hidden"]');
                                 }
 
-                                file.newName = response.data.result ? response.data.result.files.file[0].name : '';
+                                file.newName = response.data.result.files.file[0].name;
 
                                 _input.controller('ngModel').$setViewValue(file.newName);
 
@@ -1211,10 +1211,9 @@
                             
                             if (response.status > 0) {
                                 $scope.errorMsg = response.status + ': ' + response.data;
-                                $scope.$emit('upload-error', response);
-                            } else {
-                                $scope.$emit('upload-error', response);
                             }
+                                $scope.$emit('upload-error', response);
+
                         }, function (evt) {
                             file.progress = Math.min(100, parseInt(100.0 *
                                 evt.loaded / evt.total));
@@ -1567,6 +1566,8 @@
                                 $scope.data[map.district] = response.bairro;
                                 $scope.data[map.city] = response.localidade;
                                 $scope.data[map.state] = response.uf;
+                                $scope.data[map.ibge] = response.ibge;
+                                $scope.data[map.gia] = response.gia;
                             });
                         });
                     }
@@ -1582,46 +1583,67 @@
     angular.module('letsAngular')
         .directive('fwDetailData', fwDetailData);
 
-    fwDetailData.$inject = ['$timeout', '$compile', 'jQuery', '$sce'];
+    fwDetailData.$inject = ['$rootScope', '$timeout', '$compile', 'jQuery', '$sce'];
 
-    function fwDetailData($timeout, $compile, jQuery, $sce) {
+    function fwDetailData($rootScope, $timeout, $compile, jQuery, $sce) {
         return {
             restrict: 'E',
             scope: true,
-            template: '<span">{{ formatData(detail_data, field) }}</span>',
+            template: '<span" ng-bind-html="formatData(detail_data, field)"></span>',
             replace: true,
             link: {
                 pre: function preLink(scope, $el, attrs, controller) {
-                   
+
                     scope.formatData = function (data, field) {
 
-                        if (field.autocomplete !== false){                            
-                            return data[field.name+ '.label'].label || data[field.name+ '.label'];
-                        }                        
-                        
-                        if (field.type == 'date'){
-                            if(field.customOptions.hour){
-                                return moment(data[field.name]).format('DD/MM/YYYY HH:mm');                                
-                            }else{
-                                return moment(data[field.name]).format('DD/MM/YYYY');       
-                            }     
+                        if (field.autocomplete !== false) {
+
+                            return data[field.name + '.label'].label || data[field.name + '.label'];
+
                         }
+                        else if (field.type == 'date') {
 
+                            if (field.customOptions.hour) {
+                                return moment(data[field.name]).format('DD/MM/YYYY HH:mm');
+                            } else {
+                                return moment(data[field.name]).format('DD/MM/YYYY');
+                            }
 
-                        if (field.type == 'boolean'){
-                            if (field.customOptions.statusFalseText && field.customOptions.statusTrueText){
-                                if (data[field.name]){
+                        }
+                        else  if (field.type == 'boolean') {
+
+                            if (field.customOptions.statusFalseText && field.customOptions.statusTrueText) {
+                                if (data[field.name]) {
                                     return field.customOptions.statusTrueText;
-                                }else{
+                                } else {
                                     return field.customOptions.statusFalseText;
                                 }
                             }
+
+                        }
+                        else if (field.type == 'string' && field.customOptions.file) {
+
+                            var url = $rootScope.appSettings.API_URL + 'upload/' + field.customOptions.file.container + '/download/' + data[field.name];
+                            return $sce.trustAsHtml('<a target="_blank" href="' + url + '" class="btn btn-default ng-scope" style=""><i class="glyphicon glyphicon-download"></i></a>');
+                           
+                            
+                        }else if (field.type == 'float') {
+
+                            if( field.customOptions && field.customOptions.currency ){
+                                var rawData = data[field.name];                                
+                                var rawData = rawData.toFixed(2).split('.');
+                                rawData[0] = "R$ " + rawData[0].split(/(?=(?:...)*$)/).join('.');
+                                return rawData.join(',');
+                            }else{
+                                return data[field.name];
+                            }
+
+                        }else{
+                            return data[field.name];
                         }
 
-                        return data[field.name];
-
                     }
-                    
+
                 }
             }
         }
@@ -2309,10 +2331,24 @@
 
                                 }
                                 else if (field.type == 'float') {
-                                    cellOptions.cell = Backgrid.NumberCell.extend({
-                                        decimalSeparator: ',',
-                                        orderSeparator: '.'
-                                    });
+
+                                    if( field.customOptions && field.customOptions.currency ){
+                                        cellOptions.cell = Backgrid.Cell.extend({
+                                            formatter: {
+                                                fromRaw: function (rawData, model) {
+                                                    var rawData = rawData.toFixed(2).split('.');
+                                                    rawData[0] = "R$ " + rawData[0].split(/(?=(?:...)*$)/).join('.');
+                                                    return rawData.join(',');
+                                                }
+                                            }
+                                        });
+                                    }else{
+                                        cellOptions.cell = Backgrid.NumberCell.extend({
+                                            decimalSeparator: ',',
+                                            orderSeparator: '.'
+                                        });
+                                    }
+                                    
                                 }
                                 else if (field.type == 'date') {
                                     
@@ -2855,12 +2891,13 @@
                             
                             var _ini = angular.copy(field);
                             _ini.name +="_ini";
-                            _ini.label +=" (início)";
+                            _ini.label +=" (Início)";
                             scope.fieldsFilter.push(_ini);
 
                             var _fim = angular.copy(field);
                             _fim.name +="_fim";
-                            _fim.label +=" (Fim)";
+                            // Não mudar para "fim", ordenação está por ordem alfabética do label !
+                            _fim.label +=" (Término)";
                             scope.fieldsFilter.push(_fim);
 
                             return;
@@ -2873,12 +2910,13 @@
                             
                             var _ini = angular.copy(field);
                             _ini.name +="_ini";
-                            _ini.label +=" (início)";
+                            _ini.label +=" (Início)";
                             scope.fieldsFilter.push(_ini);
 
                             var _fim = angular.copy(field);
                             _fim.name +="_fim";
-                            _fim.label +=" (Fim)";
+                            // Não mudar para "fim", ordenação está por ordem alfabética do label !
+                            _fim.label +=" (Término)";
                             scope.fieldsFilter.push(_fim);
 
                             return;
@@ -3573,7 +3611,7 @@
             }
             else if (this.crudForm.$valid) {
 
-                function next(){
+                function nextBefore(){
                     if($_scope.headers.tabs){
                         Object.keys($_scope.headers.tabs).forEach(function(tab){
                             if($_scope.data[tab]){
@@ -3592,13 +3630,13 @@
 
                     response.then(function (resp) {
 
-                        function next(){
+                        function nextAfter(){
                             $state.go($state.current.name.replace('.edit', '.list').replace('.new', '.list'), {filter:$scope.getFilter()});
                         }
 
-                        $scope.$emit('after save', next, resp, typeSave);
+                        $scope.$emit('after save', nextAfter, resp, typeSave);
                         if (!$scope.$$listeners["after save"]){
-                            next();
+                            nextAfter();
                         }
 
                     }, function errorCallback(error) {
@@ -3662,12 +3700,15 @@
                         }
                         
                         ngToast.warning(messages.join("<br />"));
+
+                        $scope.$emit('error save', error);
+
                     });
                 }
 
-                $scope.$emit('before save', next);
+                $scope.$emit('before save', nextBefore);
                 if (!$scope.$$listeners["before save"]){
-                    next();
+                    nextBefore();
                 }
 
             } else {
@@ -4114,7 +4155,7 @@
                 }
                 else if (this.crudForm.$valid) {
 
-                    function next(){
+                    function nextBefore(){
                         if (!$scope.data.id) {
                             var response = $scope.resource.customPOST($scope.data, $stateParams.id);
                             var typeSave = "new";
@@ -4125,31 +4166,26 @@
 
                         response.then(function (resp) {
 
-                            function next(){
+                            function nextAfter(){
                                 $rootScope.$broadcast('refreshGRID');
                                 $modalInstance.dismiss('success');
                             }
 
-                            $scope.$emit('after save', next, resp, typeSave);
+                            $scope.$emit('after save', nextAfter, resp, typeSave);
                             if (!$scope.$$listeners["after save"]){
-                                next();
+                                nextAfter();
                             }
 
                         }, function errorCallback(error) {
-                            var messages = [];
-
-                            for (var name in error.data) {
-                                for (var idx in error.data[name]) {
-                                    messages.push(error.data[name][idx]);
-                                }
-                            }
-                            ngToast.warning(messages.join("<br />"));
+                            error.isError = true;
+                            ngToast.warning(error.data.error.message);
+                            $scope.$emit('error save', error);
                         });
                     }
 
-                    $scope.$emit('before save', next);
+                    $scope.$emit('before save', nextBefore);
                     if (!$scope.$$listeners["before save"]){
-                        next();
+                        nextBefore();
                     }
                 }
             };

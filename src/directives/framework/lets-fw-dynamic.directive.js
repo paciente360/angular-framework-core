@@ -91,6 +91,8 @@
                                 $scope.data[map.district] = response.bairro;
                                 $scope.data[map.city] = response.localidade;
                                 $scope.data[map.state] = response.uf;
+                                $scope.data[map.ibge] = response.ibge;
+                                $scope.data[map.gia] = response.gia;
                             });
                         });
                     }

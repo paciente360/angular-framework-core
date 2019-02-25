@@ -61,7 +61,7 @@
                                     var _input = element.find('input[type="hidden"]');
                                 }
 
-                                file.newName = response.data.result ? response.data.result.files.file[0].name : '';
+                                file.newName = response.data.result.files.file[0].name;
 
                                 _input.controller('ngModel').$setViewValue(file.newName);
 

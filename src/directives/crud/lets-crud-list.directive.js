@@ -183,10 +183,24 @@
 
                                 }
                                 else if (field.type == 'float') {
-                                    cellOptions.cell = Backgrid.NumberCell.extend({
-                                        decimalSeparator: ',',
-                                        orderSeparator: '.'
-                                    });
+
+                                    if( field.customOptions && field.customOptions.currency ){
+                                        cellOptions.cell = Backgrid.Cell.extend({
+                                            formatter: {
+                                                fromRaw: function (rawData, model) {
+                                                    var rawData = rawData.toFixed(2).split('.');
+                                                    rawData[0] = "R$ " + rawData[0].split(/(?=(?:...)*$)/).join('.');
+                                                    return rawData.join(',');
+                                                }
+                                            }
+                                        });
+                                    }else{
+                                        cellOptions.cell = Backgrid.NumberCell.extend({
+                                            decimalSeparator: ',',
+                                            orderSeparator: '.'
+                                        });
+                                    }
+                                    
                                 }
                                 else if (field.type == 'date') {
                                     

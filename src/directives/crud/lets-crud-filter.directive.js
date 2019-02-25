@@ -55,12 +55,13 @@
                             
                             var _ini = angular.copy(field);
                             _ini.name +="_ini";
-                            _ini.label +=" (início)";
+                            _ini.label +=" (Início)";
                             scope.fieldsFilter.push(_ini);
 
                             var _fim = angular.copy(field);
                             _fim.name +="_fim";
-                            _fim.label +=" (Fim)";
+                            // Não mudar para "fim", ordenação está por ordem alfabética do label !
+                            _fim.label +=" (Término)";
                             scope.fieldsFilter.push(_fim);
 
                             return;
@@ -73,12 +74,13 @@
                             
                             var _ini = angular.copy(field);
                             _ini.name +="_ini";
-                            _ini.label +=" (início)";
+                            _ini.label +=" (Início)";
                             scope.fieldsFilter.push(_ini);
 
                             var _fim = angular.copy(field);
                             _fim.name +="_fim";
-                            _fim.label +=" (Fim)";
+                            // Não mudar para "fim", ordenação está por ordem alfabética do label !
+                            _fim.label +=" (Término)";
                             scope.fieldsFilter.push(_fim);
 
                             return;

@@ -204,7 +204,7 @@
             }
             else if (this.crudForm.$valid) {
 
-                function next(){
+                function nextBefore(){
                     if($_scope.headers.tabs){
                         Object.keys($_scope.headers.tabs).forEach(function(tab){
                             if($_scope.data[tab]){
@@ -223,13 +223,13 @@
 
                     response.then(function (resp) {
 
-                        function next(){
+                        function nextAfter(){
                             $state.go($state.current.name.replace('.edit', '.list').replace('.new', '.list'), {filter:$scope.getFilter()});
                         }
 
-                        $scope.$emit('after save', next, resp, typeSave);
+                        $scope.$emit('after save', nextAfter, resp, typeSave);
                         if (!$scope.$$listeners["after save"]){
-                            next();
+                            nextAfter();
                         }
 
                     }, function errorCallback(error) {
@@ -293,12 +293,15 @@
                         }
                         
                         ngToast.warning(messages.join("<br />"));
+
+                        $scope.$emit('error save', error);
+
                     });
                 }
 
-                $scope.$emit('before save', next);
+                $scope.$emit('before save', nextBefore);
                 if (!$scope.$$listeners["before save"]){
-                    next();
+                    nextBefore();
                 }
 
             } else {
