@@ -15,12 +15,12 @@
                 search:'&'
             },
             controller: function ($scope) {
-                
+               
             },
             link: function (scope, $el) {
 
                 scope.data = {};
-
+                scope.showBuscaAvancada = false;
                 var fields = angular.copy(scope.fields());
 
                 scope.fieldsFilter = [];
@@ -197,6 +197,10 @@
                     scope.objFilter = undefined;
 
                     var filterData = {};
+                    if(scope.data['showBuscaAvancada']){
+                        scope.showBuscaAvancada = angular.copy(scope.data['showBuscaAvancada']);
+                        delete scope.data['showBuscaAvancada'];
+                    }
                     if (scope.showBuscaAvancada){
                         fields.forEach(function(field, idx){
 
@@ -236,6 +240,7 @@
                                 }
                             }
                         });
+                        scope.data.q = null;
                         scope.objFilter = {data:{filter:filterData}};
                     }else{
                         filterData.q = scope.data.q;
@@ -249,7 +254,7 @@
 
                 scope.openBuscaAvancada = function(){
                     scope.showBuscaAvancada = !scope.showBuscaAvancada;
-                    scope.filterData(true);
+                    // scope.filterData(true);
                 }
 
                 scope.getDateFormated = function(dt){

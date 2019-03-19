@@ -505,7 +505,7 @@
                                         // $scopeFilter.objFilter = {data:params};
                                     }else{
                                         $scopeFilter = $scopeFilter||{};
-                                        $scopeFilter.showBuscaAvancada = true;
+                                        var showBusca = false;
 
                                         Object.keys(params).forEach(function(par){
                                             if(par.split("_label").length > 1){
@@ -518,8 +518,9 @@
                                                     $scopeFilter.data[par] = params[par];
                                                 }
                                             }
+                                            if(par != 'p') showBusca = true;
                                         });
-
+                                        $scopeFilter.data['showBuscaAvancada'] = showBusca;
                                         // $scopeFilter.objFilter = {data:{filter:params}};
                                     }
 
