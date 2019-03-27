@@ -18,8 +18,11 @@
                     scope.formatData = function (data, field) {
 
                         if (field.autocomplete !== false) {
-
-                            return data[field.name + '.label'].label || data[field.name + '.label'];
+                            if(!data[field.name + '.label']){
+                                return null
+                            }else{
+                                return data[field.name + '.label'].label || data[field.name + '.label'];
+                            }
 
                         }
                         else if (field.type == 'date') {
