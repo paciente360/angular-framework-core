@@ -3996,6 +3996,8 @@
             resource.customDELETE(row.id).then(function () {
                 $rootScope.$broadcast('refreshGRID');
                 $rootScope.$broadcast('data-grid-updated', { type: route.split('/').pop() });
+            },function(err){
+                ngToast.warning(err.data.error.message);
             });
         };
 
