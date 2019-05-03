@@ -14,7 +14,6 @@
         'moment-filter',
         'checklist-model',
         'ui.toggle',
-        'ui.select',
         'ngSanitize',
         'colorpicker-dr',
         'ckeditor',
@@ -1142,981 +1141,6 @@
     'use strict';
 
     angular.module('letsAngular')
-        .directive('fwUpload', fwUpload);
-
-    fwUpload.$inject = ['$timeout'];
-
-    function fwUpload($timeout) {
-        return {
-            restrict: 'A',
-            scope: true,
-            link: function ($scope, $rootScope, element) {
-
-                $scope.defaultProgress = 0;
-                $scope.alreadySent = false;
-                var controll = true;
-
-                $scope.$on('setProgressFile', function () {
-                    if ($scope.data[$scope.field.name] != undefined && $scope.data[$scope.field.name] != null && ($scope.fileName && $scope.fileName != 'fileName')) {
-                        $scope.defaultProgress = 100;
-                        $scope.alreadySent = true;
-                    }
-                });
-
-                $scope.pushName = function () {
-                    $timeout(function () {
-                        if (document.getElementsByClassName('dz-filename')[0] && controll) {
-                            controll = false;
-                            document.getElementsByClassName('dropzone')[0].style.width = '192px';
-                            if (document.getElementsByClassName('file-preview')[0]) {
-                                document.getElementsByClassName('file-preview')[0].style.display = 'none';
-                            }
-                            document.getElementsByName('temp_filename')[0].value = document.getElementsByClassName('dz-filename')[0].firstElementChild.innerText;
-                            var _input = element.find('input[type="hidden"]');
-                            _input.controller('ngModel').$setViewValue(document.getElementsByName('temp_filename')[0].value);
-                        }
-                    });
-                };
-
-                $scope.remove = function () {
-                    $scope.alreadySent = false;
-                    var _input = element.find('input[type="hidden"]');
-                    document.getElementsByName('temp_filename')[0].value = null;
-                    _input.controller('ngModel').$setViewValue(null);
-                };
-
-                $scope.upload = function (file, errFiles) {
-                    $scope.f = file;
-                    $scope.errFile = errFiles && errFiles[0];
-                    if (file) {
-
-                        file.upload = $scope._upload($scope.field, file);
-                        file.upload.then(function (response, err) {
-                            $scope.$emit('upload-complete', response);
-                            $timeout(function () {
-                                file.result = response.data;
-                                if (element.$$element) {
-                                    var _input = element.$$element.find('input[type="hidden"]');
-                                } else {
-                                    var _input = element.find('input[type="hidden"]');
-                                }
-
-                                file.newName = response.data.result.files.file[0].name;
-
-                                _input.controller('ngModel').$setViewValue(file.newName);
-
-                            });
-                        }, function (response) {
-                            console.log(response);
-                            
-                            if (response.status > 0) {
-                                $scope.errorMsg = response.status + ': ' + response.data;
-                            }
-                                $scope.$emit('upload-error', response);
-
-                        }, function (evt) {
-                            file.progress = Math.min(100, parseInt(100.0 *
-                                evt.loaded / evt.total));
-                        })
-                    }
-                };
-
-            }
-        }
-    }
-})();
-
-(function () {
-    'use strict';
-
-    angular.module('letsAngular')
-        .directive('fwTags', fwTags);
-
-    fwTags.$inject = [];
-
-    function fwTags() {
-        return {
-            restrict: 'E',
-            scope: {
-                tags: '=',
-            },
-            template:
-
-            '<div class="input-group fw-input-group"><input type="text" class="form-control" placeholder="add a tag..." ng-model="newValue" /> ' +
-            '<span class="input-group-btn"><a class="btn btn-default" ng-click="add()">Add</a></span></div>' +
-            '<div class="tags">' +
-            '<div ng-repeat="(idx, tag) in tags" class="tag label label-success">{{tag}} <a class="close" href ng-click="remove(idx)">×</a></div>' +
-            '</div>',
-            link: function ($scope, $element) {
-
-                if ($scope.tags == null) {
-                    $scope.tags = [];
-                }
-
-                var input = angular.element($element).find('input');
-
-                // setup autocomplete
-                if ($scope.autocomplete) {
-                    // $scope.autocompleteFocus = function (event, ui) {
-                    //     input.val(ui.item.value);
-                    //     return false;
-                    // };
-                    // $scope.autocompleteSelect = function (event, ui) {
-                    //     $scope.newValue = ui.item.value;
-                    //     $scope.$apply($scope.add);
-
-                    //     return false;
-                    // };
-                    // $($element).find('input').autocomplete({
-                    //     minLength: 0,
-                    //     source: function (request, response) {
-                    //         var item;
-                    //         return response((function () {
-                    //             var _i, _len, _ref, _results;
-                    //             _ref = $scope.autocomplete;
-                    //             _results = [];
-                    //             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-                    //                 item = _ref[_i];
-                    //                 if (item.toLowerCase().indexOf(request.term.toLowerCase()) !== -1) {
-                    //                     _results.push(item);
-                    //                 }
-                    //             }
-                    //             return _results;
-                    //         })());
-                    //     },
-                    //     focus: (function (_this) {
-                    //         return function (event, ui) {
-                    //             return $scope.autocompleteFocus(event, ui);
-                    //         };
-                    //     })(this),
-                    //     select: (function (_this) {
-                    //         return function (event, ui) {
-                    //             return $scope.autocompleteSelect(event, ui);
-                    //         };
-                    //     })(this)
-                    // });
-                }
-
-
-                // adds the new tag to the array
-                $scope.add = function () {
-                    // if not dupe, add it
-                    if ($scope.tags.indexOf($scope.newValue) == -1) {
-                        $scope.tags.push($scope.newValue);
-                    }
-                    $scope.newValue = "";
-                };
-
-                // remove an item
-                $scope.remove = function (idx) {
-                    $scope.tags.splice(idx, 1);
-                };
-
-                // capture keypresses
-                input.bind('keypress', function (event) {
-
-                    // enter was pressed
-                    if (event.keyCode == 13) {
-                        event.stopPropagation();
-                        event.preventDefault();
-                        $scope.$apply($scope.add);
-                    }
-                });
-            }
-        };
-    };
-})();
-
-(function () {
-    'use strict';
-
-    angular.module('letsAngular').directive('numbersOnly', function(){
-        return {
-            require: 'ngModel',
-            link: function (scope, element, attr, ngModelCtrl) {
-                function fromUser(text) {
-                    if (text) {
-                        var transformedInput = text.replace(/[^0-9]/g, '');
-    
-                        if (transformedInput !== text) {
-                            ngModelCtrl.$setViewValue(transformedInput);
-                            ngModelCtrl.$render();
-                        }
-                        return transformedInput;
-                    }
-                    return undefined;
-                }            
-                ngModelCtrl.$parsers.push(fromUser);
-            }
-        };
-    });
-
-
-})();
-
-(function () {
-    'use strict';
-
-    angular.module('letsAngular')
-        .directive('fwInput', fwInput);
-
-    fwInput.$inject = ['viaCEP', '$timeout', '$compile', 'jQuery', '$sce'];
-
-    function fwInput(viaCEP, $timeout, $compile, jQuery, $sce) {
-        return {
-            restrict: 'E',
-            scope: true,
-            templateUrl: 'lets/views/framework/input.html',
-            replace: true,
-            link: {
-
-                pre: function preLink(scope, $el, attrs, controller) {
-                    
-                    var dataVar = $el.attr('fw-data');
-                    
-                    if (scope.field.customOptions.events == undefined) {
-                        scope.field.customOptions.events = {};
-                    }
-
-                    scope.fieldHtml = function () {
-                        return $sce.trustAsHtml(scope.field.toString());
-                    }
-
-                    if (dataVar != 'data') {
-                        scope.data = scope[dataVar];
-                    }
-
-                    if(dataVar=="detail_data"){
-                        var detail = scope.detail_key;
-
-                        if (scope.field.autocomplete !== false){
-                            scope.autocomplete = function (field, val) {
-                                return scope.autocompleteDetail(detail, field, val);
-                            }
-    
-                            scope.autocompleteSelect = function ($item, $model, $label) {
-                                return scope.autocompleteDetailSelect(detail, $item, $model, $label);
-                            }
-                        }
-
-                        if (scope.field.customOptions.file != undefined) {
-                            scope.download = function (field, id) {
-                                return scope.downloadDetail(detail, field, id, scope.data);
-                            }
-                        }
-                    }
-
-                    if (scope.field.customOptions.cep != undefined) {
-
-                        $el.find('input.main-input').blur(function () {
-                            var $scope = angular.element(this).scope();
-                            
-                            viaCEP.get(this.value).then(function (response) {
-                                var map = $scope.field.customOptions.cep;
-
-                                $scope.data[map.address] = response.logradouro;
-                                $scope.data[map.district] = response.bairro;
-                                $scope.data[map.city] = response.localidade;
-                                $scope.data[map.state] = response.uf;
-
-                                scope.$$phase || scope.$apply();
-                            });
-                        });
-                    }
-                    else if (scope.field.customOptions.multiple != undefined && scope.field.customOptions.multiple == true) {
-                        var a = $compile($el.contents())(scope);
-                    }
-
-                    jQuery($el).on('blur', ':input[ng-model]', function (e) {
-                        try {
-                            if (angular.element(this).scope().field.customOptions.events.blur != undefined) {
-                                angular.element(this).scope().field.customOptions.events.blur.call(this, e);
-                            }
-                        }
-                        catch (e) {
-                        }
-
-
-                    });
-
-                    scope.isEmpty = function (obj) {
-                        return Object.keys(obj).length;
-                    }
-                }
-
-            }
-
-        }
-    }
-})();
-
-(function () {
-    'use strict';
-
-    angular.module('letsAngular')
-        .directive('fwInputDetail', fwInputDetail);
-
-    fwInputDetail.$inject = ['viaCEP', '$timeout', '$compile', 'jQuery'];
-
-    function fwInputDetail(viaCEP, $timeout, $compile, jQuery) {
-        return {
-            restrict: 'E',
-            scope: true,
-            templateUrl: 'lets/views/framework/input-detail.html',
-            replace: true,
-            link: {
-                post: function preLink(scope, $el, attrs, controller) {
-
-                }
-            }
-        }
-    }
-})();
-
-(function () {
-    'use strict';
-
-    angular.module('letsAngular')
-        .directive('fwDynamic', fwDynamic);
-
-    fwDynamic.$inject = ['viaCEP', '$timeout', '$compile', 'jQuery', '$filter'];
-
-    function fwDynamic(viaCEP, $timeout, $compile, jQuery, $filter) {
-        var FLOAT_REGEXP_1 = /^\$?\d+.(\d{3})*(\,\d*)$/; //Numbers like: 1.123,56
-        var FLOAT_REGEXP_2 = /^\$?\d+,(\d{3})*(\.\d*)$/; //Numbers like: 1,123.56
-        var FLOAT_REGEXP_3 = /^\$?\d+(\.\d*)?$/; //Numbers like: 1123.56
-        var FLOAT_REGEXP_4 = /^\$?\d+(\,\d*)?$/; //Numbers like: 1123,56
-
-        return {
-            restrict: 'A',
-            link: {
-                post: function postLink(scope, $el, attrs, controller) {
-                    if (!controller) {
-                        controller = $el.controller('ngModel');
-                    }
-
-                    if (scope.field.type == 'date') {
-                        $el.mask('99/99/9999');
-
-                    } else if (scope.field.customOptions.cpf != undefined) {
-                        $el.mask('999.999.999-99');
-
-                    } else if (scope.field.customOptions.cnpj != undefined) {
-                        $el.mask('99.999.999/9999-99');
-                        
-                    } else if (scope.field.customOptions.customMask != undefined) {
-                        $el.mask(scope.field.customOptions.customMask);
-
-                    } else if (scope.field.type == 'float') {
-                        if (scope.field.customOptions.currency != undefined) {
-                            $el.mask("#.##0,00", { reverse: true });
-                            controller.$parsers.unshift(function (value) {
-                                return parseFloat($el.cleanVal(),10)/100;
-                            });
-                            controller.$formatters.unshift(function (value) {
-                                return $el.masked(value ? parseFloat(value).toFixed(2) : null);
-                            });
-                        } else {
-                            
-                        }
-                    }else if (scope.field.customOptions.documento !== undefined) {
-
-                        var cpfOrCnpj = function (val) {
-                            return val.replace(/\D/g, '').length >= 12 ? '00.000.000/0000-00' : '000.000.000-009' ;
-                        },
-                            docOptions = {
-                                onKeyPress: function (val, e, field,  options) {
-                                    field.mask(cpfOrCnpj.apply({}, arguments), options);
-                                }
-                            };
-     
-                        $timeout(function () {
-                            $el.mask(cpfOrCnpj, docOptions);
-                        }, 10);
-
-
-                    } else if (scope.field.customOptions.telefone != undefined) {
-                        var SPMaskBehavior = function (val) {
-                            return val.replace(/\D/g, '').length === 11 ? '(00) 00000-0000' : '(00) 0000-00009';
-                        },
-                            spOptions = {
-                                onKeyPress: function (val, e, field, options) {
-                                    field.mask(SPMaskBehavior.apply({}, arguments), options);
-                                }
-                            };
-
-                        $timeout(function () {
-                            $el.mask(SPMaskBehavior, spOptions);
-                        }, 100);
-
-                    } else if (scope.field.customOptions.cep != undefined) {
-
-                        $el.blur(function () {
-
-                            if (!this.value){
-                                return false;
-                            }
-
-                            var $scope = angular.element(this).scope();
-                            var dataVar = jQuery(this).parent().attr('fw-data');
-                            viaCEP.get(this.value).then(function (response) {
-                                var map = $scope.field.customOptions.cep;
-
-                                $scope.data[map.address] = response.logradouro;
-                                $scope.data[map.district] = response.bairro;
-                                $scope.data[map.city] = response.localidade;
-                                $scope.data[map.state] = response.uf;
-                                $scope.data[map.ibge] = response.ibge;
-                                $scope.data[map.gia] = response.gia;
-                            });
-                        });
-                    }
-                }
-            }
-        }
-    }
-})();
-
-(function () {
-    'use strict';
-
-    angular.module('letsAngular')
-        .directive('fwDetailData', fwDetailData);
-
-    fwDetailData.$inject = ['$rootScope', '$timeout', '$compile', 'jQuery', '$sce'];
-
-    function fwDetailData($rootScope, $timeout, $compile, jQuery, $sce) {
-        return {
-            restrict: 'E',
-            scope: true,
-            template: '<span" ng-bind-html="formatData(detail_data, field)"></span>',
-            replace: true,
-            link: {
-                pre: function preLink(scope, $el, attrs, controller) {
-
-                    scope.formatData = function (data, field) {
-
-                        if (field.autocomplete !== false) {
-                            if(!data[field.name + '.label']){
-                                return null
-                            }else{
-                                return data[field.name + '.label'].label || data[field.name + '.label'];
-                            }
-
-                        }
-                        else if (field.type == 'date') {
-
-                            if (field.customOptions.hour) {
-                                return moment(data[field.name]).format('DD/MM/YYYY HH:mm');
-                            } else {
-                                return moment(data[field.name]).format('DD/MM/YYYY');
-                            }
-
-                        }
-                        else  if (field.type == 'boolean') {
-
-                            if (field.customOptions.statusFalseText && field.customOptions.statusTrueText) {
-                                if (data[field.name]) {
-                                    return field.customOptions.statusTrueText;
-                                } else {
-                                    return field.customOptions.statusFalseText;
-                                }
-                            }
-
-                        }
-                        else if (field.type == 'string' && field.customOptions.file) {
-
-                            var url = $rootScope.appSettings.API_URL + 'upload/' + field.customOptions.file.container + '/download/' + data[field.name];
-                            return $sce.trustAsHtml('<a target="_blank" href="' + url + '" class="btn btn-default ng-scope" style=""><i class="glyphicon glyphicon-download"></i></a>');
-                           
-                            
-                        }else if (field.type == 'float') {
-
-                            if( field.customOptions && field.customOptions.currency ){
-                                var rawData = data[field.name];                                
-                                var rawData = rawData.toFixed(2).split('.');
-                                rawData[0] = "R$ " + rawData[0].split(/(?=(?:...)*$)/).join('.');
-                                return rawData.join(',');
-                            }else{
-                                return data[field.name];
-                            }
-
-                        }else{
-                            return data[field.name];
-                        }
-
-                    }
-
-                }
-            }
-        }
-    }
-})();
-
-(function () {
-    'use strict';
-
-    angular.module('letsAngular')
-        .directive('fwDatePicker', fwDatePicker);
-
-    fwDatePicker.$inject = ['$compile', 'jQuery'];
-
-    function fwDatePicker($compile, jQuery) {
-        var controllerName = 'vm';
-        return {
-            restrict: 'A',
-            require: '?ngModel',
-            scope: true,
-            terminal: true,
-            priority: 1,
-            compile: function (element, attrs) {
-
-                var wrapper = angular.element(
-                    '<div class="input-group">' +
-                    '<span class="input-group-btn">' +
-                    '<button type="button" class="btn btn-default" ng-click="' + controllerName + '.openPopup($event)"><i class="glyphicon glyphicon-calendar"></i></button>' +
-                    '</span>' +
-                    '</div>');
-
-                function setAttributeIfNotExists(name, value) {
-                    var oldValue = element.attr(name);
-                    if (!angular.isDefined(oldValue) || oldValue === false) {
-                        element.attr(name, value);
-                    }
-                }
-
-                setAttributeIfNotExists('type', 'text');
-                setAttributeIfNotExists('is-open', controllerName + '.popupOpen');
-                setAttributeIfNotExists('show-button-bar', false);
-                setAttributeIfNotExists('show-weeks', false);
-                setAttributeIfNotExists('datepicker-options', 'datepickerOptions');
-
-                element.addClass('form-control');
-                element.removeAttr('fw-date-picker');
-                element.after(wrapper);
-                wrapper.prepend(element);
-
-                return function (scope, element) {
-                    var options = {
-
-                    };
-
-                    if (scope.data === undefined) scope.data = {};
-
-                    if (!scope.field) {
-                        scope.field = { customOptions: [] };
-                        if (attrs.fwDatePickerNgModelParent) {
-                            options.initDate = new Date(scope.$parent[attrs.ngModel]);
-                            scope.$parent[attrs.ngModel] = angular.copy(options.initDate);
-                        } else {
-                            options.initDate = new Date(scope[attrs.ngModel]);
-                            scope[attrs.ngModel] = angular.copy(options.initDate);
-                        }
-                    }
-
-                    else if (scope.data[scope.field.name] != null) {
-                        options.initDate = new Date(scope.data[scope.field.name]);
-                        scope.data[scope.field.name] = angular.copy(options.initDate);
-                    }
-
-                    var format = 'dd/MM/yyyy';
-
-                    if (scope.field.customOptions.monthpicker !== undefined) {
-                        options.datepickerMode = "'month'";
-                        options.minMode = 'month';
-
-                        format = 'MM/yyyy';
-                    }
-
-                    element.find('input').attr('datepicker-popup', format);
-
-                    element.find('input').blur(function () {
-                        if (!moment(this.value, format).isValid() && this.value !== '') {
-                            scope.field.error = true;
-                        } else {
-                            scope.field.error = false;
-                        }
-                    });
-
-
-                    // element.find('input').focus(function (e) {
-                    //     scope.vm.openPopup(e);
-                    // });
-
-                    scope.datepickerOptions = options;
-
-                    $compile(element)(scope);
-                };
-            },
-            controller: ["$scope", function ($scope) {
-                this.popupOpen = false;
-                
-                this.openPopup = function ($event) {
-                    $event.preventDefault();
-                    $event.stopPropagation();
-                    this.popupOpen = true;
-                };
-            }],
-            controllerAs: controllerName
-        };
-    }
-})();
-
-(function (root, factory) {
-  // AMD
-  if (typeof define === 'function' && define.amd) define(['angular'], factory);
-  // Global
-  else factory(angular);
-}(this, function (angular) {
-
-  angular
-  .module('ckeditor', [])
-  .directive('ckeditor', ['$parse', ckeditorDirective]);
-
-  // Polyfill setImmediate function.
-  var setImmediate = window && window.setImmediate ? window.setImmediate : function (fn) {
-    setTimeout(fn, 0);
-  };
-
-  /**
-   * CKEditor directive.
-   *
-   * @example
-   * <div ckeditor="options" ng-model="content" ready="onReady()"></div>
-   */
-
-  function ckeditorDirective($parse) {
-    return {
-      restrict: 'A',
-      require: ['ckeditor', 'ngModel'],
-      controller: [
-        '$scope',
-        '$element',
-        '$attrs',
-        '$parse',
-        '$q',
-        ckeditorController
-      ],
-      link: function (scope, element, attrs, ctrls) {
-        // get needed controllers
-        var controller = ctrls[0]; // our own, see below
-        var ngModelController = ctrls[1];
-
-        // Initialize the editor content when it is ready.
-        controller.ready().then(function initialize() {
-          // Sync view on specific events.
-          ['dataReady', 'change', 'blur', 'saveSnapshot'].forEach(function (event) {
-            controller.onCKEvent(event, function syncView() {
-              ngModelController.$setViewValue(controller.instance.getData() || '');
-            });
-          });
-
-          controller.instance.setReadOnly(!! attrs.readonly);
-          attrs.$observe('readonly', function (readonly) {
-            controller.instance.setReadOnly(!! readonly);
-          });
-
-          // Defer the ready handler calling to ensure that the editor is
-          // completely ready and populated with data.
-          setImmediate(function () {
-            $parse(attrs.ready)(scope);
-          });
-        });
-
-        // Set editor data when view data change.
-        ngModelController.$render = function syncEditor() {
-          controller.ready().then(function () {
-            // "noSnapshot" prevent recording an undo snapshot
-            controller.instance.setData(ngModelController.$viewValue || '', {
-              noSnapshot: true,
-              callback: function () {
-                // Amends the top of the undo stack with the current DOM changes
-                // ie: merge snapshot with the first empty one
-                // http://docs.ckeditor.com/#!/api/CKEDITOR.editor-event-updateSnapshot
-                controller.instance.fire('updateSnapshot');
-              }
-            });
-          });
-        };
-      }
-    };
-  }
-
-  /**
-   * CKEditor controller.
-   */
-
-  function ckeditorController($scope, $element, $attrs, $parse, $q) {
-    var config = $parse($attrs.ckeditor)($scope) || {};
-    var editorElement = $element[0];
-    var instance;
-    var readyDeferred = $q.defer(); // a deferred to be resolved when the editor is ready
-
-    // Create editor instance.
-    if (editorElement.hasAttribute('contenteditable') &&
-        editorElement.getAttribute('contenteditable').toLowerCase() == 'true') {
-      instance = this.instance = CKEDITOR.inline(editorElement, config);
-    }
-    else {
-      instance = this.instance = CKEDITOR.replace(editorElement, config);
-    }
-
-    /**
-     * Listen on events of a given type.
-     * This make all event asynchronous and wrapped in $scope.$apply.
-     *
-     * @param {String} event
-     * @param {Function} listener
-     * @returns {Function} Deregistration function for this listener.
-     */
-
-    this.onCKEvent = function (event, listener) {
-      instance.on(event, asyncListener);
-
-      function asyncListener() {
-        var args = arguments;
-        setImmediate(function () {
-          applyListener.apply(null, args);
-        });
-      }
-
-      function applyListener() {
-        var args = arguments;
-        $scope.$apply(function () {
-          listener.apply(null, args);
-        });
-      }
-
-      // Return the deregistration function
-      return function $off() {
-        instance.removeListener(event, applyListener);
-      };
-    };
-
-    this.onCKEvent('instanceReady', function() {
-      readyDeferred.resolve(true);
-    });
-
-    /**
-     * Check if the editor if ready.
-     *
-     * @returns {Promise}
-     */
-    this.ready = function ready() {
-      return readyDeferred.promise;
-    };
-
-    // Destroy editor when the scope is destroyed.
-    $scope.$on('$destroy', function onDestroy() {
-      // do not delete too fast or pending events will throw errors
-      readyDeferred.promise.then(function() {
-        instance.destroy(false);
-      });
-    });
-  }
-}));
-
-(function () {
-    'use strict';
-
-    angular.module('letsAngular')
-        .directive('fwChart', fwChart);
-
-    fwChart.$inject = ['fwChartService', 'fwComparatorService', '$rootScope'];
-
-    function fwChart(fwChartService, fwComparatorService, $rootScope) {
-        return {
-            restrict: 'E',
-            replace: false,
-            scope: {
-                crudChartSettings: '&',
-                crudChartData: '&'
-            },
-            templateUrl: 'lets/views/framework/chart.html',
-            controller: ["$scope", function ($scope) {
-                var crudChartSettings = $scope.crudChartSettings();
-                var chartLimitSettings = crudChartSettings.chart_settings;
-                var crudChartData = $scope.crudChartData();
-
-                $scope.key = crudChartSettings.key;
-                $scope.d3chartUpdate = false;
-
-                var minMaxValues = fwComparatorService.getMinMaxValues(chartLimitSettings.xType, chartLimitSettings.xLabel, chartLimitSettings.xOffset, chartLimitSettings.yType, chartLimitSettings.yLabel, chartLimitSettings.yOffset, crudChartData)
-                var limits = { x: [minMaxValues.min.x, minMaxValues.max.x], y: [minMaxValues.min.y, minMaxValues.max.y] };
-
-                $scope.d3chartStartDate = minMaxValues.min.x;
-                $scope.d3chartEndDate = minMaxValues.max.x;
-
-                $scope.d3chartConfig = fwChartService.configD3chart('line', ['#092e64'], limits);
-                $scope.d3chartData = fwChartService.configD3chartData(crudChartSettings.fillArea || false, crudChartSettings.key, crudChartData);
-
-                $scope.$watch('d3chartStartDate', function(newValue, oldValue) {
-                    minMaxValues.min.x = newValue;
-                    limits = { x: [minMaxValues.min.x, minMaxValues.max.x], y: [minMaxValues.min.y, minMaxValues.max.y] };
-                    $scope.d3chartConfig = fwChartService.configD3chart('line', ['#092e64'], limits);
-                    if (newValue != oldValue) $rootScope.$broadcast('update-chart', { type: 'filter' });
-                });
-
-                $scope.$watch('d3chartEndDate', function(newValue, oldValue) {
-                    minMaxValues.max.x = newValue;
-                    limits = { x: [minMaxValues.min.x, minMaxValues.max.x], y: [minMaxValues.min.y, minMaxValues.max.y] };
-                    $scope.d3chartConfig = fwChartService.configD3chart('line', ['#092e64'], limits);
-                    if (newValue != oldValue) $rootScope.$broadcast('update-chart', { type: 'filter' });
-                });
-
-            }],
-            link: function (scope, $el, attrs, ctrls, transclude) {
-                scope.$el = $el;
-            }
-        }
-    }
-})();
-
-(function () {
-    'use strict';
-
-    angular.module('letsAngular')
-        .directive('fwAutoComplete', fwAutoComplete);
-
-    fwAutoComplete.$inject = ['$compile', '$timeout'];
-
-    function fwAutoComplete($compile, $timeout) {
-        var controllerName = 'vm';
-        return {
-            restrict: 'A',
-            priority: 1,
-            link: function (scope, element) {
-                var _input = element.find('input');
-
-                var clickHandler = function () {
-                    var _oldVal = _input.val();
-                    var _val = _oldVal + ' ';
-                    _input.controller('ngModel').$setViewValue(_val);
-                    // scope.$digest;
-                    $timeout(function(){
-                        _input.controller('ngModel').$setViewValue(_oldVal);
-                    });
-                };
-
-                element.find('button').click(clickHandler);
-                _input.click(clickHandler);
-
-                _input.keyup(function(){
-                    if (this.value.trim()==""){
-                        delete _input.scope().data[_input.attr('name')];
-                    }
-                })
-
-            },
-            controller: function () {
-                
-            },
-            controllerAs: controllerName
-        };
-    }
-})();
-
-(function () {
-    'use strict';
-
-    angular.module('letsAngular')
-        .directive('fwAutoCompleteTable', fwAutoCompleteTable);
-
-    fwAutoCompleteTable.$inject = ['$compile', '$rootScope', '$http', '$timeout'];
-
-    function fwAutoCompleteTable($compile, $rootScope, $http, $timeout) {
-        var controllerName = 'vm';
-        return {
-            restrict: 'A',
-            priority: 1,
-            link: function (scope, element) {
-                var $scope = scope;
-                $scope.tableSelected = function (event, table_name, dataFront) {
-
-                    $scope.tableVisibily = false;
-
-                    var elName = event.currentTarget.firstElementChild.firstChild.data.trim();
-                    // add data to create
-
-                    $scope.data[table_name] = dataFront.id;
-                    // Adaptação técnica para escopo #558
-                    $scope.data[table_name + '.labelCopy'] = { id: dataFront.id, label: elName };
-                    $scope.data[table_name + '.label'] = elName;
-
-                };
-                $scope.loadDataAutoCompleteTable = function (table_name, search_field) {
-
-                    //fazer a requisição para a API - /api/medicamentos
-                    // /api/medicamentos?filter={"limit":5, "where": {"nome_apresentacao": {"regexp": "/^AM/"}}}
-
-                    var input = element.find(':input').val().split(" ");
-
-                    // init regex
-                    var regex = "/^(" + input[0] + ")";
-
-                    //remove index 0
-                    input.splice(0, 1)
-
-                    // Operator AND
-                    input.forEach(function (element) {
-                        regex += "(?=.*" + element + ")";
-                    })
-
-                    // insensitive case
-                    regex += ".*/i";
-
-                    var filter = '{"limit": 5,"where":{"' + search_field + '":{"regexp":"' + regex + '"}}}';
-
-                    var route = $rootScope.appSettings.API_URL + table_name + '?filter=' + filter;
-
-                    var route_crudGET = $rootScope.appSettings.API_URL + table_name + '/crudGET/';
-
-                    //console.log($rootScope.appSettings.API_URL)
-
-                    $http.get(route).then(function (response) {
-
-                        $scope.autoCompleteTableData2 = [];
-
-                        response.data.forEach(function (element) {
-
-                            $http.get(route_crudGET + element.id).then(function (CGresponse) {
-
-                                $scope.autoCompleteTableData2.push(CGresponse.data);
-
-                            })
-
-                        });
-
-                    });
-
-                }
-            },
-            controller: ["$scope", function ($scope) {
-                $scope.autoCompleteTableFocus = function (table_name) {
-                    $scope.tableVisibily = true;
-                };
-                $scope.autoCompleteTableLostFocus = function () {
-                    setTimeout(function () {
-                        $scope.$apply(function () {
-
-                            $scope.tableVisibily = false;
-
-                        });
-                    }, 100);
-                };
-                $scope.updateAutoCompleteTable = function (table_name, search_field) {
-                    $scope.loadDataAutoCompleteTable(table_name, search_field);
-                }
-            }],
-            controllerAs: controllerName
-        };
-    }
-})();
-
-(function () {
-    'use strict';
-
-    angular.module('letsAngular')
         .directive('crudTabList', crudTabList);
 
     crudTabList.$inject = ['jQuery'];
@@ -3131,6 +2155,981 @@
 })();
 (function () {
     'use strict';
+
+    angular.module('letsAngular')
+        .directive('fwUpload', fwUpload);
+
+    fwUpload.$inject = ['$timeout'];
+
+    function fwUpload($timeout) {
+        return {
+            restrict: 'A',
+            scope: true,
+            link: function ($scope, $rootScope, element) {
+
+                $scope.defaultProgress = 0;
+                $scope.alreadySent = false;
+                var controll = true;
+
+                $scope.$on('setProgressFile', function () {
+                    if ($scope.data[$scope.field.name] != undefined && $scope.data[$scope.field.name] != null && ($scope.fileName && $scope.fileName != 'fileName')) {
+                        $scope.defaultProgress = 100;
+                        $scope.alreadySent = true;
+                    }
+                });
+
+                $scope.pushName = function () {
+                    $timeout(function () {
+                        if (document.getElementsByClassName('dz-filename')[0] && controll) {
+                            controll = false;
+                            document.getElementsByClassName('dropzone')[0].style.width = '192px';
+                            if (document.getElementsByClassName('file-preview')[0]) {
+                                document.getElementsByClassName('file-preview')[0].style.display = 'none';
+                            }
+                            document.getElementsByName('temp_filename')[0].value = document.getElementsByClassName('dz-filename')[0].firstElementChild.innerText;
+                            var _input = element.find('input[type="hidden"]');
+                            _input.controller('ngModel').$setViewValue(document.getElementsByName('temp_filename')[0].value);
+                        }
+                    });
+                };
+
+                $scope.remove = function () {
+                    $scope.alreadySent = false;
+                    var _input = element.find('input[type="hidden"]');
+                    document.getElementsByName('temp_filename')[0].value = null;
+                    _input.controller('ngModel').$setViewValue(null);
+                };
+
+                $scope.upload = function (file, errFiles) {
+                    $scope.f = file;
+                    $scope.errFile = errFiles && errFiles[0];
+                    if (file) {
+
+                        file.upload = $scope._upload($scope.field, file);
+                        file.upload.then(function (response, err) {
+                            $scope.$emit('upload-complete', response);
+                            $timeout(function () {
+                                file.result = response.data;
+                                if (element.$$element) {
+                                    var _input = element.$$element.find('input[type="hidden"]');
+                                } else {
+                                    var _input = element.find('input[type="hidden"]');
+                                }
+
+                                file.newName = response.data.result.files.file[0].name;
+
+                                _input.controller('ngModel').$setViewValue(file.newName);
+
+                            });
+                        }, function (response) {
+                            console.log(response);
+                            
+                            if (response.status > 0) {
+                                $scope.errorMsg = response.status + ': ' + response.data;
+                            }
+                                $scope.$emit('upload-error', response);
+
+                        }, function (evt) {
+                            file.progress = Math.min(100, parseInt(100.0 *
+                                evt.loaded / evt.total));
+                        })
+                    }
+                };
+
+            }
+        }
+    }
+})();
+
+(function () {
+    'use strict';
+
+    angular.module('letsAngular')
+        .directive('fwTags', fwTags);
+
+    fwTags.$inject = [];
+
+    function fwTags() {
+        return {
+            restrict: 'E',
+            scope: {
+                tags: '=',
+            },
+            template:
+
+            '<div class="input-group fw-input-group"><input type="text" class="form-control" placeholder="add a tag..." ng-model="newValue" /> ' +
+            '<span class="input-group-btn"><a class="btn btn-default" ng-click="add()">Add</a></span></div>' +
+            '<div class="tags">' +
+            '<div ng-repeat="(idx, tag) in tags" class="tag label label-success">{{tag}} <a class="close" href ng-click="remove(idx)">×</a></div>' +
+            '</div>',
+            link: function ($scope, $element) {
+
+                if ($scope.tags == null) {
+                    $scope.tags = [];
+                }
+
+                var input = angular.element($element).find('input');
+
+                // setup autocomplete
+                if ($scope.autocomplete) {
+                    // $scope.autocompleteFocus = function (event, ui) {
+                    //     input.val(ui.item.value);
+                    //     return false;
+                    // };
+                    // $scope.autocompleteSelect = function (event, ui) {
+                    //     $scope.newValue = ui.item.value;
+                    //     $scope.$apply($scope.add);
+
+                    //     return false;
+                    // };
+                    // $($element).find('input').autocomplete({
+                    //     minLength: 0,
+                    //     source: function (request, response) {
+                    //         var item;
+                    //         return response((function () {
+                    //             var _i, _len, _ref, _results;
+                    //             _ref = $scope.autocomplete;
+                    //             _results = [];
+                    //             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                    //                 item = _ref[_i];
+                    //                 if (item.toLowerCase().indexOf(request.term.toLowerCase()) !== -1) {
+                    //                     _results.push(item);
+                    //                 }
+                    //             }
+                    //             return _results;
+                    //         })());
+                    //     },
+                    //     focus: (function (_this) {
+                    //         return function (event, ui) {
+                    //             return $scope.autocompleteFocus(event, ui);
+                    //         };
+                    //     })(this),
+                    //     select: (function (_this) {
+                    //         return function (event, ui) {
+                    //             return $scope.autocompleteSelect(event, ui);
+                    //         };
+                    //     })(this)
+                    // });
+                }
+
+
+                // adds the new tag to the array
+                $scope.add = function () {
+                    // if not dupe, add it
+                    if ($scope.tags.indexOf($scope.newValue) == -1) {
+                        $scope.tags.push($scope.newValue);
+                    }
+                    $scope.newValue = "";
+                };
+
+                // remove an item
+                $scope.remove = function (idx) {
+                    $scope.tags.splice(idx, 1);
+                };
+
+                // capture keypresses
+                input.bind('keypress', function (event) {
+
+                    // enter was pressed
+                    if (event.keyCode == 13) {
+                        event.stopPropagation();
+                        event.preventDefault();
+                        $scope.$apply($scope.add);
+                    }
+                });
+            }
+        };
+    };
+})();
+
+(function () {
+    'use strict';
+
+    angular.module('letsAngular').directive('numbersOnly', function(){
+        return {
+            require: 'ngModel',
+            link: function (scope, element, attr, ngModelCtrl) {
+                function fromUser(text) {
+                    if (text) {
+                        var transformedInput = text.replace(/[^0-9]/g, '');
+    
+                        if (transformedInput !== text) {
+                            ngModelCtrl.$setViewValue(transformedInput);
+                            ngModelCtrl.$render();
+                        }
+                        return transformedInput;
+                    }
+                    return undefined;
+                }            
+                ngModelCtrl.$parsers.push(fromUser);
+            }
+        };
+    });
+
+
+})();
+
+(function () {
+    'use strict';
+
+    angular.module('letsAngular')
+        .directive('fwInput', fwInput);
+
+    fwInput.$inject = ['viaCEP', '$timeout', '$compile', 'jQuery', '$sce'];
+
+    function fwInput(viaCEP, $timeout, $compile, jQuery, $sce) {
+        return {
+            restrict: 'E',
+            scope: true,
+            templateUrl: 'lets/views/framework/input.html',
+            replace: true,
+            link: {
+
+                pre: function preLink(scope, $el, attrs, controller) {
+                    
+                    var dataVar = $el.attr('fw-data');
+                    
+                    if (scope.field.customOptions.events == undefined) {
+                        scope.field.customOptions.events = {};
+                    }
+
+                    scope.fieldHtml = function () {
+                        return $sce.trustAsHtml(scope.field.toString());
+                    }
+
+                    if (dataVar != 'data') {
+                        scope.data = scope[dataVar];
+                    }
+
+                    if(dataVar=="detail_data"){
+                        var detail = scope.detail_key;
+
+                        if (scope.field.autocomplete !== false){
+                            scope.autocomplete = function (field, val) {
+                                return scope.autocompleteDetail(detail, field, val);
+                            }
+    
+                            scope.autocompleteSelect = function ($item, $model, $label) {
+                                return scope.autocompleteDetailSelect(detail, $item, $model, $label);
+                            }
+                        }
+
+                        if (scope.field.customOptions.file != undefined) {
+                            scope.download = function (field, id) {
+                                return scope.downloadDetail(detail, field, id, scope.data);
+                            }
+                        }
+                    }
+
+                    if (scope.field.customOptions.cep != undefined) {
+
+                        $el.find('input.main-input').blur(function () {
+                            var $scope = angular.element(this).scope();
+                            
+                            viaCEP.get(this.value).then(function (response) {
+                                var map = $scope.field.customOptions.cep;
+
+                                $scope.data[map.address] = response.logradouro;
+                                $scope.data[map.district] = response.bairro;
+                                $scope.data[map.city] = response.localidade;
+                                $scope.data[map.state] = response.uf;
+
+                                scope.$$phase || scope.$apply();
+                            });
+                        });
+                    }
+                    else if (scope.field.customOptions.multiple != undefined && scope.field.customOptions.multiple == true) {
+                        var a = $compile($el.contents())(scope);
+                    }
+
+                    jQuery($el).on('blur', ':input[ng-model]', function (e) {
+                        try {
+                            if (angular.element(this).scope().field.customOptions.events.blur != undefined) {
+                                angular.element(this).scope().field.customOptions.events.blur.call(this, e);
+                            }
+                        }
+                        catch (e) {
+                        }
+
+
+                    });
+
+                    scope.isEmpty = function (obj) {
+                        return Object.keys(obj).length;
+                    }
+                }
+
+            }
+
+        }
+    }
+})();
+
+(function () {
+    'use strict';
+
+    angular.module('letsAngular')
+        .directive('fwInputDetail', fwInputDetail);
+
+    fwInputDetail.$inject = ['viaCEP', '$timeout', '$compile', 'jQuery'];
+
+    function fwInputDetail(viaCEP, $timeout, $compile, jQuery) {
+        return {
+            restrict: 'E',
+            scope: true,
+            templateUrl: 'lets/views/framework/input-detail.html',
+            replace: true,
+            link: {
+                post: function preLink(scope, $el, attrs, controller) {
+
+                }
+            }
+        }
+    }
+})();
+
+(function () {
+    'use strict';
+
+    angular.module('letsAngular')
+        .directive('fwDynamic', fwDynamic);
+
+    fwDynamic.$inject = ['viaCEP', '$timeout', '$compile', 'jQuery', '$filter'];
+
+    function fwDynamic(viaCEP, $timeout, $compile, jQuery, $filter) {
+        var FLOAT_REGEXP_1 = /^\$?\d+.(\d{3})*(\,\d*)$/; //Numbers like: 1.123,56
+        var FLOAT_REGEXP_2 = /^\$?\d+,(\d{3})*(\.\d*)$/; //Numbers like: 1,123.56
+        var FLOAT_REGEXP_3 = /^\$?\d+(\.\d*)?$/; //Numbers like: 1123.56
+        var FLOAT_REGEXP_4 = /^\$?\d+(\,\d*)?$/; //Numbers like: 1123,56
+
+        return {
+            restrict: 'A',
+            link: {
+                post: function postLink(scope, $el, attrs, controller) {
+                    if (!controller) {
+                        controller = $el.controller('ngModel');
+                    }
+
+                    if (scope.field.type == 'date') {
+                        $el.mask('99/99/9999');
+
+                    } else if (scope.field.customOptions.cpf != undefined) {
+                        $el.mask('999.999.999-99');
+
+                    } else if (scope.field.customOptions.cnpj != undefined) {
+                        $el.mask('99.999.999/9999-99');
+                        
+                    } else if (scope.field.customOptions.customMask != undefined) {
+                        $el.mask(scope.field.customOptions.customMask);
+
+                    } else if (scope.field.type == 'float') {
+                        if (scope.field.customOptions.currency != undefined) {
+                            $el.mask("#.##0,00", { reverse: true });
+                            controller.$parsers.unshift(function (value) {
+                                return parseFloat($el.cleanVal(),10)/100;
+                            });
+                            controller.$formatters.unshift(function (value) {
+                                return $el.masked(value ? parseFloat(value).toFixed(2) : null);
+                            });
+                        } else {
+                            
+                        }
+                    }else if (scope.field.customOptions.documento !== undefined) {
+
+                        var cpfOrCnpj = function (val) {
+                            return val.replace(/\D/g, '').length >= 12 ? '00.000.000/0000-00' : '000.000.000-009' ;
+                        },
+                            docOptions = {
+                                onKeyPress: function (val, e, field,  options) {
+                                    field.mask(cpfOrCnpj.apply({}, arguments), options);
+                                }
+                            };
+     
+                        $timeout(function () {
+                            $el.mask(cpfOrCnpj, docOptions);
+                        }, 10);
+
+
+                    } else if (scope.field.customOptions.telefone != undefined) {
+                        var SPMaskBehavior = function (val) {
+                            return val.replace(/\D/g, '').length === 11 ? '(00) 00000-0000' : '(00) 0000-00009';
+                        },
+                            spOptions = {
+                                onKeyPress: function (val, e, field, options) {
+                                    field.mask(SPMaskBehavior.apply({}, arguments), options);
+                                }
+                            };
+
+                        $timeout(function () {
+                            $el.mask(SPMaskBehavior, spOptions);
+                        }, 100);
+
+                    } else if (scope.field.customOptions.cep != undefined) {
+
+                        $el.blur(function () {
+
+                            if (!this.value){
+                                return false;
+                            }
+
+                            var $scope = angular.element(this).scope();
+                            var dataVar = jQuery(this).parent().attr('fw-data');
+                            viaCEP.get(this.value).then(function (response) {
+                                var map = $scope.field.customOptions.cep;
+
+                                $scope.data[map.address] = response.logradouro;
+                                $scope.data[map.district] = response.bairro;
+                                $scope.data[map.city] = response.localidade;
+                                $scope.data[map.state] = response.uf;
+                                $scope.data[map.ibge] = response.ibge;
+                                $scope.data[map.gia] = response.gia;
+                            });
+                        });
+                    }
+                }
+            }
+        }
+    }
+})();
+
+(function () {
+    'use strict';
+
+    angular.module('letsAngular')
+        .directive('fwDetailData', fwDetailData);
+
+    fwDetailData.$inject = ['$rootScope', '$timeout', '$compile', 'jQuery', '$sce'];
+
+    function fwDetailData($rootScope, $timeout, $compile, jQuery, $sce) {
+        return {
+            restrict: 'E',
+            scope: true,
+            template: '<span" ng-bind-html="formatData(detail_data, field)"></span>',
+            replace: true,
+            link: {
+                pre: function preLink(scope, $el, attrs, controller) {
+
+                    scope.formatData = function (data, field) {
+
+                        if (field.autocomplete !== false) {
+                            if(!data[field.name + '.label']){
+                                return null
+                            }else{
+                                return data[field.name + '.label'].label || data[field.name + '.label'];
+                            }
+
+                        }
+                        else if (field.type == 'date') {
+
+                            if (field.customOptions.hour) {
+                                return moment(data[field.name]).format('DD/MM/YYYY HH:mm');
+                            } else {
+                                return moment(data[field.name]).format('DD/MM/YYYY');
+                            }
+
+                        }
+                        else  if (field.type == 'boolean') {
+
+                            if (field.customOptions.statusFalseText && field.customOptions.statusTrueText) {
+                                if (data[field.name]) {
+                                    return field.customOptions.statusTrueText;
+                                } else {
+                                    return field.customOptions.statusFalseText;
+                                }
+                            }
+
+                        }
+                        else if (field.type == 'string' && field.customOptions.file) {
+
+                            var url = $rootScope.appSettings.API_URL + 'upload/' + field.customOptions.file.container + '/download/' + data[field.name];
+                            return $sce.trustAsHtml('<a target="_blank" href="' + url + '" class="btn btn-default ng-scope" style=""><i class="glyphicon glyphicon-download"></i></a>');
+                           
+                            
+                        }else if (field.type == 'float') {
+
+                            if( field.customOptions && field.customOptions.currency ){
+                                var rawData = data[field.name];                                
+                                var rawData = rawData.toFixed(2).split('.');
+                                rawData[0] = "R$ " + rawData[0].split(/(?=(?:...)*$)/).join('.');
+                                return rawData.join(',');
+                            }else{
+                                return data[field.name];
+                            }
+
+                        }else{
+                            return data[field.name];
+                        }
+
+                    }
+
+                }
+            }
+        }
+    }
+})();
+
+(function () {
+    'use strict';
+
+    angular.module('letsAngular')
+        .directive('fwDatePicker', fwDatePicker);
+
+    fwDatePicker.$inject = ['$compile', 'jQuery'];
+
+    function fwDatePicker($compile, jQuery) {
+        var controllerName = 'vm';
+        return {
+            restrict: 'A',
+            require: '?ngModel',
+            scope: true,
+            terminal: true,
+            priority: 1,
+            compile: function (element, attrs) {
+
+                var wrapper = angular.element(
+                    '<div class="input-group">' +
+                    '<span class="input-group-btn">' +
+                    '<button type="button" class="btn btn-default" ng-click="' + controllerName + '.openPopup($event)"><i class="glyphicon glyphicon-calendar"></i></button>' +
+                    '</span>' +
+                    '</div>');
+
+                function setAttributeIfNotExists(name, value) {
+                    var oldValue = element.attr(name);
+                    if (!angular.isDefined(oldValue) || oldValue === false) {
+                        element.attr(name, value);
+                    }
+                }
+
+                setAttributeIfNotExists('type', 'text');
+                setAttributeIfNotExists('is-open', controllerName + '.popupOpen');
+                setAttributeIfNotExists('show-button-bar', false);
+                setAttributeIfNotExists('show-weeks', false);
+                setAttributeIfNotExists('datepicker-options', 'datepickerOptions');
+
+                element.addClass('form-control');
+                element.removeAttr('fw-date-picker');
+                element.after(wrapper);
+                wrapper.prepend(element);
+
+                return function (scope, element) {
+                    var options = {
+
+                    };
+
+                    if (scope.data === undefined) scope.data = {};
+
+                    if (!scope.field) {
+                        scope.field = { customOptions: [] };
+                        if (attrs.fwDatePickerNgModelParent) {
+                            options.initDate = new Date(scope.$parent[attrs.ngModel]);
+                            scope.$parent[attrs.ngModel] = angular.copy(options.initDate);
+                        } else {
+                            options.initDate = new Date(scope[attrs.ngModel]);
+                            scope[attrs.ngModel] = angular.copy(options.initDate);
+                        }
+                    }
+
+                    else if (scope.data[scope.field.name] != null) {
+                        options.initDate = new Date(scope.data[scope.field.name]);
+                        scope.data[scope.field.name] = angular.copy(options.initDate);
+                    }
+
+                    var format = 'dd/MM/yyyy';
+
+                    if (scope.field.customOptions.monthpicker !== undefined) {
+                        options.datepickerMode = "'month'";
+                        options.minMode = 'month';
+
+                        format = 'MM/yyyy';
+                    }
+
+                    element.find('input').attr('datepicker-popup', format);
+
+                    element.find('input').blur(function () {
+                        if (!moment(this.value, format).isValid() && this.value !== '') {
+                            scope.field.error = true;
+                        } else {
+                            scope.field.error = false;
+                        }
+                    });
+
+
+                    // element.find('input').focus(function (e) {
+                    //     scope.vm.openPopup(e);
+                    // });
+
+                    scope.datepickerOptions = options;
+
+                    $compile(element)(scope);
+                };
+            },
+            controller: ["$scope", function ($scope) {
+                this.popupOpen = false;
+                
+                this.openPopup = function ($event) {
+                    $event.preventDefault();
+                    $event.stopPropagation();
+                    this.popupOpen = true;
+                };
+            }],
+            controllerAs: controllerName
+        };
+    }
+})();
+
+(function (root, factory) {
+  // AMD
+  if (typeof define === 'function' && define.amd) define(['angular'], factory);
+  // Global
+  else factory(angular);
+}(this, function (angular) {
+
+  angular
+  .module('ckeditor', [])
+  .directive('ckeditor', ['$parse', ckeditorDirective]);
+
+  // Polyfill setImmediate function.
+  var setImmediate = window && window.setImmediate ? window.setImmediate : function (fn) {
+    setTimeout(fn, 0);
+  };
+
+  /**
+   * CKEditor directive.
+   *
+   * @example
+   * <div ckeditor="options" ng-model="content" ready="onReady()"></div>
+   */
+
+  function ckeditorDirective($parse) {
+    return {
+      restrict: 'A',
+      require: ['ckeditor', 'ngModel'],
+      controller: [
+        '$scope',
+        '$element',
+        '$attrs',
+        '$parse',
+        '$q',
+        ckeditorController
+      ],
+      link: function (scope, element, attrs, ctrls) {
+        // get needed controllers
+        var controller = ctrls[0]; // our own, see below
+        var ngModelController = ctrls[1];
+
+        // Initialize the editor content when it is ready.
+        controller.ready().then(function initialize() {
+          // Sync view on specific events.
+          ['dataReady', 'change', 'blur', 'saveSnapshot'].forEach(function (event) {
+            controller.onCKEvent(event, function syncView() {
+              ngModelController.$setViewValue(controller.instance.getData() || '');
+            });
+          });
+
+          controller.instance.setReadOnly(!! attrs.readonly);
+          attrs.$observe('readonly', function (readonly) {
+            controller.instance.setReadOnly(!! readonly);
+          });
+
+          // Defer the ready handler calling to ensure that the editor is
+          // completely ready and populated with data.
+          setImmediate(function () {
+            $parse(attrs.ready)(scope);
+          });
+        });
+
+        // Set editor data when view data change.
+        ngModelController.$render = function syncEditor() {
+          controller.ready().then(function () {
+            // "noSnapshot" prevent recording an undo snapshot
+            controller.instance.setData(ngModelController.$viewValue || '', {
+              noSnapshot: true,
+              callback: function () {
+                // Amends the top of the undo stack with the current DOM changes
+                // ie: merge snapshot with the first empty one
+                // http://docs.ckeditor.com/#!/api/CKEDITOR.editor-event-updateSnapshot
+                controller.instance.fire('updateSnapshot');
+              }
+            });
+          });
+        };
+      }
+    };
+  }
+
+  /**
+   * CKEditor controller.
+   */
+
+  function ckeditorController($scope, $element, $attrs, $parse, $q) {
+    var config = $parse($attrs.ckeditor)($scope) || {};
+    var editorElement = $element[0];
+    var instance;
+    var readyDeferred = $q.defer(); // a deferred to be resolved when the editor is ready
+
+    // Create editor instance.
+    if (editorElement.hasAttribute('contenteditable') &&
+        editorElement.getAttribute('contenteditable').toLowerCase() == 'true') {
+      instance = this.instance = CKEDITOR.inline(editorElement, config);
+    }
+    else {
+      instance = this.instance = CKEDITOR.replace(editorElement, config);
+    }
+
+    /**
+     * Listen on events of a given type.
+     * This make all event asynchronous and wrapped in $scope.$apply.
+     *
+     * @param {String} event
+     * @param {Function} listener
+     * @returns {Function} Deregistration function for this listener.
+     */
+
+    this.onCKEvent = function (event, listener) {
+      instance.on(event, asyncListener);
+
+      function asyncListener() {
+        var args = arguments;
+        setImmediate(function () {
+          applyListener.apply(null, args);
+        });
+      }
+
+      function applyListener() {
+        var args = arguments;
+        $scope.$apply(function () {
+          listener.apply(null, args);
+        });
+      }
+
+      // Return the deregistration function
+      return function $off() {
+        instance.removeListener(event, applyListener);
+      };
+    };
+
+    this.onCKEvent('instanceReady', function() {
+      readyDeferred.resolve(true);
+    });
+
+    /**
+     * Check if the editor if ready.
+     *
+     * @returns {Promise}
+     */
+    this.ready = function ready() {
+      return readyDeferred.promise;
+    };
+
+    // Destroy editor when the scope is destroyed.
+    $scope.$on('$destroy', function onDestroy() {
+      // do not delete too fast or pending events will throw errors
+      readyDeferred.promise.then(function() {
+        instance.destroy(false);
+      });
+    });
+  }
+}));
+
+(function () {
+    'use strict';
+
+    angular.module('letsAngular')
+        .directive('fwChart', fwChart);
+
+    fwChart.$inject = ['fwChartService', 'fwComparatorService', '$rootScope'];
+
+    function fwChart(fwChartService, fwComparatorService, $rootScope) {
+        return {
+            restrict: 'E',
+            replace: false,
+            scope: {
+                crudChartSettings: '&',
+                crudChartData: '&'
+            },
+            templateUrl: 'lets/views/framework/chart.html',
+            controller: ["$scope", function ($scope) {
+                var crudChartSettings = $scope.crudChartSettings();
+                var chartLimitSettings = crudChartSettings.chart_settings;
+                var crudChartData = $scope.crudChartData();
+
+                $scope.key = crudChartSettings.key;
+                $scope.d3chartUpdate = false;
+
+                var minMaxValues = fwComparatorService.getMinMaxValues(chartLimitSettings.xType, chartLimitSettings.xLabel, chartLimitSettings.xOffset, chartLimitSettings.yType, chartLimitSettings.yLabel, chartLimitSettings.yOffset, crudChartData)
+                var limits = { x: [minMaxValues.min.x, minMaxValues.max.x], y: [minMaxValues.min.y, minMaxValues.max.y] };
+
+                $scope.d3chartStartDate = minMaxValues.min.x;
+                $scope.d3chartEndDate = minMaxValues.max.x;
+
+                $scope.d3chartConfig = fwChartService.configD3chart('line', ['#092e64'], limits);
+                $scope.d3chartData = fwChartService.configD3chartData(crudChartSettings.fillArea || false, crudChartSettings.key, crudChartData);
+
+                $scope.$watch('d3chartStartDate', function(newValue, oldValue) {
+                    minMaxValues.min.x = newValue;
+                    limits = { x: [minMaxValues.min.x, minMaxValues.max.x], y: [minMaxValues.min.y, minMaxValues.max.y] };
+                    $scope.d3chartConfig = fwChartService.configD3chart('line', ['#092e64'], limits);
+                    if (newValue != oldValue) $rootScope.$broadcast('update-chart', { type: 'filter' });
+                });
+
+                $scope.$watch('d3chartEndDate', function(newValue, oldValue) {
+                    minMaxValues.max.x = newValue;
+                    limits = { x: [minMaxValues.min.x, minMaxValues.max.x], y: [minMaxValues.min.y, minMaxValues.max.y] };
+                    $scope.d3chartConfig = fwChartService.configD3chart('line', ['#092e64'], limits);
+                    if (newValue != oldValue) $rootScope.$broadcast('update-chart', { type: 'filter' });
+                });
+
+            }],
+            link: function (scope, $el, attrs, ctrls, transclude) {
+                scope.$el = $el;
+            }
+        }
+    }
+})();
+
+(function () {
+    'use strict';
+
+    angular.module('letsAngular')
+        .directive('fwAutoComplete', fwAutoComplete);
+
+    fwAutoComplete.$inject = ['$compile', '$timeout'];
+
+    function fwAutoComplete($compile, $timeout) {
+        var controllerName = 'vm';
+        return {
+            restrict: 'A',
+            priority: 1,
+            link: function (scope, element) {
+                var _input = element.find('input');
+
+                var clickHandler = function () {
+                    var _oldVal = _input.val();
+                    var _val = _oldVal + ' ';
+                    _input.controller('ngModel').$setViewValue(_val);
+                    // scope.$digest;
+                    $timeout(function(){
+                        _input.controller('ngModel').$setViewValue(_oldVal);
+                    });
+                };
+
+                element.find('button').click(clickHandler);
+                _input.click(clickHandler);
+
+                _input.keyup(function(){
+                    if (this.value.trim()==""){
+                        delete _input.scope().data[_input.attr('name')];
+                    }
+                })
+
+            },
+            controller: function () {
+                
+            },
+            controllerAs: controllerName
+        };
+    }
+})();
+
+(function () {
+    'use strict';
+
+    angular.module('letsAngular')
+        .directive('fwAutoCompleteTable', fwAutoCompleteTable);
+
+    fwAutoCompleteTable.$inject = ['$compile', '$rootScope', '$http', '$timeout'];
+
+    function fwAutoCompleteTable($compile, $rootScope, $http, $timeout) {
+        var controllerName = 'vm';
+        return {
+            restrict: 'A',
+            priority: 1,
+            link: function (scope, element) {
+                var $scope = scope;
+                $scope.tableSelected = function (event, table_name, dataFront) {
+
+                    $scope.tableVisibily = false;
+
+                    var elName = event.currentTarget.firstElementChild.firstChild.data.trim();
+                    // add data to create
+
+                    $scope.data[table_name] = dataFront.id;
+                    // Adaptação técnica para escopo #558
+                    $scope.data[table_name + '.labelCopy'] = { id: dataFront.id, label: elName };
+                    $scope.data[table_name + '.label'] = elName;
+
+                };
+                $scope.loadDataAutoCompleteTable = function (table_name, search_field) {
+
+                    //fazer a requisição para a API - /api/medicamentos
+                    // /api/medicamentos?filter={"limit":5, "where": {"nome_apresentacao": {"regexp": "/^AM/"}}}
+
+                    var input = element.find(':input').val().split(" ");
+
+                    // init regex
+                    var regex = "/^(" + input[0] + ")";
+
+                    //remove index 0
+                    input.splice(0, 1)
+
+                    // Operator AND
+                    input.forEach(function (element) {
+                        regex += "(?=.*" + element + ")";
+                    })
+
+                    // insensitive case
+                    regex += ".*/i";
+
+                    var filter = '{"limit": 5,"where":{"' + search_field + '":{"regexp":"' + regex + '"}}}';
+
+                    var route = $rootScope.appSettings.API_URL + table_name + '?filter=' + filter;
+
+                    var route_crudGET = $rootScope.appSettings.API_URL + table_name + '/crudGET/';
+
+                    //console.log($rootScope.appSettings.API_URL)
+
+                    $http.get(route).then(function (response) {
+
+                        $scope.autoCompleteTableData2 = [];
+
+                        response.data.forEach(function (element) {
+
+                            $http.get(route_crudGET + element.id).then(function (CGresponse) {
+
+                                $scope.autoCompleteTableData2.push(CGresponse.data);
+
+                            })
+
+                        });
+
+                    });
+
+                }
+            },
+            controller: ["$scope", function ($scope) {
+                $scope.autoCompleteTableFocus = function (table_name) {
+                    $scope.tableVisibily = true;
+                };
+                $scope.autoCompleteTableLostFocus = function () {
+                    setTimeout(function () {
+                        $scope.$apply(function () {
+
+                            $scope.tableVisibily = false;
+
+                        });
+                    }, 100);
+                };
+                $scope.updateAutoCompleteTable = function (table_name, search_field) {
+                    $scope.loadDataAutoCompleteTable(table_name, search_field);
+                }
+            }],
+            controllerAs: controllerName
+        };
+    }
+})();
+
+(function () {
+    'use strict';
     fwStateProvider.$inject = ["$stateProvider"];
     angular
         .module('letsAngular')
@@ -3252,6 +3251,34 @@
 (function () {
     'use strict';
 
+    angular.module('letsAngular')
+        .factory('Backgrid', BackgridFactory);
+
+    BackgridFactory.$inject = ['$window'];
+
+    function BackgridFactory($window) {
+        return $window.Backgrid;
+    }
+
+})();
+
+(function () {
+    'use strict';
+
+    angular.module('letsAngular')
+        .factory('Backbone', BackboneFactory);
+
+    BackboneFactory.$inject = ['$window'];
+
+    function BackboneFactory($window) {
+        return $window.Backbone;
+    }
+
+})();
+
+(function () {
+    'use strict';
+
     fwAgeMonth.$inject = ["birthday"];
     angular.module('letsAngular')
         .filter('fwAgeMonth', fwAgeMonth);
@@ -3282,34 +3309,6 @@
             return _age + _birthType;
         }
     }
-})();
-
-(function () {
-    'use strict';
-
-    angular.module('letsAngular')
-        .factory('Backgrid', BackgridFactory);
-
-    BackgridFactory.$inject = ['$window'];
-
-    function BackgridFactory($window) {
-        return $window.Backgrid;
-    }
-
-})();
-
-(function () {
-    'use strict';
-
-    angular.module('letsAngular')
-        .factory('Backbone', BackboneFactory);
-
-    BackboneFactory.$inject = ['$window'];
-
-    function BackboneFactory($window) {
-        return $window.Backbone;
-    }
-
 })();
 
 (function () {
