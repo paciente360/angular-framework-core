@@ -93,6 +93,8 @@
                                 $scope.data[map.state] = response.uf;
                                 $scope.data[map.ibge] = response.ibge;
                                 $scope.data[map.gia] = response.gia;
+
+                                $scope.$emit('viacep complete', response);
                             });
                         });
                     }

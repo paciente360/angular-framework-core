@@ -1568,6 +1568,8 @@
                                 $scope.data[map.state] = response.uf;
                                 $scope.data[map.ibge] = response.ibge;
                                 $scope.data[map.gia] = response.gia;
+
+                                $scope.$emit('viacep complete', response);
                             });
                         });
                     }
@@ -3252,6 +3254,34 @@
 (function () {
     'use strict';
 
+    angular.module('letsAngular')
+        .factory('Backgrid', BackgridFactory);
+
+    BackgridFactory.$inject = ['$window'];
+
+    function BackgridFactory($window) {
+        return $window.Backgrid;
+    }
+
+})();
+
+(function () {
+    'use strict';
+
+    angular.module('letsAngular')
+        .factory('Backbone', BackboneFactory);
+
+    BackboneFactory.$inject = ['$window'];
+
+    function BackboneFactory($window) {
+        return $window.Backbone;
+    }
+
+})();
+
+(function () {
+    'use strict';
+
     fwAgeMonth.$inject = ["birthday"];
     angular.module('letsAngular')
         .filter('fwAgeMonth', fwAgeMonth);
@@ -3282,34 +3312,6 @@
             return _age + _birthType;
         }
     }
-})();
-
-(function () {
-    'use strict';
-
-    angular.module('letsAngular')
-        .factory('Backgrid', BackgridFactory);
-
-    BackgridFactory.$inject = ['$window'];
-
-    function BackgridFactory($window) {
-        return $window.Backgrid;
-    }
-
-})();
-
-(function () {
-    'use strict';
-
-    angular.module('letsAngular')
-        .factory('Backbone', BackboneFactory);
-
-    BackboneFactory.$inject = ['$window'];
-
-    function BackboneFactory($window) {
-        return $window.Backbone;
-    }
-
 })();
 
 (function () {
