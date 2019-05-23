@@ -61,10 +61,6 @@
             if(this.headers[name].tabs){
                 for (var _x in this.headers[name].tabs) {
                     this.headers[name].tabs[_x].get = function(name){
-                        // var field = this.fields.filter(function(el) {
-                        //     return el.name == name;
-                        // })
-                        // return field.length ? field[0] : null;
                         if(this.fields && this.fields.length){
                             for (var _y in this.fields){
                                 var field = this.fields[_y];
