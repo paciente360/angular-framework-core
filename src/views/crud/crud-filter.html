@@ -9,7 +9,13 @@
                             <i class="glyphicon" ng-class="{'glyphicon-plus': !showBuscaAvancada, 'glyphicon-minus': showBuscaAvancada}"></i>
                         </button>
                     </span>
-                    <button type="submit" style="opacity : 0"></button>
+                    <span ng-if="clearButton && fieldsFilter.length > 0" class="input-group-btn">
+                        <button type="button" class="btn btn-default" title="Limpar filtro" ng-click="clearBusca()">
+                            <i class="glyphicon glyphicon-erase"></i>
+                            <span class="hidden-xs">Limpar Filtro</span>
+                        </button>
+                    </span>
+                    <button type="submit" style="width: 0px; opacity: 0"></button>
                 </div>
             </div>
             <div class="clearfix"></div>
