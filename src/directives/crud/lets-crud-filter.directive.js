@@ -12,7 +12,8 @@
             scope: {
                 fields: '&',
                 route: '&',
-                search:'&'
+                search:'&',
+                clearButton: '=clearButton'
             },
             controller: function ($scope) {
                
@@ -90,7 +91,6 @@
 
                     scope.fieldsFilter.push(field);
                 });
-
                 scope.autocomplete = function (field, val) {
                     scope.resource = Restangular.all(scope.route());
 
@@ -193,15 +193,15 @@
                 }
 
                 scope.filterData = function(start){
-
                     scope.objFilter = undefined;
-
+                    
                     var filterData = {};
                     if(scope.data['showBuscaAvancada']){
                         scope.showBuscaAvancada = angular.copy(scope.data['showBuscaAvancada']);
                         delete scope.data['showBuscaAvancada'];
                     }
                     if (scope.showBuscaAvancada){
+                        console.log(fields)
                         fields.forEach(function(field, idx){
 
                             if (typeof(field.filter)=="object" && field.filter.range===true){
@@ -255,6 +255,12 @@
                 scope.openBuscaAvancada = function(){
                     scope.showBuscaAvancada = !scope.showBuscaAvancada;
                     // scope.filterData(true);
+                }
+                scope.clearBusca = function(){
+                    Object.keys(scope.data).forEach(function (prop){
+                        scope.data[prop] = null
+                    });
+                    scope.filterData(true);
                 }
 
                 scope.getDateFormated = function(dt){

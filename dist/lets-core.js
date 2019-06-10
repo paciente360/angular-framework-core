@@ -1224,7 +1224,6 @@
 
                             });
                         }, function (response) {
-                            console.log(response);
                             
                             if (response.status > 0) {
                                 $scope.errorMsg = response.status + ': ' + response.data;
@@ -2871,7 +2870,8 @@
             scope: {
                 fields: '&',
                 route: '&',
-                search:'&'
+                search:'&',
+                clearButton: '=clearButton'
             },
             controller: ["$scope", function ($scope) {
                
@@ -2949,7 +2949,6 @@
 
                     scope.fieldsFilter.push(field);
                 });
-
                 scope.autocomplete = function (field, val) {
                     scope.resource = Restangular.all(scope.route());
 
@@ -3052,15 +3051,15 @@
                 }
 
                 scope.filterData = function(start){
-
                     scope.objFilter = undefined;
-
+                    
                     var filterData = {};
                     if(scope.data['showBuscaAvancada']){
                         scope.showBuscaAvancada = angular.copy(scope.data['showBuscaAvancada']);
                         delete scope.data['showBuscaAvancada'];
                     }
                     if (scope.showBuscaAvancada){
+                        console.log(fields)
                         fields.forEach(function(field, idx){
 
                             if (typeof(field.filter)=="object" && field.filter.range===true){
@@ -3114,6 +3113,12 @@
                 scope.openBuscaAvancada = function(){
                     scope.showBuscaAvancada = !scope.showBuscaAvancada;
                     // scope.filterData(true);
+                }
+                scope.clearBusca = function(){
+                    Object.keys(scope.data).forEach(function (prop){
+                        scope.data[prop] = null
+                    });
+                    scope.filterData(true);
                 }
 
                 scope.getDateFormated = function(dt){
@@ -3271,34 +3276,6 @@
 (function () {
     'use strict';
 
-    angular.module('letsAngular')
-        .factory('Backgrid', BackgridFactory);
-
-    BackgridFactory.$inject = ['$window'];
-
-    function BackgridFactory($window) {
-        return $window.Backgrid;
-    }
-
-})();
-
-(function () {
-    'use strict';
-
-    angular.module('letsAngular')
-        .factory('Backbone', BackboneFactory);
-
-    BackboneFactory.$inject = ['$window'];
-
-    function BackboneFactory($window) {
-        return $window.Backbone;
-    }
-
-})();
-
-(function () {
-    'use strict';
-
     fwAgeMonth.$inject = ["birthday"];
     angular.module('letsAngular')
         .filter('fwAgeMonth', fwAgeMonth);
@@ -3329,6 +3306,34 @@
             return _age + _birthType;
         }
     }
+})();
+
+(function () {
+    'use strict';
+
+    angular.module('letsAngular')
+        .factory('Backgrid', BackgridFactory);
+
+    BackgridFactory.$inject = ['$window'];
+
+    function BackgridFactory($window) {
+        return $window.Backgrid;
+    }
+
+})();
+
+(function () {
+    'use strict';
+
+    angular.module('letsAngular')
+        .factory('Backbone', BackboneFactory);
+
+    BackboneFactory.$inject = ['$window'];
+
+    function BackboneFactory($window) {
+        return $window.Backbone;
+    }
+
 })();
 
 (function () {
@@ -3979,7 +3984,7 @@
             });
         }
 
-        $scope.autocompleteSelect = function (detail, $item, $model, $label) {
+        $scope.autocompleteSelect = function(detail, $item, $model, $label) {
             this._autocompleteSelect($item, $model, $label, null);
         };
 

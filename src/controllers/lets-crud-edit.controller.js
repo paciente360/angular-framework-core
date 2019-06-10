@@ -544,7 +544,7 @@
             });
         }
 
-        $scope.autocompleteSelect = function (detail, $item, $model, $label) {
+        $scope.autocompleteSelect = function(detail, $item, $model, $label) {
             this._autocompleteSelect($item, $model, $label, null);
         };
 
