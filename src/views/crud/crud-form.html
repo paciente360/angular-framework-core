@@ -50,9 +50,9 @@
                     
                     <div class="col-sm-12 filter-tab" style="margin-top: 15px;">
                         <div class="row pull-right" style="position: absolute; right:0">
-                            <a class="btn btn-primary btn-block btn-new hidden-xs" ng-click="newDetail(tab, data)">
+                            <a class="btn btn-primary btn-block btn-new hidden-xs" ng-click="newDetail(tab, data)" ng-hide="tab.settings && !tab.settings.add">
                                 <span class="fa fa-plus"></span> Novo Registro</a>
-                            <a class="btn btn-primary btn-block btn-new visible-xs" style="margin-top: 0;" ng-click="newDetail(tab, data)">
+                            <a class="btn btn-primary btn-block btn-new visible-xs" style="margin-top: 0;" ng-click="newDetail(tab, data)" ng-hide="tab.settings && !tab.settings.add">
                                 <span class="fa fa-plus"></span> Novo</a>
                         </div>
                         <div class="row col-xs-9 pull-left" style="padding: 0;">
