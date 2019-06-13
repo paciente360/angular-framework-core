@@ -201,7 +201,7 @@
                         delete scope.data['showBuscaAvancada'];
                     }
                     if (scope.showBuscaAvancada){
-                        console.log(fields)
+                        // console.log(fields)
                         fields.forEach(function(field, idx){
 
                             if (typeof(field.filter)=="object" && field.filter.range===true){
