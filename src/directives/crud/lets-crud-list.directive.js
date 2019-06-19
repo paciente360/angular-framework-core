@@ -41,7 +41,11 @@
                         },
                         mode: 'server',
                         parseRecords: function (resp, options) {
-                            return resp.data;
+                            if( scope.$el[0].parseRecords && typeof(scope.$el[0].parseRecords)=="function" ){
+                                return scope.$el[0].parseRecords(resp.data);
+                            }else{
+                                return resp.data;
+                            }
                         },
                         parseState: function (resp, queryParams, state, options) {
 

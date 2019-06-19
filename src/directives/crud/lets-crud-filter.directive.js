@@ -156,8 +156,12 @@
                         var options = angular.copy(field.customOptions.list) || [];
         
                         if (field.customOptions.select == true) {
-                            options.unshift({ id: "null", label: '[Em Branco]' });
-                            options.unshift({ id: null, label: '--- Selecione ---' });
+                            if (!field.customOptions.onlyList){
+                                options.unshift({ id: "null", label: '[Em Branco]' });
+                            }
+                            if (!field.customOptions.required){
+                                options.unshift({ id: null, label: '--- Selecione ---' });
+                            }
                         }
         
                         deferred.resolve(options);
