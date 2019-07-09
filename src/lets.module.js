@@ -14,7 +14,6 @@
         'moment-filter',
         'checklist-model',
         'ui.toggle',
-        'ui.select',
         'ngSanitize',
         'colorpicker-dr',
         'ckeditor',

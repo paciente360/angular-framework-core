@@ -5,7 +5,6 @@ var gulp = require('gulp');
 var fs = require('fs');
 var path = require('path');
 var gutil = require('gulp-util');
-
 var concat = require('gulp-concat');
 
 var $ = require('gulp-load-plugins')({
@@ -15,8 +14,7 @@ var $ = require('gulp-load-plugins')({
 module.exports = function(options) {
   gulp.task('partials', function () {
     return gulp.src([
-      options.src + '/src/**/*.html',
-    //   options.tmp + '/serve/app/**/*.html'
+      options.src + '/src/**/*.html'
     ])
       .pipe($.minifyHtml({
         empty: true,
@@ -27,8 +25,8 @@ module.exports = function(options) {
         module: 'letsAngular',
         root: 'lets'
       }))
-      .pipe(gulp.dest(options.dist))
-      .pipe($.size({ title: options.dist + '/', showFiles: true }));
+      .pipe(gulp.dest(options.tmp))
+      .pipe($.size({ title: options.tmp + '/', showFiles: true }));
   });
 
   gulp.task('scripts', function () {
@@ -44,20 +42,36 @@ module.exports = function(options) {
       .pipe($.ngAnnotate())
       .pipe($.useref())
       .pipe(concat('lets-core.js'))
-      .pipe(gulp.dest(options.dist + '/'))
+      .pipe(gulp.dest(options.tmp + '/'))
       .pipe($.uglify({ preserveComments: $.uglifySaveLicense, mangle: { except: ["$super"] }})).on('error', options.errorHandler('Uglify'))
       .pipe(concat('lets-core.min.js'))
-      .pipe(gulp.dest(options.dist + '/'))
-      .pipe($.size({ title: options.dist + '/', showFiles: true }));
+      .pipe(gulp.dest(options.tmp + '/'))
+      .pipe($.size({ title: options.tmp + '/', showFiles: true }));
 
       
   });
 
-  gulp.task('full', ['scripts', 'partials'], function() {
+  gulp.task('styles', function () {
+    
+    var sassOptions = {
+      style: 'expanded',
+      precision: 10
+    };
+
     return gulp.src([
-        options.dist + '/lets-core.js',
-        options.dist + '/lets-tpls.js',
-      //   options.tmp + '/serve/app/**/*.html'
+      options.src + '/src/plugins/lets-colorpicker/angular-colorpicker-dr.scss'
+    ])
+    .pipe($.sass(sassOptions)).on('error', options.errorHandler('Sass'))
+    .pipe($.csso())
+    .pipe(concat('lets.min.css'))
+    .pipe(gulp.dest(options.dist + '/'))
+
+  });
+
+  gulp.task('full', ['scripts', 'partials', 'styles'], function() {
+    return gulp.src([
+        options.tmp + '/lets-core.js',
+        options.tmp + '/lets-tpls.js'
       ])
       .pipe(concat('lets.min.js'))
       .pipe($.uglify({ preserveComments: $.uglifySaveLicense, mangle: { except: ["$super"] }})).on('error', options.errorHandler('Uglify'))
@@ -65,14 +79,11 @@ module.exports = function(options) {
       .pipe($.size({ title: options.dist + '/', showFiles: true }));
   });
 
-//   gulp.task('other', function () {
-//     return gulp
-      
-//   });
-
   gulp.task('clean', function (done) {
     $.del([options.dist + '/', options.tmp + '/'], done);
   });
 
-  gulp.task('build', ['full']);
+  gulp.task('build', ['full'],function(done){
+    $.del([options.tmp + '/'], done);
+  });
 };
