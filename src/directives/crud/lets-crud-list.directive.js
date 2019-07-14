@@ -192,9 +192,12 @@
                                         cellOptions.cell = Backgrid.Cell.extend({
                                             formatter: {
                                                 fromRaw: function (rawData, model) {
-                                                    var rawData = rawData.toFixed(2).split('.');
-                                                    rawData[0] = "R$ " + rawData[0].split(/(?=(?:...)*$)/).join('.');
-                                                    return rawData.join(',');
+                                                    if (rawData){
+                                                        var rawData = rawData.toFixed(2).split('.');
+                                                        rawData[0] = "R$ " + rawData[0].split(/(?=(?:...)*$)/).join('.');
+                                                        return rawData.join(',');
+                                                    }
+                                                    
                                                 }
                                             }
                                         });
