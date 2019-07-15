@@ -135,7 +135,8 @@
                             if (error.status == 422) { //hook for loopback
                                 if (error.data.error.code == 'CANT_SAVE_MODEL') {
                                     messages.push(error.data.error.message);
-                                } else {
+                                
+                                } else if(error.data.error.details) {
                                     var codes = error.data.error.details.codes;
     
                                     var friendlyErrors = {
@@ -175,6 +176,9 @@
                                         })
     
                                     })
+                                
+                                }else{
+                                    messages.push(error.data.error.message);
                                 }
     
                             }

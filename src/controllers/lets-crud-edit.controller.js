@@ -248,7 +248,8 @@
                         if (error.status == 422) { //hook for loopback
                             if (error.data.error.code == 'CANT_SAVE_MODEL') {
                                 messages.push(error.data.error.message);
-                            } else {
+                            } else if(error.data.error.details) {
+                                
                                 var codes = error.data.error.details.codes;
 
                                 var friendlyErrors = {
@@ -288,6 +289,8 @@
                                     })
 
                                 })
+                            }else{
+                                messages.push(error.data.error.message);
                             }
 
                         }
@@ -359,7 +362,7 @@
                         if (error.status == 422) { //hook for loopback
                             if (error.data.error.code == 'CANT_SAVE_MODEL') {
                                 messages.push(error.data.error.message);
-                            } else {
+                            } else if(error.data.error.details) {
                                 var codes = error.data.error.details.codes;
 
                                 var friendlyErrors = {
@@ -393,6 +396,8 @@
                                     // console.log(code, key);
                                     messages.push(_message);
                                 })
+                            }else{
+                                messages.push(error.data.error.message);
                             }
 
                         }

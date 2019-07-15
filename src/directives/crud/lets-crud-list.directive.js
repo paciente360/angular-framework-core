@@ -473,6 +473,9 @@
                             
                             var grid = scope.$el.attr('grid');
                             var $scopeFilter = $('div[crud-filter][grid="'+grid+'"] input').scope();
+                            if (!$scopeFilter){
+                                $scopeFilter = {};
+                            }
                             
                             if(start){
                                 if (grid=="main" && $window.location.search){
