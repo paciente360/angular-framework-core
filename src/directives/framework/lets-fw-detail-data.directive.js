@@ -16,7 +16,6 @@
                 pre: function preLink(scope, $el, attrs, controller) {
 
                     scope.formatData = function (data, field) {
-
                         if (field.autocomplete !== false) {
                             if(!data[field.name + '.label']){
                                 return null
@@ -33,6 +32,9 @@
                                 return moment(data[field.name]).format('DD/MM/YYYY');
                             }
 
+                        }
+                        else if (field.type == 'time') {
+                            return moment(data[field.name]).format('HH:mm');
                         }
                         else  if (field.type == 'boolean') {
 
