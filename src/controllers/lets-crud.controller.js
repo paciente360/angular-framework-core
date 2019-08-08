@@ -270,7 +270,8 @@
               },
               showCancelButton: true,
             }).then(function(result){
-              if(result){
+              
+              if(!!result.value){
                 
                 swangular.swal({
                   html: 'Buscando dados...',
