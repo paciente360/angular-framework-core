@@ -272,6 +272,15 @@
             }).then(function(result){
               if(result){
                 
+                swangular.swal({
+                  html: 'Buscando dados...',
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  onOpen:function(){
+                      swangular.showLoading();
+                  }
+                });
+
                 var clmnxlsx = columnXlsx.filter(function(column, index){
                   return result.value[index]
                 });
@@ -281,105 +290,105 @@
                 
                 var totalRecords = $scope.totalPager || $('tr').find('td').last().data('model').collection.state.totalRecords;
                 all_filter = Object.assign({}, all_filter,{per_page: totalRecords});
-                console.log('all_filter: ', all_filter);
-                // debugger;
+                
+
                 resource.customGET('pager', all_filter).then(function (response) {
-                  // debugger;
-                  console.log(response.data);
                   
-                  var res = response.data.map(function(lead){
-                      
-                      
-                    var leadFiltrado = {}
-                    clmnxlsx.forEach(function(column){
-                      var atrbts =  column.split('#');
-                      if(atrbts.length == 1){
-                        leadFiltrado[column] = lead[column];
-                      }else if(atrbts.length>1){
-                        // debugger;
-                        var aux = atrbts.reduce(function(obj, atb, i){
-                          if(i === atrbts.length - 1){
-                            obj? obj[atb] = caminhaObj(lead, atrbts): '';
-                            return obj;
-                          }
-                          return (obj? (obj[atb] = obj[atb]? obj[atb]: {}): '');
-                        }, leadFiltrado);
-                        // console.log(aux);
-                        // leadFiltrado = Object.assign(leadFiltrado, aux);
-                        // debugger;
-                        // leadFiltrado[atrbts[atrbts.length-1]] = caminhaObj(lead, atrbts);
-                        // leadFiltrado[column] = caminhaObj(lead, atrbts);
-                      }
-                    });
-                    return leadFiltrado;
-                  });
                   
-                  // debugger;
-                  var trocas = [];
-                  montaColunasComNomes(fields, trocas, '');
-                  // console.log(trocas);
                   
-                 res.map(function(row){
-                    var trc = trocas;
-                    trc.forEach(function(troca){
-                      // row[troca.depois] = percorreObjeto(row, troca.antes);
-                      
-                      var aux = percorreObjeto(row, troca.antes);
-                      if(typeof(aux) === 'object')aux = aux.join(', ');
-      
-                      row[troca.depois] = aux;
-      
+                  function nextBeforeExport() {
+                    
+                    var res = response.data.map(function(lead){   
+                      var leadFiltrado = {}
+                      clmnxlsx.forEach(function(column){
+                        var atrbts =  column.split('#');
+                        if(atrbts.length == 1){
+                          leadFiltrado[column] = lead[column];
+                        }else if(atrbts.length>1){
+                          var aux = atrbts.reduce(function(obj, atb, i){
+                            if(i === atrbts.length - 1){
+                              obj? obj[atb] = caminhaObj(lead, atrbts): '';
+                              return obj;
+                            }
+                            return (obj? (obj[atb] = obj[atb]? obj[atb]: {}): '');
+                          }, leadFiltrado);
+                        }
+                      });
+                      return leadFiltrado;
                     });
-                    // SÓ PODE DELETAR DEPOIS DE ATRIBIR TODOS POIS PODE ACONTECER DE UM ATRIBUTO VIR ALGUM ATRIBUTO PAI EM COMUM
-                    // debugger;
-                    trc.forEach(function(troca){
-                      if(troca.antes[0] != troca.depois){
-                        delete row[troca.antes[0]];
-                      }
-                    });
-      
-                    for(var key in row){
+
+                    var trocas = [];
+                    montaColunasComNomes(fields, trocas, '');
+                    // console.log(trocas);
+                    
+                    res.map(function(row){
+                      var trc = trocas;
+                      trc.forEach(function(troca){
+                        // row[troca.depois] = percorreObjeto(row, troca.antes);
+                        
+                        var aux = percorreObjeto(row, troca.antes);
+                        if(typeof(aux) === 'object')aux = aux.join(', ');
+        
+                        row[troca.depois] = aux;
+        
+                      });
+                      // SÓ PODE DELETAR DEPOIS DE ATRIBIR TODOS POIS PODE ACONTECER DE UM ATRIBUTO TER ALGUM ATRIBUTO PAI EM COMUM
                       // debugger;
-      
-                      // if(!row[key].match(/[A-Z]{2,}[0-9]{4,}(_[A-Z0-9]{1,6})?/g) && moment(row[key], 'YYYY-MM-DD', true).isValid()){
-                      //   var aux = moment(row[key], 'YYYY-MM-DD');
-                      //   row[key] = aux.format('DD/MM/YY h:mm');
+                      trc.forEach(function(troca){
+                        if(troca.antes[0] != troca.depois){
+                          delete row[troca.antes[0]];
+                        }
+                      });
+                      // FAZ DATA 
+                      // for(var key in row){
+                        // debugger;
+        
+                        // if(!row[key].match(/[A-Z]{2,}[0-9]{4,}(_[A-Z0-9]{1,6})?/g) && moment(row[key], 'YYYY-MM-DD', true).isValid()){
+                        //   var aux = moment(row[key], 'YYYY-MM-DD');
+                        //   row[key] = aux.format('DD/MM/YY h:mm');
+                        // }
+        
+                        // if(moment(row[key], 'YYYY-MM-DD').isValid()){
+                        //   var aux = moment(row[key], 'YYYY-MM-DD');
+                        //   row[key] = aux.format('DD/MM/YY h:mm');
+                        // }
                       // }
-      
-                      // if(moment(row[key], 'YYYY-MM-DD').isValid()){
-                      //   var aux = moment(row[key], 'YYYY-MM-DD');
-                      //   row[key] = aux.format('DD/MM/YY h:mm');
-                      // }
-                    }
-      
-                  });
-      
-                  // var oldLabels = fOldLabels(fields);
-                  // var titles = fTitles(res)
-                  // var oldIndex = fOldIndex(oldLabels, titles);
-      
-                  // debugger;
-                  
-                  // fields
-                  /* generate a worksheet */
-                  var ws = XLSX.utils.json_to_sheet(res);
-                  // oldIndex.forEach(function(oi, i){
-                  //   if(oi != -1){
-                  //     var celula = 'A'+ (oi+1);
-                  //     var cell = ws[celula];
-                  //     delete ws[celula].w;
-      
-                  //     ws[celula].v = labelcelula(fields, oldLabels[i]);
-                  //   }
-                  // });
-                  /* add to workbook */
-                  var wb = XLSX.utils.book_new();
-                  XLSX.utils.book_append_sheet(wb, ws, "dadosexportados");
-                  /* write workbook and force a download */
-                  var date = moment().unix();
-                  XLSX.writeFile(wb, "Exportacao_" + date + ".xlsx");
-      
-                  $scope.export_btn_is_disable = false;
+        
+                    });
+
+                    // var oldLabels = fOldLabels(fields);
+                    // var titles = fTitles(res)
+                    // var oldIndex = fOldIndex(oldLabels, titles);
+        
+                    // debugger;
+                    
+                    // fields
+                    /* generate a worksheet */
+                    swangular.close();
+                    var ws = XLSX.utils.json_to_sheet(res);
+                    // oldIndex.forEach(function(oi, i){
+                    //   if(oi != -1){
+                    //     var celula = 'A'+ (oi+1);
+                    //     var cell = ws[celula];
+                    //     delete ws[celula].w;
+        
+                    //     ws[celula].v = labelcelula(fields, oldLabels[i]);
+                    //   }
+                    // });
+                    /* add to workbook */
+                    var wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, "dadosexportados");
+                    /* write workbook and force a download */
+                    var date = moment().unix();
+                    XLSX.writeFile(wb, "Exportacao_" + date + ".xlsx");
+        
+                    $scope.export_btn_is_disable = false;
+                  }
+
+                  $scope.$emit("before export", response, nextBeforeExport);
+                  if (!$scope.$$listeners["before export"]){
+                    nextBeforeExport();
+                  }
                 });
                 
               }else{
