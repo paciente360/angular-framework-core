@@ -29,7 +29,7 @@
 
                 _input.keyup(function(){
                     if (this.value.trim()==""){
-                        delete _input.scope().data[_input.attr('name')];
+                        _input.scope().data[_input.attr('name')] = null;
                     }
                 })
 
