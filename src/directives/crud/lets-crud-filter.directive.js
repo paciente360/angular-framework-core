@@ -91,7 +91,9 @@
 
                     scope.fieldsFilter.push(field);
                 });
-                scope.autocomplete = function (field, val) {
+                scope.autocomplete = function (field, val) {                    
+                    scope.$emit('before-filter-autocomplete', scope);
+
                     scope.resource = Restangular.all(scope.route());
 
                     var queries = [];
@@ -169,8 +171,9 @@
                     return deferred.promise;
                 }
 
-                scope.autocompleteSelect = function ($item, $model, $label) {
-            
+                scope.autocompleteSelect = function ($item, $model, $label) {                    
+                    scope.$emit('after-filter-autocomplete', scope);
+
                     var _data = this.data;
         
                     if (_data==undefined){
