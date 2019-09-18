@@ -171,11 +171,13 @@
                     return deferred.promise;
                 }
 
-                scope.autocompleteSelect = function ($item, $model, $label) {                    
-                    scope.$emit('after-filter-autocomplete', scope);
-
+                scope.autocompleteSelect = function ($item, $model, $label) {  
+                    
+                    
+                    scope.$emit('after-filter-autocomplete', {scope: scope, name: this.field.name, value: $item});
+                    
                     var _data = this.data;
-        
+                    
                     if (_data==undefined){
                         _data = {};
                     }
