@@ -22,75 +22,82 @@
 
                 scope.data = {};
                 scope.showBuscaAvancada = false;
-                var fields = angular.copy(scope.fields());
+                var fields;
 
                 scope.fieldsFilter = [];
-                fields.forEach(function(field, idx){
-                    if (!field.filter)return;
 
-                    field.disabled = false;
-                    field.notnull = false;
-                    field.name = field.name;
-
-                    if (field.customOptions.file){
-                        delete field.customOptions.file;
-                    }
-
-                    if (field.type=="text"){
-                        field.type = "string";
-                    }
-                    else if (field.type=="boolean"){
-                        field.type = "number";
-                        field.autocomplete = true;
-                        field.customOptions = {
-                            "list":[
-                                {"id":"false",  "label":field.customOptions.statusFalseText},
-                                {"id":"true",  "label":field.customOptions.statusTrueText}
-                            ],
-                            "select":true
-                        };
-                    }
-                    else if (field.type=="date"){
-                        
-                        if (typeof(field.filter)=="object" && field.filter.range===true){
-                            
-                            var _ini = angular.copy(field);
-                            _ini.name +="_ini";
-                            _ini.label +=" (Início)";
-                            scope.fieldsFilter.push(_ini);
-
-                            var _fim = angular.copy(field);
-                            _fim.name +="_fim";
-                            // Não mudar para "fim", ordenação está por ordem alfabética do label !
-                            _fim.label +=" (Término)";
-                            scope.fieldsFilter.push(_fim);
-
-                            return;
+                scope.startFilters = function() {
+                    fields = angular.copy(scope.fields());
+                    scope.fieldsFilter = [];
+                    fields.forEach(function(field, idx){
+                        if (!field.filter)return;
+    
+                        field.disabled = false;
+                        field.notnull = false;
+                        field.name = field.name;
+    
+                        if (field.customOptions.file){
+                            delete field.customOptions.file;
                         }
-
-                    }
-                    else if (field.type == "number" || field.type == "integer" || field.type == "float" || field.type == "bigint"){
-                        
-                        if (typeof(field.filter)=="object" && field.filter.range===true){
-                            
-                            var _ini = angular.copy(field);
-                            _ini.name +="_ini";
-                            _ini.label +=" (Início)";
-                            scope.fieldsFilter.push(_ini);
-
-                            var _fim = angular.copy(field);
-                            _fim.name +="_fim";
-                            // Não mudar para "fim", ordenação está por ordem alfabética do label !
-                            _fim.label +=" (Término)";
-                            scope.fieldsFilter.push(_fim);
-
-                            return;
+    
+                        if (field.type=="text"){
+                            field.type = "string";
                         }
+                        else if (field.type=="boolean"){
+                            field.type = "number";
+                            field.autocomplete = true;
+                            field.customOptions = {
+                                "list":[
+                                    {"id":"false",  "label":field.customOptions.statusFalseText},
+                                    {"id":"true",  "label":field.customOptions.statusTrueText}
+                                ],
+                                "select":true
+                            };
+                        }
+                        else if (field.type=="date"){
+                            
+                            if (typeof(field.filter)=="object" && field.filter.range===true){
+                                
+                                var _ini = angular.copy(field);
+                                _ini.name +="_ini";
+                                _ini.label +=" (Início)";
+                                scope.fieldsFilter.push(_ini);
+    
+                                var _fim = angular.copy(field);
+                                _fim.name +="_fim";
+                                // Não mudar para "fim", ordenação está por ordem alfabética do label !
+                                _fim.label +=" (Término)";
+                                scope.fieldsFilter.push(_fim);
+    
+                                return;
+                            }
+    
+                        }
+                        else if (field.type == "number" || field.type == "integer" || field.type == "float" || field.type == "bigint"){
+                            
+                            if (typeof(field.filter)=="object" && field.filter.range===true){
+                                
+                                var _ini = angular.copy(field);
+                                _ini.name +="_ini";
+                                _ini.label +=" (Início)";
+                                scope.fieldsFilter.push(_ini);
+    
+                                var _fim = angular.copy(field);
+                                _fim.name +="_fim";
+                                // Não mudar para "fim", ordenação está por ordem alfabética do label !
+                                _fim.label +=" (Término)";
+                                scope.fieldsFilter.push(_fim);
+    
+                                return;
+                            }
+    
+                        }
+    
+                        scope.fieldsFilter.push(field);
+                    });
+                }
 
-                    }
-
-                    scope.fieldsFilter.push(field);
-                });
+                
                 scope.autocomplete = function (field, val) {                    
                     scope.$emit('before-filter-autocomplete', scope);
 
@@ -172,7 +179,7 @@
                 }
 
                 scope.autocompleteSelect = function ($item, $model, $label) {  
-                    
+                    debugger;
                     
                     scope.$emit('after-filter-autocomplete', {scope: scope, name: this.field.name, value: $item});
                     
@@ -275,6 +282,12 @@
                 scope.getDateFormated = function(dt){
                     return moment(dt).format('DD/MM/YYYY');
                 }
+
+                scope.startFilters();
+
+                scope.$on('refresh-fields', function(e, data) {
+                    scope.startFilters();
+                });
 
                if(scope.search()=="fixed"){
                 scope.showBuscaAvancada = true;
