@@ -528,7 +528,7 @@
                                                     $scopeFilter.data[par] = params[par];
                                                 }
                                             }
-                                            if(par != 'p') showBusca = true;
+                                            // if(par != 'p') showBusca = true;
                                         });
                                         $scopeFilter.data['showBuscaAvancada'] = showBusca;
                                         // $scopeFilter.objFilter = {data:{filter:params}};
@@ -606,9 +606,9 @@
                         });
                     }
 
-                    jQuery($window).on('sn:resize', function () {
-                        createBackgrid(pageableCRUDModel);
-                    });
+                    // jQuery($window).on('sn:resize', function () {
+                    //     createBackgrid(pageableCRUDModel);
+                    // });
 
                     createBackgrid(pageableCRUDModel);                    
                 }
