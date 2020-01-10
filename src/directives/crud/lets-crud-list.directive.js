@@ -459,6 +459,15 @@
                         });
 
                         scope.$el.find('.table-container').html('').append(pageableGrid.render().$el).append(paginator.render().$el);
+                        
+                        setTimeout(function () {
+                            angular.element(paginator.render().$el).click(function(){
+                                window.scrollTo({
+                                    top: 100,
+                                    behavior: 'smooth'
+                                });
+                            })
+                        },0)
 
                         scope.$broadcast('refreshGRID', true);
                     }
@@ -610,7 +619,8 @@
                     //     createBackgrid(pageableCRUDModel);
                     // });
 
-                    createBackgrid(pageableCRUDModel);                    
+                    createBackgrid(pageableCRUDModel);   
+                                    
                 }
 
                 var listener = scope.$parent.$watch('headers', function (newValue, oldValue) {
