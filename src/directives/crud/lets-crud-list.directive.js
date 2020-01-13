@@ -537,9 +537,9 @@
                                                     $scopeFilter.data[par] = params[par];
                                                 }
                                             }
-                                            // if(par != 'p') showBusca = true;
+                                            if(par != 'p') showBusca = true;
                                         });
-                                        $scopeFilter.data['showBuscaAvancada'] = showBusca;
+                                        $scopeFilter.data['showBusca'] = showBusca;
                                         // $scopeFilter.objFilter = {data:{filter:params}};
                                     }
 
