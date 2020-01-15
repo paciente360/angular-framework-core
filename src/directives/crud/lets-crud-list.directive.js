@@ -539,7 +539,7 @@
                                             }
                                             if(par != 'p') showBusca = true;
                                         });
-                                        $scopeFilter.data['showBusca'] = showBusca;
+                                        $scopeFilter.data['showBuscaAvancada'] = showBusca;
                                         // $scopeFilter.objFilter = {data:{filter:params}};
                                     }
 
