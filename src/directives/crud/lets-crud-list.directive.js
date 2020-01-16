@@ -500,7 +500,20 @@
                                             params[attr].fim = decodeURIComponent(p[1]);
 
                                         }else{
-                                            params[p[0]] = decodeURIComponent(p[1]);
+                                            try {
+                                                p[1] = JSON.parse(p[1])
+                                                // console.log('BREKA <-', p[0], p[1]);
+                                                
+                                            } catch (error) {
+                                                p[1] = p[1]
+                                                // console.log('BREKA ERROR<-', p[0], p[1]);
+                                            }
+
+                                            if(typeof p[1] == "object"){
+                                                params[p[0]] = p[1];    
+                                            }else{
+                                                params[p[0]] = decodeURIComponent(p[1]);
+                                            }
                                         }
                                     });
 
@@ -521,9 +534,20 @@
                                             if(par.split("_label").length > 1){
                                                 $scopeFilter.data[par.replace("_label","")+".label"] = {id:params[par.replace("_label","")], label:params[par]};
                                             }else{
+                                                // console.log('BREKA ->', params[par])
+
                                                 if (typeof(params[par])=="object"){
-                                                    $scopeFilter.data[par+"_ini"] = moment(params[par].ini, 'DD/MM/YYYY').toDate();
-                                                    $scopeFilter.data[par+"_fim"] = moment(params[par].fim, 'DD/MM/YYYY').toDate();
+                                                    for (var key in params[par]) {
+                                                        if(key == "ini" || key == "fim"){
+                                                            $scopeFilter.data[par+"_"+key] = moment(params[par][key], 'DD/MM/YYYY').toDate();
+                                                        }else{
+                                                            $scopeFilter.data[par] = $scopeFilter.data[par] || {};
+                                                            $scopeFilter.data[par][key] = params[par][key] ;
+                                                        }
+                                                       
+                                                    } 
+                                                    // $scopeFilter.data[par+"_ini"] = moment(params[par].ini, 'DD/MM/YYYY').toDate();
+                                                    // $scopeFilter.data[par+"_fim"] = moment(params[par].fim, 'DD/MM/YYYY').toDate();
                                                 }else{
                                                     $scopeFilter.data[par] = params[par];
                                                 }
@@ -555,6 +579,15 @@
 
                                                 if ($scopeFilter.objFilter.data.filter[key].fim){
                                                     str.push(key+"_fim="+$scopeFilter.objFilter.data.filter[key].fim);
+                                                }
+
+                                                if(!$scopeFilter.objFilter.data.filter[key].ini && !$scopeFilter.objFilter.data.filter[key].fim){
+                                                    // console.log($scopeFilter.objFilter.data.filter[key])
+                                                    var objCheck = $scopeFilter.objFilter.data.filter[key];
+                                                    // console.log('objeto', objCheck);
+                                                    
+                                                    str.push(key+"="+JSON.stringify(objCheck));
+
                                                 }
                                             }else{
                                                 if (key!="p"){

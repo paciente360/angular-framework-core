@@ -166,6 +166,16 @@
     </label>
   </div>
 
+    <!-- checkbox -->
+    <div ng-if="field.type == 'checkbox'" class="d-flex flex-row justify-content-around">
+        <div ng-repeat="campo in field.customOptions.list">
+            <div class="circle-group">
+                <input type="checkbox" ng-false-value="undefined" class="input-control circle" id="{{field.name + campo.id}}" ng-model="data[field.name][campo.id]" ng-true-value="{{campo.id}}">
+                <label for="{{field.name + campo.id}}">{{campo.label}}</label>
+            </div>
+        </div>
+    </div>
+
   <!--Autocomplete-->
   <div ng-if="field.autocomplete && !field.customOptions.autocomplete_table">
     <div fw-auto-complete="" class="fw-input-group fw-auto-complete input-group">
