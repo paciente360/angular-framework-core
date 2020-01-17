@@ -216,8 +216,6 @@
                         scope.showBuscaAvancada = angular.copy(scope.data['showBuscaAvancada']);
                         delete scope.data['showBuscaAvancada'];
                     }
-
-                    console.log(scope.showBuscaAvancada, scope.data['showBusca']);
                     
                     if ( scope.showBuscaAvancada || scope.data['showBusca'] ) {
                         // console.log(fields)
