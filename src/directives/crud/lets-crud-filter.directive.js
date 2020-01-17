@@ -179,7 +179,7 @@
                 }
 
                 scope.autocompleteSelect = function ($item, $model, $label) {  
-                    debugger;
+                    // debugger;
                     
                     scope.$emit('after-filter-autocomplete', {scope: scope, name: this.field.name, value: $item});
                     
@@ -216,7 +216,10 @@
                         scope.showBuscaAvancada = angular.copy(scope.data['showBuscaAvancada']);
                         delete scope.data['showBuscaAvancada'];
                     }
-                    if (scope.showBuscaAvancada){
+
+                    console.log(scope.showBuscaAvancada, scope.data['showBusca']);
+                    
+                    if ( scope.showBuscaAvancada || scope.data['showBusca'] ) {
                         // console.log(fields)
                         fields.forEach(function(field, idx){
 
