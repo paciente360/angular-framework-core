@@ -17,7 +17,8 @@
         'ngSanitize',
         'colorpicker-dr',
         'ckeditor',
-        'thatisuday.dropzone'
+        'thatisuday.dropzone',
+        'swangular'
     ]);
 
     // ----------------------------
