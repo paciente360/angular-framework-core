@@ -216,15 +216,12 @@
                         scope.showBuscaAvancada = angular.copy(scope.data['showBuscaAvancada']);
                         delete scope.data['showBuscaAvancada'];
                     }
-
-                    console.log(scope.showBuscaAvancada, scope.data['showBusca']);
                     
                     if ( scope.showBuscaAvancada || scope.data['showBusca'] ) {
-                        // console.log(fields)
                         fields.forEach(function(field, idx){
 
                             if (typeof(field.filter)=="object" && field.filter.range===true){
-
+                                
                                 var values = {};
 
                                 if (scope.data[field.name+"_ini"]){
@@ -248,8 +245,12 @@
                             }
 
                             if (scope.data[field.name]){
+
                                 filterData[field.name] = scope.data[field.name];
 
+                                if(field.customOptions && field.customOptions.telefone){
+                                    filterData[field.name] = scope.data[field.name].replace(/\D/g, '')
+                                }
                                 if(field.type=="date"){
                                     filterData[field.name] = scope.getDateFormated(filterData[field.name])
                                 }
@@ -257,11 +258,13 @@
                                 if(field.autocomplete){
                                     filterData[field.name+"_label"] = scope.data[field.name+".label"].label;
                                 }
+
                             }
                         });
                         scope.data.q = null;
+                        
                         scope.objFilter = {data:{filter:filterData}};
-                    }else{
+                    }else{                        
                         filterData.q = scope.data.q;
                         filterData.p = scope.data.p;
                         scope.objFilter = {data:filterData};
