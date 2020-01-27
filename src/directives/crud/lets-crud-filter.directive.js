@@ -29,6 +29,7 @@
                 scope.startFilters = function() {
                     fields = angular.copy(scope.fields());
                     scope.fieldsFilter = [];
+                    fields = fields.filter(function(field){return field.filter});
                     fields.forEach(function(field, idx){
                         if (!field.filter)return;
     
@@ -232,7 +233,7 @@
                                 }
 
                                 if (scope.data[field.name+"_fim"]){
-                                    values.fim = scope.data[field.name+"_fim"];
+                                    values.fim = scope.data[field.name+"_fim"]; 
                                     if (field.type=="date"){
                                         values.fim = scope.getDateFormated(values.fim);
                                     }
