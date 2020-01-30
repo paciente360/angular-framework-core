@@ -45,6 +45,13 @@
       class="main-input form-control" autocomplete="off" />
   </div>
 
+  <!-- Colorpicker -->
+  <div ng-if="field.type == 'colorpicker' && (!field.customOptions.file && !field.customOptions.email && !field.autocomplete)">
+    <input ng-model-options="{fieldInfo: field}" name="{{field.name}}" type="text" id="{{field.name}}" fw-dynamic
+      ng-required="field.notnull" ng-model="data[field.name]" size="{{field.length}}" ng-disabled="field.disabled"
+      class="main-input form-control" autocomplete="off" colorpicker />
+  </div>
+
   <!-- Simplecolor -->
   <div ng-if="field.type == 'simplecolor'">
     <input ng-model-options="{fieldInfo: field}" color-picker color-me="true" name="{{field.name}}" type="text" id="{{field.name}}"
