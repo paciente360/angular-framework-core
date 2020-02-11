@@ -22,7 +22,7 @@
         </div>
         
         <div class="busca-avancada row" collapse="!showBuscaAvancada">
-            <div class="form-group" style="margin-bottom: 10px; margin-right: 0px; min-width: 200px;" ng-repeat="field in fieldsFilter track by $index" ng-class="field.filter.range===true ? 'col-sm-2' : 'col-sm-3'">
+            <div class="form-group" style="margin-bottom: 10px; margin-right: 0px; min-width: 200px;" ng-repeat="field in fieldsFilter track by $index" ng-class="field.filter.customClass ? field.filter.customClass : (field.filter.range===true ? 'col-sm-2' : 'col-sm-3')">
                 <label for="{{field.name}}" class="control-label" style="font-size:12px; margin-bottom: 0px;font-weight: 600">{{field.label}}</label>
                 <fw-input fw-data="data"></fw-input>
             </div>

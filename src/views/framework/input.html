@@ -167,7 +167,7 @@
   </div>
 
     <!-- checkbox -->
-    <div ng-if="field.type == 'checkbox'" class="d-flex flex-row justify-content-around">
+    <div ng-if="field.type == 'checkbox'" class="d-flex flex-row">
         <div ng-repeat="campo in field.customOptions.list">
             <div class="circle-group">
                 <input type="checkbox" ng-false-value="undefined" class="input-control circle" id="{{field.name + campo.id}}" ng-model="data[field.name][campo.id]" ng-true-value="{{campo.id}}">

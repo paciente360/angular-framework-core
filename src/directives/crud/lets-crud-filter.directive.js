@@ -96,6 +96,13 @@
     
                         scope.fieldsFilter.push(field);
                     });
+
+                    scope.fieldsFilter = scope.fieldsFilter.sort(function(a, b) {                        
+                        var filter1 = a.filter.sequence || 0;
+                        var filter2 = b.filter.sequence || 0;
+                        return filter1 - filter2;
+                      });                    
+                    
                 }
 
                 
