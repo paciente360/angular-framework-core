@@ -4,6 +4,7 @@
   "description": "Core Module for Lets Angular Framework",
   "dependencies": {},
   "scripts": {
+    "build": "gulp build",
     "test": "gulp test"
   },
   "devDependencies": {

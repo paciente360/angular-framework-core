@@ -3,7 +3,7 @@
 
     var module = angular.module('letsAngular');
 
-    module.controller('CRUDController', function ($scope, Restangular, module, $state, $window, $stateParams, $rootScope, headers, swangular) {
+    module.controller('CRUDController', function ($scope, Restangular, module, $state, $window, $stateParams, $rootScope, headers, swangular,ngToast) {
         $scope.headersReady = false;
         $scope.export_btn_is_disable = false;
 
@@ -51,6 +51,13 @@
 
           var bigFiltro = $scope.getFilter();
           $scope.export_btn_is_disable = true;
+          var totalRecords = $scope.totalPager || $('tr').find('td').last().data('model').collection.state.totalRecords;
+          if(totalRecords && totalRecords > 2000)
+          {
+            ngToast.warning('Não é possível exportar mais que 2000 registros.')
+            $scope.export_btn_is_disable = false;
+            throw 'Não é possível exportar mais que 2000 registros.'
+          }
           var resource = $scope.resource;
           function filtraExport (item){
             return item.export;
@@ -287,9 +294,7 @@
               });
      
               
-              var all_filter = filtrarGrid(bigFiltro);
-              
-              var totalRecords = $scope.totalPager || $('tr').find('td').last().data('model').collection.state.totalRecords;
+              var all_filter = filtrarGrid(bigFiltro);             
               all_filter = Object.assign({}, all_filter,{per_page: totalRecords});
               
     
