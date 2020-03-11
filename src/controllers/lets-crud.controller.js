@@ -396,7 +396,6 @@
               });
               
             }else{
-              console.log(result);
               
               if($scope.totalPager != undefined && !result.dismiss){
                 swangular.swal({
