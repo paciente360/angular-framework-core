@@ -401,7 +401,7 @@
                 swangular.swal({
                   type: 'info',
                   title: 'Ocorreu um erro',
-                  text: 'Mas não é possível criar exportar os dados, pois não há registros.'
+                  text: 'Não é possível criar exportar os dados, pois não há registros.'
                 })
               }
     
