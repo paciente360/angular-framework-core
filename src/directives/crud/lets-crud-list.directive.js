@@ -55,7 +55,8 @@
                                 scope.$el.find('.table-container .backgrid-paginator ul.total-records').remove();
                                 scope.$el.find('.table-container .backgrid-paginator').append(infoTotal);
                             });
-                            scope.$parent.totalPager = scope.$parent.totalPager ? scope.$parent.totalPager :resp.total_count;
+                            // Sempre pegar atualizado (não causa problema em páginas customizadas)
+                            scope.$parent.totalPager = resp.total_count;
                             return { totalRecords: resp.total_count };
                         },
                     };
