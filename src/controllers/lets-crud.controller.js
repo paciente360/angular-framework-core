@@ -51,7 +51,7 @@
 
           var bigFiltro = $scope.getFilter();
           $scope.export_btn_is_disable = true;
-          var totalRecords = $scope.totalPager || $('tr').find('td').last().data('model').collection.state.totalRecords;
+          var totalRecords = $scope.totalPager !== undefined ? $scope.totalPager : $('tr').find('td').last().data('model').collection.state.totalRecords;
           if(totalRecords && totalRecords > 2000)
           {
             ngToast.warning('Não é possível exportar mais que 2000 registros.')
@@ -396,12 +396,13 @@
               });
               
             }else{
-    
-              if($scope.totalPager != undefined){
+              console.log(result);
+              
+              if($scope.totalPager != undefined && !result.dismiss){
                 swangular.swal({
                   type: 'info',
-                  title: 'Desculpe',
-                  text: 'Mas não há leads cadastrados.'
+                  title: 'Ocorreu um erro',
+                  text: 'Mas não é possível criar exportar os dados, pois não há registros.'
                 })
               }
     
