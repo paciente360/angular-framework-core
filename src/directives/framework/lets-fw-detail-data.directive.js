@@ -63,7 +63,11 @@
                             }else{
                                 return data[field.name];
                             }
-
+                        }else if (field.type == 'custom') {       
+                            // para manter o padrão do list (enviando um jquery e dentro de attributes)  
+                            var _field = field.toString({attributes:data})                                                      
+                            if(_field && _field[0] && _field[0].outerHTML) return $sce.trustAsHtml(_field[0].outerHTML);
+                            else return ''                            
                         }else{
                             return data[field.name];
                         }
