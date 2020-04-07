@@ -577,7 +577,7 @@
             tab.route = (id ? route : $scope.headers.route+tab.fixedRoute);
             tab.id = id ? id : null;
 
-            fwModalService.createCRUDModal(tab, null, "CRUDEditDetailController");
+            fwModalService.createCRUDModal(tab, null, "CRUDEditDetailController", null, $scope);
         };
 
         $scope.deleteDetail = function (route, row) {

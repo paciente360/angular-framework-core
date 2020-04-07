@@ -14,7 +14,7 @@
             return $modal.open(config).result;
         };
     
-        self.createCRUDModal = function (headers, data, ctrl, template) {
+        self.createCRUDModal = function (headers, data, ctrl, template, parentScope) {
             return self._createModal({
                 animation: true,
                 templateUrl: template || 'lets/views/crud/crud-modal.html',
@@ -28,7 +28,8 @@
                             var _data = jQuery.extend({}, data);
                         }
                         return _data;
-                    }
+                    },
+                    parentScope:parentScope
                 },
                 size: 'lg',
                 backdrop: 'static',
