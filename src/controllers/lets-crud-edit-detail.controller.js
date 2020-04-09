@@ -3,7 +3,7 @@
 
     var module = angular.module('letsAngular');
 
-    module.controller('CRUDEditDetailController', function ($scope, parentScope, Restangular, $http, $stateParams, $timeout, headers, $rootScope, $modalInstance, $q, ngToast, Upload) {
+    module.controller('CRUDEditDetailController', function ($scope, Restangular, $http, $stateParams, $timeout, headers, $rootScope, $modalInstance, $q, ngToast, Upload) {
 
         $scope.data = {};
         $scope.headers = headers;
@@ -11,10 +11,16 @@
         $scope.autocompleteModels = {};
         $scope.doafterAutoCompleteSelect = {};
         $scope.$http = $http;
+       
+        var parentScope = headers.parentScope;
+        delete headers.parentScope;
 
         if(headers.modal_id){
             $rootScope.$emit('open:'+headers.modal_id+'', $scope); // @deprecated 
-            parentScope.$emit('open:'+headers.modal_id+'', $scope);
+
+            if (parentScope){
+                parentScope.$emit('open:'+headers.modal_id+'', $scope);
+            }
         }
 
         $scope.datepickers = {};

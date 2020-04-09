@@ -20,7 +20,10 @@
                 templateUrl: template || 'lets/views/crud/crud-modal.html',
                 controller: ctrl || 'CRUDFormModalController',
                 resolve: {
-                    headers: function() { return headers; },
+                    headers: function() { 
+                        headers.parentScope = parentScope;
+                        return headers;
+                    },
                     data: function() {
                         try {
                             var _data = angular.copy(data);
