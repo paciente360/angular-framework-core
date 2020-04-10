@@ -36,7 +36,8 @@
                 },
                 size: 'lg',
                 backdrop: 'static',
-                keyboard: false
+                keyboard: false,
+                windowClass: headers.modal_id ? 'modal-'+headers.modal_id : ''
             });
         };
     

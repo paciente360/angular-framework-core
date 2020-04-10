@@ -433,6 +433,10 @@
 
                         var text = 'Selecione antes o(a) ' + dep.label;
 
+                        if (dep.custom){
+                            var text = dep.label;
+                        }
+
                         var data = [];
                         data.push({ id: null, label: text });
 
