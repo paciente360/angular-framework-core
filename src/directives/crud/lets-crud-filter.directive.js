@@ -26,6 +26,8 @@
 
                 scope.fieldsFilter = [];
 
+                        
+
                 scope.startFilters = function() {
                     fields = angular.copy(scope.fields());
                     scope.fieldsFilter = [];
@@ -103,6 +105,10 @@
                         return filter1 - filter2;
                       });                    
                     
+
+                      setTimeout(function(){
+                        scope.$emit('filter-init', scope); 
+                      }, 500);
                 }
 
                 
@@ -277,7 +283,8 @@
                         filterData.p = scope.data.p;
                         scope.objFilter = {data:filterData};
                     }
-                    if(start){
+
+                    if(start){                                             
                         $rootScope.$broadcast('refreshGRID', false, true);
                     }
                 }
