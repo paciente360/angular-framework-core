@@ -608,7 +608,7 @@
                     headers.route = $scope.headers.route+"/details/"+detail;
                 }
 
-                fwModalService.createCRUDModal(headers)
+                fwModalService.createCRUDModal(headers, null, null, null, $scope)
                 .then(function (response) {
                     response.new = true;
                     $scope.data[detail].push(response);
@@ -643,7 +643,7 @@
                 headers.route = $scope.headers.route+"/details/"+detail;
             }
 
-            fwModalService.createCRUDModal(headers, detail_data)
+            fwModalService.createCRUDModal(headers, detail_data, null, null, $scope)
             .then(function (response) {
                 $scope.data[detail][ $scope.data[detail].indexOf(detail_data)] = response;
             });
