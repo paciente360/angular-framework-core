@@ -205,6 +205,9 @@
             }
             else if (this.crudForm.$valid) {
                 $_scope.loading_http_request = true;
+                $timeout(function () {
+                    $_scope.loading_http_request = false;
+                }, 2000);
                 function nextBefore(){
                     if($_scope.headers.tabs){
                         Object.keys($_scope.headers.tabs).forEach(function(tab){
