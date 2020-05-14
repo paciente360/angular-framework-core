@@ -205,10 +205,15 @@
             }
             else if (this.crudForm.$valid) {
                 $_scope.loading_http_request = true;
-                $timeout(function () {
-                    $_scope.loading_http_request = false;
-                }, 2000);
-                function nextBefore(){
+                function nextBefore(error_) {
+                    if(error_) {
+                        $_scope.loading_http_request = false;
+                        if(error_.message){
+                            ngToast.warning(error_.message);
+                        } else {
+                            ngToast.warning("Confira seu formulário");
+                        }
+                    } else {
                     if($_scope.headers.tabs){
                         Object.keys($_scope.headers.tabs).forEach(function(tab){
                             if($_scope.data[tab]){
@@ -305,12 +310,8 @@
 
                         $scope.$emit('error save', error);
 
-                    }).catch(function (error) {
-                        console.log({'tipo': "erro ao salvar", error: error});
-                        $_scope.loading_http_request = false;
-                    });
-
-                     
+                    });                    
+                    }
                 }
 
                 $scope.$emit('before save', nextBefore);
