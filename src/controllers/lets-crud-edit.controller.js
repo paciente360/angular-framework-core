@@ -206,6 +206,7 @@
             else if (this.crudForm.$valid) {
                 $_scope.loading_http_request = true;
                 function nextBefore(error_) {
+                    console.log(error_)
                     if(error_) {
                         $_scope.loading_http_request = false;
                         if(error_.message){
