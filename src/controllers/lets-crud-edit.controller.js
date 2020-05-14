@@ -222,6 +222,7 @@
                         var typeSave = "edit";
                     }
 
+                    // debugger;
                     response.then(function (resp) {
 
                         function nextAfter(){
@@ -301,7 +302,12 @@
 
                         $scope.$emit('error save', error);
 
+                    }).catch(function (error) {
+                        console.log({'tipo': "erro ao salvar", error: error});
+                        $_scope.loading_http_request = false;
                     });
+
+                     
                 }
 
                 $scope.$emit('before save', nextBefore);
