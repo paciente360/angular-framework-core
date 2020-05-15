@@ -206,7 +206,7 @@
             else if (this.crudForm.$valid) {
                 $_scope.loading_http_request = true;
                 function nextBefore(error_) {
-                    console.log(error_)
+                    // console.log(error_)
                     if(error_) {
                         $_scope.loading_http_request = false;
                         if(error_.message){
@@ -222,12 +222,12 @@
                             }
                         });
                     }
-
+                    var response;
                     if (!$stateParams.id) {
-                        var response = $scope.$parent.resource.post($scope.data);
+                        response = $scope.$parent.resource.post($scope.data);
                         var typeSave = "new";
                     } else {
-                        var response = $scope.data.put();
+                        response = $scope.data.put();
                         var typeSave = "edit";
                     }
 
