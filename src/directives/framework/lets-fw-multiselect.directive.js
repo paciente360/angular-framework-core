@@ -7,12 +7,10 @@
     fwMultiSelect.$inject = ['$compile', '$timeout', 'Restangular', '$state'];
 
     function fwMultiSelect($compile, $timeout, Restangular) {
-        // debugger
         return {
             restrict: 'A',
             priority: 1,
             link: function (scope, element) {
-                // console.log('element', element)
 
                 scope.dataReference = $(element)
 
@@ -49,30 +47,19 @@
                 $scope.setting = {}
                 var field = ''
 
-                // console.log('state',$state)
-
                 $scope.$on('filter-init', function(scope){
-                    // console.log('scope gambiarra do vini', scope)             
-
-                    // console.log(data)
                     var data = scope.targetScope.data || undefined
                     var filter = $($scope.dataReference).attr('data-reference') || undefined
                     field = filter
-                    // console.log('scopes', filter, data)
                     
                     if(filter && data){
                         $scope.msmodel = angular.copy(data[filter]) || []
-                        // console.log('set msmodel', filter, data)
                     }
-
-                    // console.log('undefined?', $scope.dataReference)
-                    // console.log('controller scope',$scope )
                 })
 
                 // Eventos da biblioteca 'angularjs-dropdown-multiselect'
 
                 $scope.changedMultiSelect = function (a) {
-                    // console.log('evento')
                     if ($scope.msmodel.length) {
                         angular.element('.fw-multiselect-button').css('color', '#555555')
                     } else {
@@ -81,7 +68,6 @@
                 }
 
                 $scope.onItemSelect = function (item, $event) {
-                    // console.log('onItemSelect',item, $scope.msmodel, $scope.msdata)
                     
                     $scope.data[field] = $scope.msmodel
                     var _label = $scope.msdata.find(function (_item) {
@@ -111,7 +97,6 @@
 
                         $timeout(function() {},0)
                         }, function errorCallback() {
-                        // console.log('b')
                         });
                     })
                 }
@@ -129,7 +114,6 @@
                 };
                 
                 $scope.openDropdownByButton = function(name){
-                    // console.log('openDropdownByButton',name)
                     $timeout(function() {
                         $('[data-reference="'+name+'"] button').click()
                     })      
@@ -137,8 +121,6 @@
 
                 // Inicialização e set e eventos
                 $scope.onInitMulti = function (event, field) {
-                    // $scope.msdata = vini
-                    // console.log(event)
                     var dropdown = $(event.target)
                     dropdown.scope().input.searchFilter = "";
 
@@ -155,7 +137,6 @@
                         }))
 
                         // sim, precisa dessa gambiarra pra chumbar os evento e os textos
-                        // console.log(_scope)
 
                         //set texts
                         _scope.texts.buttonDefaultText = "Selecione " + field.label

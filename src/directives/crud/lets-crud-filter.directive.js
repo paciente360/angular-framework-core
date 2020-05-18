@@ -108,7 +108,6 @@
 
                       setTimeout(function(){
                         scope.$emit('filter-init', scope);
-                        // console.log('scope do timeout',scope) 
                         scope.$broadcast('filter-init', scope);                        
                       }, 500);
                 }
