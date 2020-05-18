@@ -205,7 +205,16 @@
             }
             else if (this.crudForm.$valid) {
                 $_scope.loading_http_request = true;
-                function nextBefore(){
+                function nextBefore(error_) {
+                    // console.log(error_)
+                    if(error_) {
+                        $_scope.loading_http_request = false;
+                        if(error_.message){
+                            ngToast.warning(error_.message);
+                        } else {
+                            ngToast.warning("Confira seu formulário");
+                        }
+                    } else {
                     if($_scope.headers.tabs){
                         Object.keys($_scope.headers.tabs).forEach(function(tab){
                             if($_scope.data[tab]){
@@ -213,15 +222,16 @@
                             }
                         });
                     }
-
+                    var response;
                     if (!$stateParams.id) {
-                        var response = $scope.$parent.resource.post($scope.data);
+                        response = $scope.$parent.resource.post($scope.data);
                         var typeSave = "new";
                     } else {
-                        var response = $scope.data.put();
+                        response = $scope.data.put();
                         var typeSave = "edit";
                     }
 
+                    // debugger;
                     response.then(function (resp) {
 
                         function nextAfter(){
@@ -301,7 +311,8 @@
 
                         $scope.$emit('error save', error);
 
-                    });
+                    });                    
+                    }
                 }
 
                 $scope.$emit('before save', nextBefore);
