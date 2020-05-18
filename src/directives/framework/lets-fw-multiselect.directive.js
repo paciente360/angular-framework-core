@@ -47,11 +47,6 @@
                 $scope.filter = {};
                 $scope.msdata = [];
                 $scope.setting = {}
-                var vini = [
-                    {id: 1, label: "Administrador Geral"},
-                    {id: 2, label: "Arbo"},
-                    {id: 4, label: "Corretor"},
-                ]
                 var field = ''
 
                 // console.log('state',$state)
@@ -168,17 +163,8 @@
                         _scope.texts.dynamicButtonTextSuffix = "selecionado(s)"
 
                         _scope.externalEvents.onItemSelect = $scope.onItemSelect
-                        _scope.externalEvents.onSelectionChanged = $scope.changedMultiSelect = function (a) {
-                            // console.log('evento')
-                            if ($scope.msmodel.length) {
-                                angular.element('.fw-multiselect-button').css('color', '#555555')
-                            } else {
-                                angular.element('.fw-multiselect-button').css('color', '#CCC')
-                            }
-                        }
-                        _scope.externalEvents.onItemDeselect = $scope.onItemDeselect = function (item) {
-
-                        }
+                        _scope.externalEvents.onSelectionChanged = $scope.changedMultiSelect
+                        _scope.externalEvents.onItemDeselect = $scope.onItemDeselect
                     }
                 }                
 
