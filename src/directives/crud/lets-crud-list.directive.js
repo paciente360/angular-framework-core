@@ -550,7 +550,11 @@
                                                     for (var key in params[par]) {
                                                         if(key == "ini" || key == "fim"){
                                                             $scopeFilter.data[par+"_"+key] = moment(params[par][key], 'DD/MM/YYYY').toDate();
-                                                        }else{
+                                                        }
+                                                        else if (params[par][key].id && params[par][key].label) {
+                                                            $scopeFilter.data[par] = params[par]
+                                                        }
+                                                        else {
                                                             $scopeFilter.data[par] = $scopeFilter.data[par] || {};
                                                             $scopeFilter.data[par][key] = params[par][key] ;
                                                         }

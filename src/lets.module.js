@@ -18,7 +18,8 @@
         'colorpicker-dr',
         'ckeditor',
         'thatisuday.dropzone',
-        'swangular'
+        'swangular',
+        'angularjs-dropdown-multiselect'
     ]);
 
     // ----------------------------

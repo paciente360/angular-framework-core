@@ -42,7 +42,9 @@
                         if (field.customOptions.file){
                             delete field.customOptions.file;
                         }
-    
+                        if(field.customOptions.multiselect){
+                            field.type = "multiselect"
+                        }    
                         if (field.type=="text"){
                             field.type = "string";
                         }
@@ -107,7 +109,8 @@
                     
 
                       setTimeout(function(){
-                        scope.$emit('filter-init', scope); 
+                        scope.$emit('filter-init', scope);
+                        scope.$broadcast('filter-init', scope);                        
                       }, 500);
                 }
 
@@ -269,10 +272,13 @@
                                     filterData[field.name] = scope.getDateFormated(filterData[field.name])
                                 }
 
-                                if(field.autocomplete){
+                                if(field.autocomplete && !field.customOptions.multiselect){
                                     filterData[field.name+"_label"] = scope.data[field.name+".label"].label;
                                 }
 
+                                if (field.autocomplete && field.customOptions.multiselect){
+                                    filterData[field.name] = scope.data[field.name];
+                                }
                             }
                         });
                         scope.data.q = null;
