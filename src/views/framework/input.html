@@ -177,7 +177,7 @@
     </div>
 
   <!-- Multiselect -->
-  <div ng-if="field.autocomplete && !field.customOptions.autocomplete_table && field.customOptions.multiselect">
+  <div ng-if="field.type == 'multiselect'">
     <!-- <label for="corretor">{{field.label}}</label> -->
     <div class="fw-multiselect-content">
       <!--  -->
@@ -215,7 +215,7 @@
 
 
   <!--Autocomplete-->
-  <div ng-if="field.autocomplete && !field.customOptions.autocomplete_table && !field.customOptions.multiselect">
+  <div ng-if="field.autocomplete && !field.customOptions.autocomplete_table">
     <div fw-auto-complete="" class="fw-input-group fw-auto-complete input-group">
       <input 
       id="{{field.name}}" 

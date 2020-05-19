@@ -42,7 +42,9 @@
                         if (field.customOptions.file){
                             delete field.customOptions.file;
                         }
-    
+                        if(field.customOptions.multiselect){
+                            field.type = "multiselect"
+                        }    
                         if (field.type=="text"){
                             field.type = "string";
                         }
