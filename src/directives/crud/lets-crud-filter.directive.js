@@ -44,6 +44,7 @@
                         }
                         if(field.customOptions.multiselect){
                             field.type = "multiselect"
+                            field.autocomplete = false
                         }    
                         if (field.type=="text"){
                             field.type = "string";
