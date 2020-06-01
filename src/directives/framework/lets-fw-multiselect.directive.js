@@ -88,11 +88,12 @@
                     })
                 }
 
-                $scope.makeRequestAutocomplete = function (scope, value, route) {
+                $scope.makeRequestAutocomplete = function (scope, value, route, isGeneral) {
                     $timeout(function() {
                         if(!value) value = '[blank]'
+                        var prefix = isGeneral ? 'general/': ''
                         $scope.resource = Restangular.all($scope.route());
-                        $scope.resource.customGET('autocomplete/'+route+'/'+value+'?limit=10').then(function (data) {
+                        $scope.resource.customGET(prefix+'autocomplete/'+route+'/'+value+'?limit=10').then(function (data) {
                         scope.options = $scope.removeDuplicates(data.concat(scope.selectedModel),'id');  
 
                         $timeout(function() {},0)
@@ -123,17 +124,19 @@
                 $scope.onInitMulti = function (event, field) {
                     var dropdown = $(event.target)
                     dropdown.scope().input.searchFilter = "";
+                    var route = field.customOptions.general ? field.customOptions.general : field.name
+                    var isGeneral = field.customOptions.general ? true : false
 
                     if (!dropdown.initMultiSelect) {
                         var _scope = dropdown.scope()
                         dropdown.initMultiSelect = true
                         // Popular o msdata pela depois de iniciado
-                        $scope.makeRequestAutocomplete(_scope,'[blank]', field.name)        
+                        $scope.makeRequestAutocomplete(_scope,'[blank]', route, isGeneral)        
                         dropdown.parent().find(".dropdown-header").append('<i class="glyphicon glyphicon-search" style=" position: absolute; top: 20px; right: 35px; "></i>')
                         
                         // Chamar autocomplete toda vez que alguma coisa é digitada no search-filter
                         _scope.$watch('input.searchFilter', $scope._debounce(function(data) {
-                            $scope.makeRequestAutocomplete(_scope,data,field.name)
+                            $scope.makeRequestAutocomplete(_scope,data,route, isGeneral)
                         }))
 
                         // sim, precisa dessa gambiarra pra chumbar os evento e os textos
