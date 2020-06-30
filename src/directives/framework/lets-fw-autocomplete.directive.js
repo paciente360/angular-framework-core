@@ -16,12 +16,14 @@
 
                 var clickHandler = function () {
                     var _oldVal = _input.val();
-                    var _val = _oldVal + ' ';
-                    _input.controller('ngModel').$setViewValue(_val);
-                    // scope.$digest;
-                    $timeout(function(){
-                        _input.controller('ngModel').$setViewValue(_oldVal);
-                    });
+                    if (!_oldVal){
+                        var _val = _oldVal + ' ';
+                        _input.controller('ngModel').$setViewValue(_val);
+                        // scope.$digest;
+                        $timeout(function(){
+                            _input.controller('ngModel').$setViewValue(_oldVal);
+                        });
+                    }
                 };
 
                 element.find('button').click(clickHandler);
@@ -32,6 +34,13 @@
                         _input.scope().data[_input.attr('name')] = null;
                     }
                 })
+
+                element.find('.icon.fa-close').click(function(){
+                    _input.scope().data[_input.attr('name')] = null;
+                    _input.scope().data[_input.attr('name') + '.label'] = null;
+                    _input.val('');
+                    _input.controller('ngModel').$setViewValue('')
+                });
 
             },
             controller: function () {

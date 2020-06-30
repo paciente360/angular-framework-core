@@ -570,11 +570,6 @@
             this._autocompleteSelect($item, $model, $label, null);
         };
 
-        $scope.removeAutoComplete = function(field, data) {            
-            delete data[field.name]
-            delete data[field.name + '.label']
-        };
-
         $scope.autocompleteDetailSelect = function (detail, $item, $model, $label) {
             this._autocompleteSelect($item, $model, $label, detail);
         }
