@@ -12,6 +12,7 @@
         $scope.$emit('refresh-headers');
 
         $scope.datepickers = {};
+        $scope.loading_http_request = false;
         $scope.datepickerToggle = function (name) {
             if ($scope.datepickers[name] == undefined) {
                 $scope.datepickers[name] = false;
@@ -203,8 +204,17 @@
                 ngToast.warning(_messages.join("<br />"));
             }
             else if (this.crudForm.$valid) {
-
-                function nextBefore(){
+                $_scope.loading_http_request = true;
+                function nextBefore(error_) {
+                    // console.log(error_)
+                    if(error_) {
+                        $_scope.loading_http_request = false;
+                        if(error_.message){
+                            ngToast.warning(error_.message);
+                        } else {
+                            ngToast.warning("Confira seu formulário");
+                        }
+                    } else {
                     if($_scope.headers.tabs){
                         Object.keys($_scope.headers.tabs).forEach(function(tab){
                             if($_scope.data[tab]){
@@ -212,18 +222,20 @@
                             }
                         });
                     }
-
+                    var response;
                     if (!$stateParams.id) {
-                        var response = $scope.$parent.resource.post($scope.data);
+                        response = $scope.$parent.resource.post($scope.data);
                         var typeSave = "new";
                     } else {
-                        var response = $scope.data.put();
+                        response = $scope.data.put();
                         var typeSave = "edit";
                     }
 
+                    // debugger;
                     response.then(function (resp) {
 
                         function nextAfter(){
+                            $_scope.loading_http_request = false;
                             $state.go($state.current.name.replace('.edit', '.list').replace('.new', '.list'), {filter:$scope.getFilter()});
                         }
 
@@ -234,7 +246,7 @@
 
                     }, function errorCallback(error) {
                         var messages = [];
-                        
+                        $_scope.loading_http_request = false;
                         function findLabel(name) {
                             for (var _x in $_scope.headers.fields) {
                                 var field = $_scope.headers.fields[_x];
@@ -299,7 +311,8 @@
 
                         $scope.$emit('error save', error);
 
-                    });
+                    });                    
+                    }
                 }
 
                 $scope.$emit('before save', nextBefore);

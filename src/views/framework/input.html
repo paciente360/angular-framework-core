@@ -173,11 +173,65 @@
     </label>
   </div>
 
+    <!-- checkbox -->
+    <div ng-if="field.type == 'checkbox'" class="d-flex flex-row">
+        <div ng-repeat="campo in field.customOptions.list">
+            <div class="circle-group">
+                <input type="checkbox" ng-false-value="undefined" class="input-control circle" id="{{field.name + campo.id}}" ng-model="data[field.name][campo.id]" ng-true-value="{{campo.id}}">
+                <label for="{{field.name + campo.id}}">{{campo.label}}</label>
+            </div>
+        </div>
+    </div>
+
+  <!-- Multiselect -->
+  <div ng-if="field.type == 'multiselect'">
+    <!-- <label for="corretor">{{field.label}}</label> -->
+    <div class="fw-multiselect-content">
+      <!--  -->
+      <div 
+        data-element=""
+        id="{{field.name}}"
+        name="{{field.name}}"
+        ng-dropdown-multiselect="" 
+        fw-multi-select
+        data-reference="{{field.name}}" 
+        class="ng-dropdown-multiselect" 
+        ng-click="onInitMulti($event, field)" 
+        events="{'onSelectionChanged':changedMultiSelect,'onItemSelect':onItemSelect,'onItemDeselect':onItemDeselect}"
+        translation-texts="{'buttonDefaultText': 'Selecione ...',
+        'dynamicButtonTextSuffix':'selecionado(s)'}" 
+        options="msdata" 
+        extra-settings="{scrollableHeight: '200px',
+        scrollable: true,
+        buttonDefaultText: 'Tipos de {field.label}',
+        enableSearch: true,
+        styleActive: true,
+        showCheckAll: false,
+        showUncheckAll: false,
+        selectedToTop: true,
+        buttonClasses: 'btn btn-default fw-multiselect-button'}" 
+        selected-model="msmodel"
+        ng-model="data[msmodel]"></div>
+      <span class="input-group-btn"  ng-click="openDropdownByButton(field.name)">
+        <button type="button" class="btn btn-default">
+          <i class="glyphicon glyphicon-menu-down"></i>
+        </button>
+      </span>
+    </div>
+  </div>
+
+
   <!--Autocomplete-->
   <div ng-if="field.autocomplete && !field.customOptions.autocomplete_table">
     <div fw-auto-complete="" class="fw-input-group fw-auto-complete input-group">
-      <input id="{{field.name}}" ng-model-options="{fieldInfo: field}" fw-auto-complete typeahead-on-select="autocompleteSelect($item, $model, $label)"
-        aria-autocomplete="none" autocomplete="off" typeahead-min-length="0" typeahead="row as row.label for row in autocomplete(field, $viewValue)"
+      <input 
+      id="{{field.name}}" 
+      ng-model-options="{fieldInfo: field}" 
+      fw-auto-complete 
+      typeahead-on-select="autocompleteSelect($item, $model, $label)"
+        aria-autocomplete="none" 
+        autocomplete="off" 
+        typeahead-min-length="0" typeahead="row as row.label for row in autocomplete(field, $viewValue)"
         type="text" class="form-control" name="{{field.name}}" ng-required="field.notnull" ng-model="$parent.data[field.name + '.label']"
         size="{{field.length}}" placeholder="{{field.label}}" ng-disabled="field.disabled" ng-readonly="field.customOptions.select == true"
         ng-class="{'fieldSelect': field.customOptions.select == true}" />

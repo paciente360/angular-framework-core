@@ -55,7 +55,8 @@
                                 scope.$el.find('.table-container .backgrid-paginator ul.total-records').remove();
                                 scope.$el.find('.table-container .backgrid-paginator').append(infoTotal);
                             });
-
+                            // Sempre pegar atualizado (não causa problema em páginas customizadas)
+                            scope.$parent.totalPager = resp.total_count;
                             return { totalRecords: resp.total_count };
                         },
                     };
@@ -459,6 +460,15 @@
                         });
 
                         scope.$el.find('.table-container').html('').append(pageableGrid.render().$el).append(paginator.render().$el);
+                        
+                        setTimeout(function () {
+                            angular.element(paginator.render().$el).click(function(){
+                                window.scrollTo({
+                                    top: 100,
+                                    behavior: 'smooth'
+                                });
+                            })
+                        },0)
 
                         scope.$broadcast('refreshGRID', true);
                     }
@@ -500,7 +510,20 @@
                                             params[attr].fim = decodeURIComponent(p[1]);
 
                                         }else{
-                                            params[p[0]] = decodeURIComponent(p[1]);
+                                            try {
+                                                p[1] = JSON.parse(p[1])
+                                                // console.log('BREKA <-', p[0], p[1]);
+                                                
+                                            } catch (error) {
+                                                p[1] = p[1]
+                                                // console.log('BREKA ERROR<-', p[0], p[1]);
+                                            }
+
+                                            if(typeof p[1] == "object"){
+                                                params[p[0]] = p[1];    
+                                            }else{
+                                                params[p[0]] = decodeURIComponent(p[1]);
+                                            }
                                         }
                                     });
 
@@ -521,16 +544,31 @@
                                             if(par.split("_label").length > 1){
                                                 $scopeFilter.data[par.replace("_label","")+".label"] = {id:params[par.replace("_label","")], label:params[par]};
                                             }else{
+                                                // console.log('BREKA ->', params[par])
+
                                                 if (typeof(params[par])=="object"){
-                                                    $scopeFilter.data[par+"_ini"] = moment(params[par].ini, 'DD/MM/YYYY').toDate();
-                                                    $scopeFilter.data[par+"_fim"] = moment(params[par].fim, 'DD/MM/YYYY').toDate();
+                                                    for (var key in params[par]) {
+                                                        if(key == "ini" || key == "fim"){
+                                                            $scopeFilter.data[par+"_"+key] = moment(params[par][key], 'DD/MM/YYYY').toDate();
+                                                        }
+                                                        else if (params[par][key].id && params[par][key].label) {
+                                                            $scopeFilter.data[par] = params[par]
+                                                        }
+                                                        else {
+                                                            $scopeFilter.data[par] = $scopeFilter.data[par] || {};
+                                                            $scopeFilter.data[par][key] = params[par][key] ;
+                                                        }
+                                                       
+                                                    } 
+                                                    // $scopeFilter.data[par+"_ini"] = moment(params[par].ini, 'DD/MM/YYYY').toDate();
+                                                    // $scopeFilter.data[par+"_fim"] = moment(params[par].fim, 'DD/MM/YYYY').toDate();
                                                 }else{
                                                     $scopeFilter.data[par] = params[par];
                                                 }
                                             }
                                             if(par != 'p') showBusca = true;
                                         });
-                                        $scopeFilter.data['showBuscaAvancada'] = showBusca;
+                                        $scopeFilter.data['showBusca'] = showBusca;
                                         // $scopeFilter.objFilter = {data:{filter:params}};
                                     }
 
@@ -555,6 +593,15 @@
 
                                                 if ($scopeFilter.objFilter.data.filter[key].fim){
                                                     str.push(key+"_fim="+$scopeFilter.objFilter.data.filter[key].fim);
+                                                }
+
+                                                if(!$scopeFilter.objFilter.data.filter[key].ini && !$scopeFilter.objFilter.data.filter[key].fim){
+                                                    // console.log($scopeFilter.objFilter.data.filter[key])
+                                                    var objCheck = $scopeFilter.objFilter.data.filter[key];
+                                                    // console.log('objeto', objCheck);
+                                                    
+                                                    str.push(key+"="+JSON.stringify(objCheck));
+
                                                 }
                                             }else{
                                                 if (key!="p"){
@@ -606,11 +653,12 @@
                         });
                     }
 
-                    jQuery($window).on('sn:resize', function () {
-                        createBackgrid(pageableCRUDModel);
-                    });
+                    // jQuery($window).on('sn:resize', function () {
+                    //     createBackgrid(pageableCRUDModel);
+                    // });
 
-                    createBackgrid(pageableCRUDModel);                    
+                    createBackgrid(pageableCRUDModel);   
+                                    
                 }
 
                 var listener = scope.$parent.$watch('headers', function (newValue, oldValue) {

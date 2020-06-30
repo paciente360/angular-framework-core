@@ -26,9 +26,12 @@
 
                 scope.fieldsFilter = [];
 
+                        
+
                 scope.startFilters = function() {
                     fields = angular.copy(scope.fields());
                     scope.fieldsFilter = [];
+                    fields = fields.filter(function(field){return field.filter});
                     fields.forEach(function(field, idx){
                         if (!field.filter)return;
     
@@ -39,7 +42,10 @@
                         if (field.customOptions.file){
                             delete field.customOptions.file;
                         }
-    
+                        if(field.customOptions.multiselect){
+                            field.type = "multiselect"
+                            field.autocomplete = false
+                        }    
                         if (field.type=="text"){
                             field.type = "string";
                         }
@@ -95,6 +101,18 @@
     
                         scope.fieldsFilter.push(field);
                     });
+
+                    scope.fieldsFilter = scope.fieldsFilter.sort(function(a, b) {                        
+                        var filter1 = a.filter.sequence || 0;
+                        var filter2 = b.filter.sequence || 0;
+                        return filter1 - filter2;
+                      });                    
+                    
+
+                      setTimeout(function(){
+                        scope.$emit('filter-init', scope);
+                        scope.$broadcast('filter-init', scope);                        
+                      }, 500);
                 }
 
                 
@@ -179,7 +197,7 @@
                 }
 
                 scope.autocompleteSelect = function ($item, $model, $label) {  
-                    debugger;
+                    // debugger;
                     
                     scope.$emit('after-filter-autocomplete', {scope: scope, name: this.field.name, value: $item});
                     
@@ -216,12 +234,12 @@
                         scope.showBuscaAvancada = angular.copy(scope.data['showBuscaAvancada']);
                         delete scope.data['showBuscaAvancada'];
                     }
-                    if (scope.showBuscaAvancada){
-                        // console.log(fields)
+                    
+                    if ( scope.showBuscaAvancada || scope.data['showBusca'] ) {
                         fields.forEach(function(field, idx){
 
                             if (typeof(field.filter)=="object" && field.filter.range===true){
-
+                                
                                 var values = {};
 
                                 if (scope.data[field.name+"_ini"]){
@@ -232,7 +250,7 @@
                                 }
 
                                 if (scope.data[field.name+"_fim"]){
-                                    values.fim = scope.data[field.name+"_fim"];
+                                    values.fim = scope.data[field.name+"_fim"]; 
                                     if (field.type=="date"){
                                         values.fim = scope.getDateFormated(values.fim);
                                     }
@@ -245,25 +263,35 @@
                             }
 
                             if (scope.data[field.name]){
+
                                 filterData[field.name] = scope.data[field.name];
 
+                                if(field.customOptions && field.customOptions.telefone){
+                                    filterData[field.name] = scope.data[field.name].replace(/\D/g, '')
+                                }
                                 if(field.type=="date"){
                                     filterData[field.name] = scope.getDateFormated(filterData[field.name])
                                 }
 
-                                if(field.autocomplete){
+                                if(field.autocomplete && !field.customOptions.multiselect){
                                     filterData[field.name+"_label"] = scope.data[field.name+".label"].label;
+                                }
+
+                                if (field.autocomplete && field.customOptions.multiselect){
+                                    filterData[field.name] = scope.data[field.name];
                                 }
                             }
                         });
                         scope.data.q = null;
+                        
                         scope.objFilter = {data:{filter:filterData}};
-                    }else{
+                    }else{                        
                         filterData.q = scope.data.q;
                         filterData.p = scope.data.p;
                         scope.objFilter = {data:filterData};
                     }
-                    if(start){
+
+                    if(start){                                             
                         $rootScope.$broadcast('refreshGRID', false, true);
                     }
                 }
