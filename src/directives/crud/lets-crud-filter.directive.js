@@ -131,7 +131,7 @@
                             var dep = deps[x];
                             if (scope.data[dep.field] == undefined || scope.data[dep.field] == null || scope.data[dep.field] == "null") {
         
-                                var text = 'Selecione antes o(a) ' + dep.label;
+                                var text = 'Selecione antes '+(dep.gender ? dep.gender : 'o(a)')+' ' + dep.label;
         
                                 var data = [];
                                 data.push({ id: null, label: text });

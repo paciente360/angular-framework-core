@@ -18,6 +18,7 @@
 
     <label for="{{field.name}}" class="control-label">{{field.label}}
         <span ng-if="field.required">*</span>
+        <i ng-if="field.help" class="fa fa-info-circle" title="{{field.help}}" style="cursor:help; font-size:12px;"></i>
     </label>
     <fw-input fw-data="data"></fw-input>
 </div>
