@@ -13,16 +13,13 @@
             priority: 1,
             link: function (scope, element) {
                 var _input = element.find('input');
+                _input.data('qtd-open',0);
 
                 var clickHandler = function () {
-                    var _oldVal = _input.val();
-                    if (!_oldVal){
-                        var _val = _oldVal + ' ';
-                        _input.controller('ngModel').$setViewValue(_val);
-                        // scope.$digest;
-                        $timeout(function(){
-                            _input.controller('ngModel').$setViewValue(_oldVal);
-                        });
+                    if (!_input.val()){
+                        _input.data('qtd-open',_input.data('qtd-open')+1);
+                        var arr = [" ","  "];
+                        _input.controller('ngModel').$setViewValue(arr[(_input.data('qtd-open')%2)]);
                     }
                 };
 
