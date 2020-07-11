@@ -170,7 +170,9 @@
         
                         scope.resource.customGET(route, queries).then(function (data) {
                             // if (field.customOptions.select == true) {
-                                data.unshift({ id: "null", label: '[Em Branco]' });
+                                if (!field.customOptions.onlyList){
+                                    data.unshift({ id: "null", label: '[Em Branco]' });
+                                }
                                 data.unshift({ id: null, label: '--- Selecione ---' });
                             // }
                             deferred.resolve(data);

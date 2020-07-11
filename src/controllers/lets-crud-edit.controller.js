@@ -495,7 +495,12 @@
 
                 $scope.resource.customGET(route, queries).then(function (data) {
 
-                    if (field.customOptions.select == true) {
+                    var exs = data.length>0;
+                    if (data.length==0){
+                        data.unshift({ id: null, label: 'Nenhum registro encontrado.' });
+                    }
+
+                    if (field.customOptions.select == true && exs) {
                         data.unshift({ id: null, label: '--- Selecione ---' });
                     }
 
