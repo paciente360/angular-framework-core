@@ -3,9 +3,9 @@
 
     angular.module('letsAngular').directive('crudFilter', crudFilter);
 
-    crudFilter.$inject = ['$q','Restangular', '$timeout', '$rootScope'];
+    crudFilter.$inject = ['$q','Restangular', '$timeout', '$rootScope', 'locale'];
 
-    function crudFilter($q, Restangular, $timeout, $rootScope) {
+    function crudFilter($q, Restangular, $timeout, $rootScope, locale) {
         return {
             templateUrl: 'lets/views/crud/crud-filter.html',
             replace: true,
@@ -131,7 +131,10 @@
                             var dep = deps[x];
                             if (scope.data[dep.field] == undefined || scope.data[dep.field] == null || scope.data[dep.field] == "null") {
         
-                                var text = 'Selecione antes '+(dep.gender ? dep.gender : 'o(a)')+' ' + dep.label;
+                                var text = 
+                                    locale.translate('letsfw.select_before')
+                                    .replace('%name%', dep.label.toLocaleLowerCase())
+                                    .replace('%gender%', (dep.gender ? dep.gender : 'o(a)'));
         
                                 var data = [];
                                 data.push({ id: null, label: text });
@@ -171,9 +174,9 @@
                         scope.resource.customGET(route, queries).then(function (data) {
                             // if (field.customOptions.select == true) {
                                 if (!field.customOptions.onlyList){
-                                    data.unshift({ id: "null", label: '[Em Branco]' });
+                                    data.unshift({ id: "null", label: locale.translate('letsfw.is_blank') });
                                 }
-                                data.unshift({ id: null, label: '--- Selecione ---' });
+                                data.unshift({ id: null, label: '--- '+locale.translate('letsfw.select')+' ---' });
                             // }
                             deferred.resolve(data);
                         }, function errorCallback() {
@@ -186,10 +189,10 @@
         
                         if (field.customOptions.select == true) {
                             if (!field.customOptions.onlyList){
-                                options.unshift({ id: "null", label: '[Em Branco]' });
+                                options.unshift({ id: "null", label: locale.translate('letsfw.is_blank') });
                             }
                             if (!field.customOptions.required){
-                                options.unshift({ id: null, label: '--- Selecione ---' });
+                                options.unshift({ id: null, label: '--- '+locale.translate('letsfw.select')+' ---' });
                             }
                         }
         

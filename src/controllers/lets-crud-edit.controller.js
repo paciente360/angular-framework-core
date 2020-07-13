@@ -3,7 +3,7 @@
 
     var module = angular.module('letsAngular');
 
-    module.controller('CRUDEditController', function ($scope, Restangular, $stateParams, $timeout, $modal, module, $state, $rootScope, $q, ngToast, $http, Upload, fwModalService, $window) {
+    module.controller('CRUDEditController', function ($scope, Restangular, $stateParams, $timeout, $modal, module, $state, $rootScope, $q, ngToast, $http, Upload, fwModalService, $window, locale) {
         $scope.data = {};
         $scope.dataLoaded = false;
         $scope.module = module;
@@ -340,7 +340,8 @@
                 }
 
                 if (messages.length > 0) {
-                    ngToast.warning(messages.join("<br />"));
+                    // ngToast.warning(messages.join("<br />"));
+                    return false;
                 }
                 else {
 
@@ -444,7 +445,10 @@
                     var dep = deps[x];
                     if ($scope.data[dep.field] == undefined || $scope.data[dep.field] == null) {
 
-                        var text = 'Selecione antes '+(dep.gender ? dep.gender : 'o(a)')+' ' + dep.label;
+                        var text = 
+                                locale.translate('letsfw.select_before')
+                                .replace('%name%', dep.label.toLocaleLowerCase())
+                                .replace('%gender%', (dep.gender ? dep.gender : 'o(a)'));
 
                         if (dep.custom){
                             var text = dep.label;
@@ -497,11 +501,11 @@
 
                     var exs = data.length>0;
                     if (data.length==0){
-                        data.unshift({ id: null, label: 'Nenhum registro encontrado.' });
+                        data.unshift({ id: null, label: locale.translate('letsfw.no_record_found') });
                     }
 
                     if (field.customOptions.select == true && exs) {
-                        data.unshift({ id: null, label: '--- Selecione ---' });
+                        data.unshift({ id: null, label: '--- '+locale.translate('letsfw.select')+' ---' });
                     }
 
                     if (field.quickAdd === true && val != '[blank]') {
@@ -518,7 +522,7 @@
                 var options = angular.copy(field.customOptions.list) || [];
 
                 if (field.customOptions.select == true) {
-                    options.unshift({ id: null, label: '--- Selecione ---' });
+                    options.unshift({ id: null, label: '--- '+locale.translate('letsfw.select')+' ---' });
                 }
 
                 deferred.resolve(options);
@@ -669,7 +673,7 @@
         };
 
         $scope.deleteDetailData = function (detail_data, detail_key) {
-            if (window.confirm('Deseja realmente excluir esse item?')) {
+            if (window.confirm(locale.translate('letsfw.message_delete'))) {
                 this.data[detail_key].splice(this.data[detail_key].indexOf(detail_data), 1);
             }
         };

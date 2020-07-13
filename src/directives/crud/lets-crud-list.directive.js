@@ -24,6 +24,8 @@
 
                 scope.$el = $el;
 
+                var locale = angular.element('body').injector().get('locale');
+
                 function render() {
                     var settings = scope.crudListSettings();
                     settings.route = appSettings.API_URL + settings.url;
@@ -51,7 +53,7 @@
 
                             $timeout(function(){
                                 var infoTotal = jQuery("<ul class='pull-right total-records'>");
-                                infoTotal.append(jQuery("<li>").html("Registros na página: "+resp.total_entries+" / "+resp.total_count));
+                                infoTotal.append(jQuery("<li>").html(locale.translate('letsfw.records_page')+": "+resp.total_entries+" / "+resp.total_count));
                                 scope.$el.find('.table-container .backgrid-paginator ul.total-records').remove();
                                 scope.$el.find('.table-container .backgrid-paginator').append(infoTotal);
                             });
@@ -327,6 +329,7 @@
                                 var _html = this.template(this.model.toJSON());
                                 this.$el.html(_html);
                                 this.$el.data('model', this.model);
+
                                 this.$el.find('button.btn-edit').click(function (e) {
                                     e.stopPropagation();
 
@@ -337,13 +340,12 @@
                                         $scope.edit($(this).closest('td').data('model').attributes);
                                     }
 
-
                                 });
 
                                 this.$el.find('button.btn-delete').click(function (e) {
                                     e.stopPropagation();
 
-                                    var _confirm = window.confirm('Deseja realmente excluir esse registro?');
+                                    var _confirm = window.confirm(locale.translate('letsfw.message_delete'));
 
                                     if (_confirm) {
                                         var $scope = angular.element(this).scope();
@@ -359,7 +361,7 @@
                                 this.$el.find('button.btn-delete-detail').click(function (e) {
                                     e.stopPropagation();
 
-                                    var _confirm = window.confirm('Deseja realmente excluir esse registro?');
+                                    var _confirm = window.confirm(locale.translate('letsfw.message_delete'));
 
                                     if (_confirm) {
                                         var $scope = angular.element(this).scope();
@@ -393,7 +395,7 @@
                         if (settings.settings.edit || settings.settings.delete){
                             columns.push({
                                 name: "actions",
-                                label: "Ações",
+                                label: locale.translate('letsfw.actions'),
                                 sortable: false,
                                 cell: ActionCell
                             });

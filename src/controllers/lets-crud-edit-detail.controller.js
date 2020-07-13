@@ -3,7 +3,7 @@
 
     var module = angular.module('letsAngular');
 
-    module.controller('CRUDEditDetailController', function ($scope, Restangular, $http, $stateParams, $timeout, headers, $rootScope, $modalInstance, $q, ngToast, Upload) {
+    module.controller('CRUDEditDetailController', function ($scope, Restangular, $http, $stateParams, $timeout, headers, $rootScope, $modalInstance, $q, ngToast, Upload, locale) {
 
         $scope.data = {};
         $scope.headers = headers;
@@ -303,7 +303,10 @@
 
                         if ($scope.data[dep.field] == undefined || $scope.data[dep.field] == null) {
 
-                            var text = 'Selecione antes '+(dep.gender ? dep.gender : 'o(a)')+' ' + dep.label;
+                            var text = 
+                                    locale.translate('letsfw.select_before')
+                                    .replace('%name%', dep.label.toLocaleLowerCase())
+                                    .replace('%gender%', (dep.gender ? dep.gender : 'o(a)'));
 
                             if (dep.custom){
                                 var text = dep.label;
@@ -346,15 +349,15 @@
 
                         var exs = data.length>0;
                         if (data.length==0){
-                            data.unshift({ id: null, label: 'Nenhum registro encontrado.' });
+                            data.unshift({ id: null, label: locale.translate('letsfw.no_record_found') });
                         }
 
                         if (field.customOptions.select == true && exs) {
-                            data.unshift({ id: null, label: '--- Selecione ---' });
+                            data.unshift({ id: null, label: '--- '+locale.translate('letsfw.select')+' ---' });
                         }
 
                         if (field.quickAdd === true && val != '[blank]') {
-                            data.push({ id: null, label: 'Adicionar novo: ' + val });
+                            data.push({ id: null, label: locale.translate('letsfw.add_new')+': ' + val });
                         }
 
                         deferred.resolve(data);
@@ -368,7 +371,7 @@
                     var options = angular.copy(field.customOptions.list) || [];
 
                     if (field.customOptions.select == true) {
-                        options.unshift({ id: null, label: '--- Selecione ---' });
+                        options.unshift({ id: null, label: '--- '+locale.translate('letsfw.select')+' ---' });
                     }
 
                     deferred.resolve(options);

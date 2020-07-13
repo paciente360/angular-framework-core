@@ -2,7 +2,7 @@
     <div class='fixed-caption-block' ng-if="headers.fixed_tab">
         <fieldset>
             <legend>
-                <strong>Informações Principais</strong>
+                <strong>{{'letsfw.main_information'|locale}}</strong>
             </legend>
             <ng-include ng-if="beforeForm != undefined" src="beforeForm"></ng-include>
             
@@ -17,7 +17,7 @@
         <tab ng-if="headers.main_tabs == undefined" heading="{{headers.label_row}}">
             <fieldset>
                 <legend>
-                    <strong>Informações Principais</strong>
+                    <strong>{{'letsfw.main_information'|locale}}</strong>
                 </legend>
                 <ng-include ng-if="beforeForm != undefined" src="beforeForm"></ng-include>
                 
@@ -38,7 +38,7 @@
                 <ng-include src="'lets/views/crud/crud-detail-list.html'"></ng-include>
                 <div ng-if="(!detail.settings) || (detail.settings && detail.settings.add)" class="pull-right">
                     <button type="button" class="btn btn-primary button-new" origin="tabs_session" detail="{{detail_key}}" form-modal="{{detail.modal ? true : false}}">
-                        <span class="icon fa fa-plus"></span>Novo Registro
+                        <span class="icon fa fa-plus"></span>{{'letsfw.new_record'|locale}}
                     </button>
                 </div>
             </fieldset>
@@ -53,13 +53,13 @@
                         
                         <div class="visible-xs" style="margin-bottom: 15px;">
                             <a class="btn btn-primary btn-block btn-new" ng-click="newDetail(tab, data)" ng-hide="tab.settings && !tab.settings.add">
-                                <span class="fa fa-plus"></span> Novo Registro
+                                <span class="fa fa-plus"></span> {{'letsfw.new_record'|locale}}
                             </a>
                         </div>
 
                         <div style="position: absolute; right:15px; z-index:99" class="hidden-xs">
                             <a class="btn btn-primary btn-block btn-new" ng-click="newDetail(tab, data)" ng-hide="tab.settings && !tab.settings.add">
-                                <span class="fa fa-plus"></span> Novo Registro
+                                <span class="fa fa-plus"></span> {{'letsfw.new_record'|locale}}
                             </a>
                         </div>
 
@@ -88,9 +88,9 @@
         <div class="row">
             <div class="col-sm-offset-4 col-sm-7">
                 <button ng-if="!headers.disabled" type="submit" class="btn btn-big btn-primary" ng-class="{'disabled': loading_http_request}">
-                    <span class="icon fa fa-floppy-o"></span>Salvar</button>
+                    <span class="icon fa fa-floppy-o"></span>{{'letsfw.save'|locale}}</button>
                 <button type="button" class="btn btn-big btn-inverse" ng-click="cancel()">
-                    <span class="icon fa fa-undo"></span>Cancelar</button>
+                    <span class="icon fa fa-undo"></span>{{'letsfw.cancel'|locale}}</button>
             </div>
         </div>
     </div>

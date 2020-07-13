@@ -3,7 +3,7 @@
         <tr>
             <th ng-repeat="field in detail.fields | filter: {viewable: true}" ng-if="detail.modal===true">{{field.label}}</th>
             <th ng-repeat="field in detail.fields | filter: {editable: true}" ng-if="!detail.modal">{{field.label}}</th>
-            <th ng-if="detail.settings  === undefined|| (detail.settings.edit || detail.settings.delete)"  class="text-center">Ações</th>
+            <th ng-if="detail.settings  === undefined|| (detail.settings.edit || detail.settings.delete)"  class="text-center">{{'letsfw.actions'|locale}}</th>
         </tr>
     </thead>
     <tbody>
@@ -28,7 +28,7 @@
         </tr>
         <tr ng-if="!data[detail_key] || data[detail_key].length==0" class="no-data">
             <td colspan="100%">
-                Nenhum dado cadastrado.
+                {{'letsfw.no_record_found'|locale}}
             </td>
         </tr>
     </tbody>
