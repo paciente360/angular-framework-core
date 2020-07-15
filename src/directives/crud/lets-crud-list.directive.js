@@ -19,6 +19,10 @@
                 $scope.$on('refreshGRID', function (event, start, filter) {
                     $scope.pageableCRUDModel.fetch(null, start, filter);
                 });
+
+                $scope.$on('renderGRID', function (event) {
+                    $scope.renderGRID();
+                });
             },
             link: function (scope, $el, attrs) {
 
@@ -659,6 +663,10 @@
 
                     createBackgrid(pageableCRUDModel);   
                                     
+                }
+
+                scope.renderGRID = function(){
+                    render();
                 }
 
                 var listener = scope.$parent.$watch('headers', function (newValue, oldValue) {
