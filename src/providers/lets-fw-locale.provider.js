@@ -74,7 +74,9 @@
     module.filter('date_format', dateFormat);
 	function dateFormat() {
         return function (date, param1) {
-            return moment(date).format(param1)
+            if (date){
+                return moment(date).format(param1)
+            }
         }
     }
 
