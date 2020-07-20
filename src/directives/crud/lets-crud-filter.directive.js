@@ -293,7 +293,7 @@
                         scope.objFilter = {data:filterData};
                     }
 
-                    scope.$emit('after-filter-data', data);
+                    scope.$emit('after-filter-data', scope.data);
 
                     if(start){                                             
                         $rootScope.$broadcast('refreshGRID', false, true);
