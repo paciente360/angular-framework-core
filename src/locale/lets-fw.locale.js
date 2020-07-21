@@ -91,6 +91,26 @@
                 "en":"Main Information",
                 "es":"Información Principal"
             },
+            "first":{
+                "pt-br":"Primeiro",
+                "en":"First",
+                "es":"Primero"
+            },
+            "previous":{
+                "pt-br":"Anterior",
+                "en":"Previous",
+                "es":"Anterior"
+            },
+            "next":{
+                "pt-br":"Próximo",
+                "en":"Next",
+                "es":"Próximo"
+            },
+            "last":{
+                "pt-br":"Último",
+                "en":"Last",
+                "es":"Último"
+            }
         })
 
 

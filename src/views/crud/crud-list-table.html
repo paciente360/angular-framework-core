@@ -1,0 +1,99 @@
+<header class='crud-list-header row hidden-xs' style='display: flex;' ng-if="!tab">
+    <h4>{{headers.label}}</h4>
+</header>
+
+<div style="margin-top: 15px;" ng-class="{'col-sm-12':tab}">
+    <div class="filtros">
+
+        <div style="position: absolute; right:0px; top: 0px;" class="hidden-xs" ng-if="tab">
+            <a class="btn btn-primary btn-block btn-new" ng-click="newDetail()" ng-show="headers.settings.add">
+                <span class="fa fa-plus"></span> {{'letsfw.new_record'|locale}}
+            </a>
+        </div>
+
+        <div class="visible-xs" style="margin-bottom: 15px;" ng-if="tab">
+            <a class="btn btn-primary btn-block btn-new" ng-click="newDetail()" ng-show="headers.settings.add">
+                <span class="fa fa-plus"></span> {{'letsfw.new_record'|locale}}
+            </a>
+        </div>
+
+        <form ng-submit="filterTable()">
+            <div class="busca row" ng-if="!hideInputSearch">
+                <div class="form-group col-sm-5" style="margin-bottom: 10px;">
+                    <div class="fw-input-group input-group">
+                        <input autocomplete="off" type="text" class="form-control" name="q" ng-model="filterdata['q']" ng-disabled="showBuscaAvancada" placeholder="{{'letsfw.search_by'|locale}}..."/>
+                        <span class="input-group-btn" ng-if="fieldsFilter.length > 0">
+                            <button type="button" class="btn btn-default" title="{{'letsfw.search_advanced'|locale}}" ng-click="openBuscaAvancada()">
+                                <i class="fa fa-filter" ng-if="!showBuscaAvancada"></i>
+                                <i class="fa fa-filter" ng-if="showBuscaAvancada"></i>
+                                <i class="fa fa-times" ng-if="showBuscaAvancada" style="font-size:10px; position: absolute; bottom: 6px;"></i>
+                            </button>
+                        </span>
+                        <button type="submit" style="width: 0px; opacity: 0"></button>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            
+            <div class="busca-avancada row" collapse="!showBuscaAvancada">
+                <div class="form-group" style="margin-bottom: 10px; margin-right: 0px; min-width: 200px;" ng-repeat="field in fieldsFilter track by $index" ng-class="field.filter.customClass ? field.filter.customClass : (field.filter.size ? 'col-sm-'+field.filter.size : (field.filter.range===true ? 'col-sm-2' :  'col-sm-3'))">
+                    <label for="{{field.name}}" class="control-label" style="font-size:12px; margin-bottom: 0px;font-weight: 600">{{field.label}}</label>
+                    <fw-input fw-data="filterdata"></fw-input>
+                </div>
+                <div class="form-group col-sm-2">
+                    <label class="control-label" style="font-size:12px; margin-bottom: 0px;">&nbsp;</label>
+                    <div>
+                        <button type="submit" class="btn btn-primary"><span class="icon fa fa-search"></span>{{'letsfw.search'|locale}}</button>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<div class="widget-body">
+    <div class="table-container">
+        <table class="table table-striped table-editable no-margin mb-sm {{headers.tableClass}}">
+            <thead>
+                <tr>
+                    <th class="{{field.name}}" ng-repeat="field in headers.fields | filter: {viewable: true}">
+                        <a>{{field.label}}</a>
+                    </th>
+                    <th class="editable actions" ng-if="headers.settings.edit || headers.settings.delete">
+                        {{'letsfw.actions'|locale}}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="data in tableData.data">
+                    <td ng-repeat="field in headers.fields | filter: {viewable: true}">
+                        {{parseRecord(data,field)}}
+                        <div ng-if="field.type == 'custom'" data="data" field="field" fw-custom-field></div>
+                    </td>
+                    <td class="text-right btn-column">
+                        <div class="btn-group" role="group">
+                            <button ng-if="headers.settings.edit" ng-click="edit(data)" type="button" class="btn btn-default btn-edit">
+                                <span class="glyphicon glyphicon-pencil"></span>
+                            </button>
+                            <button ng-if="headers.settings.delete" ng-click="delete(data)" type="button" class="btn btn-default btn-delete">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div ng-if="!tableData.data" class="text-center" style="padding:10px">
+            <i class="fa fa-spinner fa-spin fa-2x fa-fw"></i>
+        </div>
+        <div fw-paginator
+            totalrecords="tableData.total_count"
+            pagesize="tableData.total_entries"
+            currentpage="tableData.currentPage"
+            totalpages="tableData.total_pages"
+            gopage="gopage"
+        ></div>
+    </div>
+</div>

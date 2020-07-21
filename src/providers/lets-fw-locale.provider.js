@@ -6,7 +6,7 @@
     module.provider('locale', localeProvider);
     function localeProvider () {
 
-        this.locale = "pt-br";
+        this.locale;
         this.catalog = {};
         this.onSetLocale;
 
@@ -60,6 +60,8 @@
         this.$get = function () {
             return this;
         };
+
+        this.setLocale("pt-br");
 
     }
 

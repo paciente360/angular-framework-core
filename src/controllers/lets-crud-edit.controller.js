@@ -84,6 +84,10 @@
             $scope.fetchData();
         });
 
+        $scope.getscope = function(){
+            return $scope;
+        }
+
         $scope._upload = function (field, file) {
             var _url = $rootScope.appSettings.API_URL;
 

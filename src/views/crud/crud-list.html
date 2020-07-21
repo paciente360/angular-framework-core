@@ -9,7 +9,7 @@
         <a class="btn btn-primary outline-btn btn-block btn-new" ng-disabled="export_btn_is_disable" ng-click="export()"><span class="icon fa fa-share"></span>Exportar Dados</a>
     </div>
 </div>
-<section grid="main" class="widget" crud-list crud-list-settings="{url: headers.route, fields: headers.fields, tab: false, settings: headers.settings, filterScope: headers.settings.filterScope, sort:headers.settings.sort, tableClass: headers.tableClass}">
+<section ng-if="!headers.new_grid" grid="main" class="widget" crud-list crud-list-settings="{url: headers.route, fields: headers.fields, tab: false, settings: headers.settings, filterScope: headers.settings.filterScope, sort:headers.settings.sort, tableClass: headers.tableClass}">
     <header class='crud-list-header row hidden-xs' style='display: flex;'>
         <h4>{{headers.label}}</h4>
     </header>
@@ -20,3 +20,5 @@
         <div class="table-container"></div>
     </div>
 </section>
+
+<section ng-if="headers.new_grid" grid="main" class="widget" crud-list-table settings="{headers:headers, tab:false}"></section>
