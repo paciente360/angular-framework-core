@@ -25,10 +25,12 @@
                     if (!headers.settings){
                         headers.settings = {add:true, edit:true, delete:true}
                     }
+                    $scope.sort = headers.sort;
                 }else{
                     $scope.resource = Restangular.all(headers.route);
+                    $scope.sort = headers.settings.sort;
                 }
-
+                
                 $scope.getFilter = function(){
                     return decodeURIComponent($window.location.search).replace("?filter=","");
                 }
@@ -204,13 +206,6 @@
                         queries.scope = headers.settings.filterScope;
                     }
 
-                    if (headers.sort){
-                        queries.sort_by = headers.sort.sortKey;
-                        if (headers.sort.order && headers.sort.order=="desc"){
-                            queries.order = "desc";
-                        }
-                    }
-
                     var str = [];
 
                     if ($scope.showBuscaAvancada){
@@ -253,6 +248,21 @@
 
                     if ($scope.currentPage!=1){
                         str.push("pg="+$scope.currentPage);
+                    }
+
+                    if ($scope.sort){
+                        str.push("or="+$scope.sort.sortKey);
+                        queries.sort_by = $scope.sort.sortKey;
+                        
+                        if($scope.sort.sortKey){
+                            var fld = headers.get($scope.sort.sortKey);
+                            if (fld.autocomplete && !fld.customOptions.list){
+                                queries.sort_by +=".label";
+                            }
+                        }
+
+                        str.push("by="+$scope.sort.order);
+                        queries.order = $scope.sort.order;
                     }
 
                     if (updateLocation && !$scope.tab){
@@ -329,6 +339,10 @@
                             $scope.currentPage = params.pg;
                         }
 
+                        if(params.or || params.by ){
+                            $scope.sort = { sortKey:params.or, order:params.by}
+                        }
+
                         if(params.q){
                             $scope.filterdata["q"] = params["q"];
                         }else{
@@ -368,6 +382,23 @@
                     $scope.refreshTable(true);
                 }
 
+                $scope.order = function(field){
+
+                    if (!$scope.sort || ($scope.sort && $scope.sort.sortKey!=field) ){
+                        $scope.sort = {sortKey:field, order:"asc"}
+
+                    }else if ($scope.sort.order=="asc"){
+                        $scope.sort = {sortKey:field, order:"desc"}
+
+                    }else if ($scope.sort.order=="desc"){
+                        $scope.sort = undefined;
+                    }
+
+
+                   
+                    $scope.refreshTable(true);
+                }
+
                 $scope.$on('refreshGRID', function (event) {
                     $scope.refreshTable();
                 });
@@ -375,6 +406,8 @@
                 if ($scope.tab){
                     var _scope = $scope.settings.getscope();
                     _scope.$emit('create:'+$scope.settings.tab_name, $scope);
+                }else{
+                    $scope.$emit('create:grid', $scope);
                 }
                
             },

@@ -59,7 +59,14 @@
             <thead>
                 <tr>
                     <th class="{{field.name}}" ng-repeat="field in headers.fields | filter: {viewable: true}">
-                        <a>{{field.label}}</a>
+                        <a ng-click="order(field.name)" ng-if="field.type!=='custom'">
+                            {{field.label}}
+                            <i class="fa fa-caret-up" style="font-size:15px;" ng-if="sort.sortKey==field.name && sort.order=='desc'"></i>
+                            <i class="fa fa-caret-down" style="font-size:15px;" ng-if="sort.sortKey==field.name && sort.order=='asc'"></i>
+                        </a>
+                        <span ng-if="field.type=='custom'">
+                            {{field.label}}
+                        </span>
                     </th>
                     <th class="editable actions" ng-if="headers.settings.edit || headers.settings.delete">
                         {{'letsfw.actions'|locale}}
