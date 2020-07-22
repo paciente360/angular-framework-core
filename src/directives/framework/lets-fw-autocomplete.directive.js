@@ -35,7 +35,7 @@
                 element.find('.icon.fa-close').click(function(){
                     _input.scope().data[_input.attr('name')] = null;
                     _input.scope().data[_input.attr('name') + '.label'] = null;
-                    _input.scope().autocompleteSelect({});
+                    _input.scope().autocompleteSelect({id:null}, {id:null});
                     _input.val('');
                     _input.controller('ngModel').$setViewValue('')
                 });
