@@ -72,7 +72,7 @@
                         {{parseRecord(data,field)}}
                         <div ng-if="field.type == 'custom'" data="data" field="field" fw-custom-field></div>
                     </td>
-                    <td class="text-right btn-column">
+                    <td class="text-right btn-column" ng-if="headers.settings.edit || headers.settings.delete">
                         <div class="btn-group" role="group">
                             <button ng-if="headers.settings.edit" ng-click="edit(data)" type="button" class="btn btn-default btn-edit">
                                 <span class="glyphicon glyphicon-pencil"></span>
