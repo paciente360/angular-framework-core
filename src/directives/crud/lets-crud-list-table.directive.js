@@ -325,7 +325,6 @@
                         $scope.refreshTable();
                         return;
                     }
-
                     
                     if($state.params.filter){
 
@@ -373,6 +372,13 @@
 
                     }
 
+                    if ($scope.tab){
+                        var _scope = $scope.settings.getscope();
+                        _scope.$emit('create:'+$scope.settings.tab_name, $scope);
+                    }else{
+                        $scope.$emit('create:grid', $scope);
+                    }
+
                     $scope.refreshTable();
                     
                 }
@@ -406,13 +412,6 @@
                 $scope.$on('refreshGRID', function (event) {
                     $scope.refreshTable();
                 });
-
-                if ($scope.tab){
-                    var _scope = $scope.settings.getscope();
-                    _scope.$emit('create:'+$scope.settings.tab_name, $scope);
-                }else{
-                    $scope.$emit('create:grid', $scope);
-                }
                
             },
             link: function (scope, $el) {
