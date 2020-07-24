@@ -296,6 +296,8 @@
                         scope.objFilter = {data:filterData};
                     }
 
+                    scope.$emit('after-filter-data', scope.objFilter);
+
                     if(start){                                             
                         $rootScope.$broadcast('refreshGRID', false, true);
                     }
