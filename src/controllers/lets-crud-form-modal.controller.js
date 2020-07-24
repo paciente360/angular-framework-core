@@ -9,17 +9,6 @@
         $scope.data = data || {};
         $scope.headers = headers;
 
-        var parentScope = headers.parentScope;
-        delete headers.parentScope;
-
-        if(headers.modal_id){
-            $rootScope.$emit('open:'+headers.modal_id+'', $scope); // @deprecated 
-
-            if (parentScope){
-                parentScope.$emit('open:'+headers.modal_id+'', $scope);
-            }
-        }
-
         $scope.resource = Restangular.all(headers.route);
 
         for (var y in $scope.headers.fields) {
@@ -52,6 +41,16 @@
         $timeout(function(){
             $scope.$broadcast('setProgressFile');
         });
+
+        var parentScope = headers.parentScope;
+        delete headers.parentScope;
+        if(headers.modal_id){
+            $rootScope.$emit('open:'+headers.modal_id+'', $scope); // @deprecated 
+
+            if (parentScope){
+                parentScope.$emit('open:'+headers.modal_id+'', $scope);
+            }
+        }
 
 
     });

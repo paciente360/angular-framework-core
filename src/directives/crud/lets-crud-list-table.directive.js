@@ -399,6 +399,10 @@
                     $scope.refreshTable(true);
                 }
 
+                $scope.getscope = function(){
+                    return $scope;
+                }
+
                 $scope.$on('refreshGRID', function (event) {
                     $scope.refreshTable();
                 });
@@ -473,11 +477,12 @@
         return {
             scope: {
                 data: '=',
-                field: '='
+                field: '=',
+                getscope:'='
             },
             link: function ($scope, $el) {
                 if( $scope.field.toString && typeof($scope.field.toString)=="function" ){
-                    $el.append($scope.field.toString($scope.data))
+                    $el.append($scope.field.toString($scope.data, $scope.getscope()))
                 }
             }
         }

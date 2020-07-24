@@ -77,7 +77,7 @@
                 <tr ng-repeat="data in tableData.data">
                     <td ng-repeat="field in headers.fields | filter: {viewable: true}">
                         {{parseRecord(data,field)}}
-                        <div ng-if="field.type == 'custom'" data="data" field="field" fw-custom-field></div>
+                        <div ng-if="field.type=='custom'" data="data" field="field" getscope="getscope" fw-custom-field></div>
                     </td>
                     <td class="text-right btn-column" ng-if="headers.settings.edit || headers.settings.delete">
                         <div class="btn-group" role="group">
