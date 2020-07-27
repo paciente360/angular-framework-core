@@ -11,7 +11,8 @@
             scope: {
                 settings: '='
             },
-            controller: function ($scope) {
+            controller: function ($scope, $controller) {
+                $controller('AutoCompleteController', {$scope:$scope});
 
                 var headers = $scope.settings.headers;
                 $scope.tab = $scope.settings.tab;
@@ -35,112 +36,6 @@
                     return decodeURIComponent($window.location.search).replace("?filter=","");
                 }
 
-                $scope.autocomplete = function (field, val) {                    
-
-                    var queries = [];
-                    var deferred = $q.defer();
-        
-                    // Autocomplete Dependencies
-                    if (field.autocomplete_dependencies.length > 0) {
-                        var deps = field.autocomplete_dependencies;
-                        for (var x in deps) {
-                            var dep = deps[x];
-                            if ($scope.filterdata[dep.field] == undefined || $scope.filterdata[dep.field] == null || $scope.filterdata[dep.field] == "null") {
-        
-                                var text = 
-                                    locale.translate('letsfw.select_before')
-                                    .replace('%name%', dep.label.toLocaleLowerCase())
-                                    .replace('%gender%', (dep.gender ? dep.gender : 'o(a)'));
-        
-                                var data = [];
-                                data.push({ id: null, label: text });
-        
-                                deferred.resolve(data);
-        
-                                return deferred.promise;
-                            } else {
-                                queries[dep.field] = $scope.filterdata[dep.field];
-                            }
-                        }
-                    }
-        
-                    // Check Value
-                    val = val.trim();
-                    if (val.length == 0 || field.customOptions.select == true) {
-                        val = '[blank]';
-                    }
-
-                    // Callback Continue
-                    var callback = function(options){
-                        if (field.customOptions.select == true) {
-                            if (field.customOptions.searchBlank){
-                                options.unshift({ id: "null", label: locale.translate('letsfw.is_blank') });
-                            }
-                            if (!field.customOptions.required){
-                                options.unshift({ id: null, label: '--- '+locale.translate('letsfw.select')+' ---' });
-                            }
-                        }
-                        deferred.resolve(options);
-                    }
-
-                    // Check field type
-                    if (field.customOptions.list == undefined) {
-                        
-                        if (field.customOptions.general !== undefined) {
-                            var route = 'general/autocomplete/'+field.customOptions.general+'/'+val;
-                        }else{
-                            var route = 'autocomplete/'+field.name+'/'+ val;
-                        }
-
-                        if (field.customOptions.select == true){
-                            queries["limit"] = 0;
-                        }else{
-                            queries["limit"] = 20;
-                        }
-
-                        $scope.resource.customGET(route, queries).then(function (options) {
-                            callback(options);
-                        }, function errorCallback() {
-                            return deferred.reject();
-                        });
-
-                    }else{
-                        var options = angular.copy(field.customOptions.list) || [];
-                        callback(options);
-                    }
-                    
-                    return deferred.promise;
-                }
-
-                $scope.autocompleteSelect = function ($item) {  
-
-                    $scope.$emit('autocomplete-select-'+this.field.name, {scope:$scope, value:$item});
-                    
-                    var _data = this.data;
-                    
-                    if (_data==undefined){
-                        _data = {};
-                    }
-        
-                    if ($item.id != null && typeof $item.id != 'integer' || (typeof $item.id == 'integer' && $item.id > 0)) {
-                        _data[this.field.name] = $item.id;
-                    }
-                    else if ($item.id == null) {
-                        _data[this.field.name] = _data[this.field.name + '.label'] = null;
-                    }
-                    else {
-                        _data[this.field.name + '.label'] = null;
-                        return false;
-                    }
-        
-                    this.data = _data;
-        
-                    var field = this.field;
-                    $timeout(function(){
-                        jQuery('#'+field.name).trigger('keyup');
-                    });
-                }
-                
                 $scope.openBuscaAvancada = function(){
                     $scope.showBuscaAvancada = !$scope.showBuscaAvancada;
                     if (!$scope.showBuscaAvancada ){

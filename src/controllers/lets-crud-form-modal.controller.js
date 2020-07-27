@@ -3,24 +3,24 @@
 
     var module = angular.module('letsAngular');
 
-    module.controller('CRUDFormModalController', function ($controller, $scope, $modalInstance, ngToast, headers, Restangular, $stateParams, $timeout, $state, $rootScope, $q, $http, Upload, $modal, data, fwStringService, auth, fwObjectService, fwErrorService) {
-        $controller('CRUDEditController', { $scope: $scope, Restangular: Restangular, $stateParams: $stateParams, $timeout: $timeout, $modal: $modal, module: module, $state: $state, $rootScope: $rootScope, $q: $q, ngToast: ngToast, $http: $http, Upload: Upload });
+    module.controller('CRUDFormModalController', function ($controller, $scope, $modalInstance, headers, Restangular, $rootScope, data, fwErrorService) {
+        $controller('CRUDEditController', { $scope: $scope, module:module });
 
         $scope.data = data || {};
         $scope.headers = headers;
-
         $scope.resource = Restangular.all(headers.route);
 
-        for (var y in $scope.headers.fields) {
-            var field = $scope.headers.fields[y];
-            if (field.type == 'boolean' && $scope.data[field.name]==undefined) {
-                if (field.customOptions.default){
-                    $scope.data[field.name] = true;
-                }else{
-                    $scope.data[field.name] = false;
-                }
+        var parentScope = headers.parentScope;
+        delete headers.parentScope;
+        if(headers.modal_id){
+            $rootScope.$emit('open:'+headers.modal_id+'', $scope); // @deprecated 
+
+            if (parentScope){
+                parentScope.$emit('open:'+headers.modal_id+'', $scope);
             }
         }
+
+        $scope.fetchData();
 
         $scope.cancel = function () {
             $modalInstance.dismiss('cancel');
@@ -37,21 +37,6 @@
         $rootScope.$on('cancel-modal', function (event, res) {
             $modalInstance.dismiss('cancel');
         });
-        
-        $timeout(function(){
-            $scope.$broadcast('setProgressFile');
-        });
-
-        var parentScope = headers.parentScope;
-        delete headers.parentScope;
-        if(headers.modal_id){
-            $rootScope.$emit('open:'+headers.modal_id+'', $scope); // @deprecated 
-
-            if (parentScope){
-                parentScope.$emit('open:'+headers.modal_id+'', $scope);
-            }
-        }
-
 
     });
 

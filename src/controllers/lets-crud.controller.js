@@ -3,7 +3,7 @@
 
     var module = angular.module('letsAngular');
 
-    module.controller('CRUDController', function ($scope, Restangular, module, $state, $window, $stateParams, $rootScope, headers, swangular,ngToast) {
+    module.controller('CRUDController', function ($scope, Restangular, module, $state, $window, $rootScope, headers, swangular,ngToast) {
         $scope.headersReady = false;
         $scope.export_btn_is_disable = false;
 
@@ -408,6 +408,10 @@
               $scope.export_btn_is_disable = false;
             }
           });
+        }
+
+        $scope.getscope = function(){
+            return $scope;
         }
     });
 
