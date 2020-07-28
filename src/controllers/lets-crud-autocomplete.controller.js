@@ -103,6 +103,7 @@
 		}
 
 		$scope._autocompleteSelect = function ($item, $model, $label, detail) {
+			this.field.error = undefined;
 
 			var _data = this.detail_data || this.data || {};
 

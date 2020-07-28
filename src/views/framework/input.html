@@ -68,6 +68,9 @@
   <div ng-if="field.type == 'password'">
     <input ng-model-options="{fieldInfo: field}" type="password" id="{{field.name}}" fw-dynamic ng-required="field.notnull"
       ng-model="data[field.name]" ng-disabled="field.disabled" class="main-input form-control" autocomplete="off" />
+      <ul class="parsley-errors-list filled" ng-if="field.error">
+        <li class="parsley-required">{{field.error}}</li>
+      </ul>
   </div>
 
   <!-- Email -->
@@ -89,7 +92,8 @@
       data-date-format="DD/MM/YYYY" placeholder="DD/MM/YYYY" ng-disabled="field.disabled" autocomplete="off" />
 
     <ul class="parsley-errors-list filled" ng-if="field.error">
-      <li class="parsley-required">A data informada é inválida.</li>
+      <li ng-if="field.error===true" class="parsley-required">A data informada é inválida.</li>
+      <li ng-if="field.error!==true" class="parsley-required">{{field.error}}</li>
     </ul>
   </div>
 
@@ -242,6 +246,9 @@
         </button>
       </span>
     </div>
+    <ul class="parsley-errors-list filled" ng-if="field.error">
+      <li class="parsley-required">{{field.error}}</li>
+    </ul>
   </div>
 
   <!--Autocomplete Table-->

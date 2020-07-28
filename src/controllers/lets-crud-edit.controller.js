@@ -191,41 +191,42 @@
 
         $scope._submit = function ($this, detail) {
             var $_scope = $this;
-            var err = {};
             var _data = $_scope.data;
+            
 
             _.each($_scope.headers.fields, function (field, key) {
+                field.error = undefined;
+
+                // Number null
                 if(!_data[field.name] && _data[field.name] != 0 && !field.notnull && field.type === 'number'){
                     _data[field.name] = null;
                 }
 
+                // Confirm Password
                 if (field.type == 'password' && field.name.indexOf('confirm') != 0) {
-                    if (_data['confirm_' + field.name] != _data[field.name]) {
-                        err.password = 'Os campos "' + field.label + '" e "Confirmar ' + field.label + '" não são iguais';
+                    if (_data['confirm_'+field.name] != _data[field.name]) {
+                        field.error='Senha diferente da confirmação.'
+                        $this.crudForm.$valid = false;
                     }
                 }
-            });
-            
-            _.each($_scope.data, function (dataValue, key) {
-                if (key.indexOf('.label') !== -1 && _data.id === undefined) {
-                    if (typeof dataValue !== 'object' && dataValue !== '') {
-                        err[key] = 'Adicione o(a) ' + key.split('.')[0] + ' no sistema antes de escolher nesse formulário!';
-                    }
-                }
-                if (key === 'data_nascimento') {
-                    if (moment(dataValue).isAfter(moment()) || moment(dataValue).isSame(moment(), "day")) {
-                        err[key] = 'Insira uma data de nascimento válida, anterior ao dia de hoje!';
-                    }
-                }
-            });
 
-            // Show Errors
-            if (Object.keys(err).length > 0) {
-                var _messages = new Array();
-                _.each(err, function (value, key) { _messages.push(value); });
-                ngToast.warning(_messages.join("<br />"));
-                return false;
-            }
+                // Invalid Autocomplete
+                if (field.autocomplete && _data[field.name+".label"] && "object"!==typeof(_data[field.name+".label"]) ){
+                    field.error="Campo inválido, selecione novamente.";
+                    $this.crudForm.$valid = false;
+                }
+
+                // Invalid Date
+                if (field.name=="data_nascimento"){
+                    var dataValue = _data[field.name];
+                    if (moment(dataValue).isAfter(moment()) || moment(dataValue).isSame(moment(), "day")) {
+                        field.error='Insira uma data de nascimento válida, anterior ao dia de hoje!';
+                        $this.crudForm.$valid = false;
+                    }
+                }
+
+
+            });
 
             // Validade Form
             if (!$this.crudForm.$valid) {
