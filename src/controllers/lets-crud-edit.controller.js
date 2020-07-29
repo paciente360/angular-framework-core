@@ -59,9 +59,13 @@
                         if (field.customOptions && field.customOptions.list!=undefined) {
                             field.customOptions.list.forEach(function(item){
                                 if (item.id==data[field.name]){
-                                    data[field.name+'.label'] = item.label;
+                                    data[field.name+'.label'] = item;
                                 }
                             });
+                        }else if (field.autocomplete){
+                            if (data[field.name+'.label'] && "object"!=typeof(data[field.name+'.label'])){
+                                data[field.name+'.label'] = {id:data[field.name].id, label:data[field.name+'.label']};
+                            }
                         }
 
                         if (field.type == 'password'){

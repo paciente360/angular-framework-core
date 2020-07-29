@@ -40,7 +40,11 @@
 			}
 
 			// Check Value
-			val = val.trim();
+			if (val.length>0){
+				val = encodeURIComponent(val.trim())
+			}
+
+
 			if (val.length == 0 || field.customOptions.select == true) {
 				val = '[blank]';
 			}

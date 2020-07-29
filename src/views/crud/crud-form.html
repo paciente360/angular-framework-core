@@ -2,7 +2,8 @@
     <div class='fixed-caption-block' ng-if="headers.fixed_tab">
         <fieldset>
             <legend>
-                <strong>{{'letsfw.main_information'|locale}}</strong>
+                <strong ng-if="headers.label_row">{{headers.label_row}}</strong>
+                <strong ng-if="!headers.label_row">{{'letsfw.main_information'|locale}}</strong>
             </legend>
             <ng-include ng-if="beforeForm != undefined" src="beforeForm"></ng-include>
             
@@ -16,8 +17,9 @@
         
         <tab ng-if="headers.main_tabs == undefined" heading="{{headers.label_row}}">
             <fieldset>
-                <legend>
-                    <strong>{{'letsfw.main_information'|locale}}</strong>
+                <legend ng-show="_.size(headers.tabs) == 0">
+                    <strong ng-if="headers.label_row">{{headers.label_row}}</strong>
+                    <strong ng-if="!headers.label_row">{{'letsfw.main_information'|locale}}</strong>
                 </legend>
                 <ng-include ng-if="beforeForm != undefined" src="beforeForm"></ng-include>
                 
