@@ -3,7 +3,7 @@
 
     var module = angular.module('letsAngular');
 
-    module.controller('CRUDEditDetailController', function ($scope, $controller, Restangular, $stateParams, $timeout, headers, $rootScope, $modalInstance, ngToast) {
+    module.controller('CRUDEditDetailController', function ($scope, $controller, Restangular, headers, $rootScope, $modalInstance) {
         $controller('CRUDEditController', {$scope:$scope, module:module});
 
         $scope.headers = headers;

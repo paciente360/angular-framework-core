@@ -78,7 +78,7 @@
                             }
                         }
                     }else{
-                        if (record[field.name]){
+                        if (record[field.name]!==null && record[field.name]!==undefined){
                             return record[field.name];
                         }
                     }
@@ -151,7 +151,7 @@
                         
                         if($scope.sort.sortKey){
                             var fld = headers.get($scope.sort.sortKey);
-                            if (fld.autocomplete && !fld.customOptions.list){
+                            if (fld && fld.autocomplete && !fld.customOptions.list){
                                 queries.sort_by +=".label";
                             }
                         }

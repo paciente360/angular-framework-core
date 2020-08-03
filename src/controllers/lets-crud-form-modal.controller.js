@@ -20,8 +20,6 @@
             }
         }
 
-        $scope.fetchData();
-
         $scope.cancel = function () {
             $modalInstance.dismiss('cancel');
         }
@@ -29,14 +27,14 @@
         $scope.submit = function () {
             if (this.crudForm.$valid) {
                 $modalInstance.close($scope.data);
-            } else {
-                fwErrorService.emitFormErrors(this.crudForm)
             }
         };
 
         $rootScope.$on('cancel-modal', function (event, res) {
             $modalInstance.dismiss('cancel');
         });
+
+        $scope.fetchData();
 
     });
 
