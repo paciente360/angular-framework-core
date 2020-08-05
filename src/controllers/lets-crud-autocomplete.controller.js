@@ -24,7 +24,7 @@
 
 						var text =
 							locale.translate('letsfw.select_before')
-								.replace('%name%', dep.label.toLocaleLowerCase())
+								.replace('%name%', (dep.label ? dep.label.toLocaleLowerCase() : dep.field))
 								.replace('%gender%', (dep.gender ? dep.gender : 'o(a)'));
 
 						var data = [];

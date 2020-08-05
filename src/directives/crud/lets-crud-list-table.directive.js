@@ -217,6 +217,7 @@
                 $scope.startTable = function(){
 
                     if ($scope.tab){
+                        $scope.settings.getscope().$emit('create:'+$scope.settings.tab_name, $scope)
                         $scope.refreshTable();
                         return;
                     }
@@ -266,14 +267,8 @@
                         }
 
                     }
-
-                    if ($scope.tab){
-                        var _scope = $scope.settings.getscope();
-                        _scope.$emit('create:'+$scope.settings.tab_name, $scope);
-                    }else{
-                        $scope.$emit('create:grid', $scope);
-                    }
-
+                   
+                    $scope.$emit('create:grid', $scope);
                     $scope.refreshTable();
                     
                 }
