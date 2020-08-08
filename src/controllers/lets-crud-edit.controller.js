@@ -257,7 +257,8 @@
                 
                 if (detail){
                     if (!$scope.data.id) {
-                        var response = $scope.resource.customPOST($scope.data, $stateParams.id);
+                        var _id = $scope.headers.parentID || $stateParams.id;
+                        var response = $scope.resource.customPOST($scope.data, _id);
                         var typeSave = "new";
                     } else {
                         var response = $scope.resource.customPUT($scope.data, $scope.data.id);
@@ -384,10 +385,12 @@
             if (!tab.fixedRoute){
                 tab.fixedRoute = tab.route;
             }
+
+            var _route = $scope.headers.route_detail ? $scope.headers.route_detail : $scope.headers.route;
             
-            var parentModel = $scope.headers.parent_route ? $scope.headers.parent_route : $scope.headers.route.toLowerCase();
-            tab.route = (id ? route : $scope.headers.route+tab.fixedRoute);
+            tab.route = (id ? route : _route+tab.fixedRoute);
             tab.id = id ? id : null;
+            tab.parentID = $scope.data.id;
 
             fwModalService.createCRUDModal(tab, null, "CRUDEditDetailController", null, $scope);
         };

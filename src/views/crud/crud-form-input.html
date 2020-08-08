@@ -1,5 +1,5 @@
 <div class="form-group" ng-repeat="field in fields | filter: filter" ng-if="!auto_layout">
-    <label for="{{field.name}}" class="col-sm-2 control-label no-padding">{{field.label}}
+    <label for="{{field.name}}" class="col-sm-2 control-label no-padding">{{field.label ? field.label : "&nbsp"}}
         <span ng-if="field.required">*</span>
     </label>
     <div class="col-sm-9">
@@ -16,7 +16,7 @@
     "
     ng-if="auto_layout">
 
-    <label for="{{field.name}}" class="control-label">{{field.label}}
+    <label for="{{field.name}}" class="control-label">{{field.label ? field.label : "&nbsp"}}
         <span ng-if="field.required">*</span>
         <i ng-if="field.help" class="fa fa-info-circle" title="{{field.help}}" style="cursor:help; font-size:12px;"></i>
     </label>

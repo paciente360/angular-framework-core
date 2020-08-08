@@ -8,6 +8,14 @@
 
         $scope.headers = headers;
         $scope.resource = Restangular.all(headers.route);
+
+        $scope.submit = function(){
+            $scope._submit(this, true);
+        }
+
+        $scope.cancel = function () {
+            $modalInstance.dismiss('success');
+        };
        
         var parentScope = headers.parentScope;
         delete headers.parentScope;
@@ -20,14 +28,6 @@
         }
 
         $scope.fetchData(headers.id, true);
-
-        $scope.submit = function(){
-            $scope._submit(this, true);
-        }
-
-        $scope.cancel = function () {
-            $modalInstance.dismiss('success');
-        };
 
     });
 

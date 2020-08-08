@@ -80,7 +80,7 @@
                     </div>
                 </section>
 
-                <section ng-if="appSettings.NEW_GRID || tab.new_grid" grid="{{tab_name}}" crud-list-table settings="{headers:tab, tab:true, url:headers.route+'/details/'+data.id+'/'+tab_name, getscope:getscope, tab_name:tab_name}"></section>
+                <section ng-if="appSettings.NEW_GRID || tab.new_grid" grid="{{tab_name}}" crud-list-table settings="{headers:tab, tab:true, url:(headers.route_detail ? headers.route_detail : headers.route)+'/details/'+data.id+'/'+tab_name, getscope:getscope, tab_name:tab_name}"></section>
             </div>
             <div ng-if="tab.templateUrl">
                 <ng-include src="tab.templateUrl"></ng-include>

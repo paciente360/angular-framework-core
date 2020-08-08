@@ -10,16 +10,6 @@
         $scope.headers = headers;
         $scope.resource = Restangular.all(headers.route);
 
-        var parentScope = headers.parentScope;
-        delete headers.parentScope;
-        if(headers.modal_id){
-            $rootScope.$emit('open:'+headers.modal_id+'', $scope); // @deprecated 
-
-            if (parentScope){
-                parentScope.$emit('open:'+headers.modal_id+'', $scope);
-            }
-        }
-
         $scope.cancel = function () {
             $modalInstance.dismiss('cancel');
         }
@@ -33,6 +23,16 @@
         $rootScope.$on('cancel-modal', function (event, res) {
             $modalInstance.dismiss('cancel');
         });
+
+        var parentScope = headers.parentScope;
+        delete headers.parentScope;
+        if(headers.modal_id){
+            $rootScope.$emit('open:'+headers.modal_id+'', $scope); // @deprecated 
+
+            if (parentScope){
+                parentScope.$emit('open:'+headers.modal_id+'', $scope);
+            }
+        }
 
         $scope.fetchData();
 

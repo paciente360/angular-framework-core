@@ -21,6 +21,18 @@
                 $scope.currentPage = 1;
                 $scope.perPage = 15;
 
+                if( typeof(headers.get)!=="function" ){
+                    headers.get = function(name){
+                        for (var _x in headers.fields) {
+                            var field = headers.fields[_x];
+        
+                            if (field.name == name) {
+                                return field;
+                            }
+                        }
+                    }
+                }
+
                 if ($scope.tab){
                     $scope.resource = Restangular.all($scope.settings.url);
                     if (!headers.settings){
