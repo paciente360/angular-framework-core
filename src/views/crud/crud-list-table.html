@@ -34,7 +34,7 @@
                 </div>
                 <div class="clearfix"></div>
             </div>
-            
+
             <div class="busca-avancada row" collapse="!showBuscaAvancada">
                 <div class="form-group" style="margin-bottom: 10px; margin-right: 0px; min-width: 200px;" ng-repeat="field in fieldsFilter track by $index" ng-class="field.filter.customClass ? field.filter.customClass : (field.filter.size ? 'col-sm-'+field.filter.size : (field.filter.range===true ? 'col-sm-2' :  'col-sm-3'))">
                     <label for="{{field.name}}" class="control-label" style="font-size:12px; margin-bottom: 0px;font-weight: 600">{{field.label}}</label>
@@ -54,7 +54,7 @@
 </div>
 
 <div class="widget-body">
-    <div class="table-container">
+    <div class="table-container" ng-if="!headers.templateTableUrl">
         <table class="table table-striped table-editable no-margin mb-sm {{headers.tableClass}}">
             <thead>
                 <tr>
@@ -103,4 +103,5 @@
             gopage="gopage"
         ></div>
     </div>
+    <ng-include ng-if="headers.templateTableUrl" src="headers.templateTableUrl"></ng-include>
 </div>

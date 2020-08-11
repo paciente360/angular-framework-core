@@ -19,7 +19,7 @@
                 $scope.filterdata = {};
                 $scope.tableData = {total_count:0, total_entries:0, currentpage:1};
                 $scope.currentPage = 1;
-                $scope.perPage = 15;
+                $scope.perPage = headers.perPage || 15;
 
                 if( typeof(headers.get)!=="function" ){
                     headers.get = function(name){
@@ -43,7 +43,7 @@
                     $scope.resource = Restangular.all(headers.route);
                     $scope.sort = headers.settings.sort;
                 }
-                
+
                 $scope.getFilter = function(){
                     return decodeURIComponent($window.location.search).replace("?filter=","");
                 }
@@ -143,9 +143,9 @@
                                 }
 
                                 str.push(field.name+"="+queries["filter["+field.name+"]"]);
-                                
+
                             }
-                            
+
                         }
 
                     }else if ($scope.filterdata.q){
@@ -160,7 +160,7 @@
                     if ($scope.sort){
                         str.push("or="+$scope.sort.sortKey);
                         queries.sort_by = $scope.sort.sortKey;
-                        
+
                         if($scope.sort.sortKey){
                             var fld = headers.get($scope.sort.sortKey);
                             if (fld && fld.autocomplete && !fld.customOptions.list){
@@ -178,17 +178,21 @@
                             inherit: true,
                             relative: $state.$current,
                             notify: false
-                        });  
+                        });
                     }
 
-                    $scope.resource.customGET(route, queries).then(function(response) {
-                        $timeout(function(){
-                            $scope.tableData = response;
-                            $scope.tableData.currentPage = $scope.currentPage;
-                        })
-                    },function() {
-                        $scope.tableData = {};
-                    });
+                    if(typeof $scope.searchRecords !== "function"){
+                        $scope.resource.customGET(route, queries).then(function(response) {
+                            $timeout(function(){
+                                $scope.tableData = response;
+                                $scope.tableData.currentPage = $scope.currentPage;
+                            })
+                        },function() {
+                            $scope.tableData = {};
+                        });
+                    }else{
+                        $scope.searchRecords(queries, route);
+                    }
 
                 }
 
@@ -200,7 +204,7 @@
                         $state.go($state.current.name.replace(/\.list$/, '.edit'), { id: row.id, page: null, filter:$scope.getFilter()});
                     }
                 };
-        
+
                 $scope.delete = function (row) {
                     var _confirm = window.confirm(locale.translate('letsfw.message_delete'));
                     if (_confirm) {
@@ -255,7 +259,7 @@
                         }else{
                             for (var idx = 0; idx < $scope._fields.length; idx++) {
                                 const field = $scope._fields[idx];
-    
+
                                 if (params[field.name]){
                                     if(field.type=="date"){
                                         $scope.filterdata[field.name] = moment(params[field.name],"L");
@@ -282,7 +286,7 @@
                    
                     $scope.$emit('create:grid', $scope);
                     $scope.refreshTable();
-                    
+
                 }
 
                 $scope.gopage = function(page){
@@ -303,7 +307,7 @@
                     }
 
 
-                   
+
                     $scope.refreshTable(true);
                 }
 
@@ -314,14 +318,14 @@
                 $scope.$on('refreshGRID', function (event) {
                     $scope.refreshTable();
                 });
-               
+
             },
             link: function (scope, $el) {
 
                 scope.headers = scope.settings.headers;
                 scope._fields = angular.copy(scope.headers.fields);
                 scope.fieldsFilter = [];
-               
+
                 // Ajustas os campos para o filtro
                 for (var idx = 0; idx < scope._fields.length; idx++) {
                     const field = scope._fields[idx];
@@ -342,7 +346,7 @@
 
                     }else if (field.type=="text"){
                         field.type = "string";
-                    
+
                     }else if (field.type=="boolean"){
                         field.type = "number";
                         field.autocomplete = true;
@@ -353,13 +357,12 @@
                             ],
                             "select":true
                         };
-                
+
                     }
 
                     scope.fieldsFilter.push(field);
-                    
+
                 }
-                
                 if(scope.headers.search=="fixed"){
                     scope.showBuscaAvancada = true;
                     scope.hideInputSearch = true;
@@ -388,6 +391,6 @@
             }
         }
     }
-    
+
 
 })();
