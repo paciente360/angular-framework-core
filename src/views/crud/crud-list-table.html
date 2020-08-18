@@ -58,7 +58,7 @@
         <table class="table table-striped table-editable no-margin mb-sm {{headers.tableClass}}">
             <thead>
                 <tr>
-                    <th class="{{field.name}}" ng-repeat="field in headers.fields | filter: {viewable: true}">
+                    <th class="{{field.name}} {{field.customClass}}" ng-repeat="field in headers.fields | filter: {viewable: true}">
                         <a ng-click="order(field.name)" ng-if="field.type!=='custom'">
                             {{field.label}}
                             <i class="fa fa-caret-up" style="font-size:15px;" ng-if="sort.sortKey==field.name && sort.order=='desc'"></i>
@@ -75,16 +75,16 @@
             </thead>
             <tbody>
                 <tr ng-repeat="data in tableData.data">
-                    <td ng-repeat="field in headers.fields | filter: {viewable: true}">
+                    <td class="{{field.name}} {{field.customClass}}" ng-repeat="field in headers.fields | filter: {viewable: true}">
                         {{parseRecord(data,field)}}
                         <div ng-if="field.type=='custom'" data="data" field="field" getscope="getscope" fw-custom-field></div>
                     </td>
                     <td class="text-right btn-column" ng-if="headers.settings.edit || headers.settings.delete">
                         <div class="btn-group" role="group">
-                            <button ng-if="headers.settings.edit" ng-click="edit(data)" type="button" class="btn btn-default btn-edit">
+                            <button ng-if="headers.settings.edit" ng-click="edit(data)" type="button" class="btn btn-default btn-edit" title="{{'letsfw.editar'|locale}}">
                                 <span class="glyphicon glyphicon-pencil"></span>
                             </button>
-                            <button ng-if="headers.settings.delete" ng-click="delete(data)" type="button" class="btn btn-default btn-delete">
+                            <button ng-if="headers.settings.delete" ng-click="delete(data)" type="button" class="btn btn-default btn-delete" title="{{'letsfw.excluir'|locale}}">
                                 <span class="glyphicon glyphicon-remove"></span>
                             </button>
                         </div>

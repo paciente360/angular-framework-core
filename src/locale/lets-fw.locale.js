@@ -21,6 +21,16 @@
                 "en":"OK",
                 "es":"Feito"
             },
+            "editar":{
+                "pt-br":"Editar",
+                "en":"Edit",
+                "es":"Editar"
+            },
+            "excluir":{
+                "pt-br":"Excluir",
+                "en":"Delete",
+                "es":"Eliminar"
+            },
             "select":{
                 "pt-br":"Selecione",
                 "en":"Select",

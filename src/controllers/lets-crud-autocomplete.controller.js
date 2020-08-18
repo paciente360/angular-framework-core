@@ -34,7 +34,7 @@
 
 						return deferred.promise;
 					} else {
-						queries[dep.field] = data[dep.field];
+						queries[dep.field] = typeof(data[dep.field])=="object" ?  data[dep.field].id : data[dep.field];
 					}
 				}
 			}
