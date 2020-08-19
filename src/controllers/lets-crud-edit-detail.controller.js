@@ -3,9 +3,10 @@
 
     var module = angular.module('letsAngular');
 
-    module.controller('CRUDEditDetailController', function ($scope, $controller, Restangular, headers, $rootScope, $modalInstance) {
+    module.controller('CRUDEditDetailController', function ($scope, $controller, Restangular, headers, $rootScope, data, $modalInstance) {
         $controller('CRUDEditController', {$scope:$scope, module:module});
 
+        $scope.data = data || {};
         $scope.headers = headers;
         $scope.resource = Restangular.all(headers.route);
 

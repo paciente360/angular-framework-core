@@ -81,6 +81,9 @@
                     </td>
                     <td class="text-right btn-column" ng-if="headers.settings.edit || headers.settings.delete">
                         <div class="btn-group" role="group">
+                            <button ng-repeat="act in headers.actions" ng-click="this[act.function](data)" type="button" class="btn btn-default" title="{{act.label}}">
+                                <span class="{{act.class}}"></span>
+                            </button>
                             <button ng-if="headers.settings.edit" ng-click="edit(data)" type="button" class="btn btn-default btn-edit" title="{{'letsfw.editar'|locale}}">
                                 <span class="glyphicon glyphicon-pencil"></span>
                             </button>

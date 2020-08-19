@@ -199,7 +199,7 @@
                 $scope.edit = function (row) {
                     if( $scope.tab ){
                         var _scope = $scope.settings.getscope();
-                        _scope.newDetail(headers, $scope.data, row.id, $scope.settings.url);
+                        _scope.newDetail(headers, null, row.id, $scope.settings.url);
                     }else{
                         $state.go($state.current.name.replace(/\.list$/, '.edit'), { id: row.id, page: null, filter:$scope.getFilter()});
                     }
@@ -222,7 +222,7 @@
 
                 $scope.newDetail = function(){
                     var _scope = $scope.settings.getscope();
-                    _scope.newDetail(headers, _scope.data);
+                    _scope.newDetail(headers);
                 }
 
                 $scope.filterTable = function(){

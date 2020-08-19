@@ -47,38 +47,7 @@
             
             if (id) {
                 _resource.customGET(_route).then(function (data) {
-                    for (var y in $scope.headers.fields) {
-                        var field = $scope.headers.fields[y];
-                        
-                        if (field.type == 'date' && (data[field.name] != undefined && data[field.name] != null)) {
-                            var dt = new Date(data[field.name]);
-                            dt.setHours(dt.getHours() + (dt.getTimezoneOffset()/60) );
-                            data[field.name] = dt;
-                        }
-
-                        if (field.customOptions && field.customOptions.list!=undefined) {
-                            field.customOptions.list.forEach(function(item){
-                                if (item.id==data[field.name]){
-                                    data[field.name+'.label'] = item;
-                                }
-                            });
-                        }else if (field.autocomplete){
-                            if (data[field.name+'.label'] && "object"!=typeof(data[field.name+'.label'])){
-                                data[field.name+'.label'] = {id:data[field.name].id, label:data[field.name+'.label']};
-                            }
-                        }
-
-                        if (field.type == 'password'){
-                            field.notnull = false;
-                        }
-
-                        if (field.customOptions && field.customOptions.file != undefined) {
-                            $scope.fileName = data[field.name];
-                        }
-
-                    }
-
-                    $scope.data = data;
+                    $scope.parseData(data);
                     
                     $timeout(function(){
                         $scope.$broadcast('setProgressFile');
@@ -94,6 +63,40 @@
 
             }
         };
+
+        $scope.parseData = function(data){
+            for (var y in $scope.headers.fields) {
+                var field = $scope.headers.fields[y];
+                
+                if (field.type == 'date' && (data[field.name] != undefined && data[field.name] != null)) {
+                    var dt = new Date(data[field.name]);
+                    dt.setHours(dt.getHours() + (dt.getTimezoneOffset()/60) );
+                    data[field.name] = dt;
+                }
+
+                if (field.customOptions && field.customOptions.list!=undefined) {
+                    field.customOptions.list.forEach(function(item){
+                        if (item.id==data[field.name]){
+                            data[field.name+'.label'] = item;
+                        }
+                    });
+                }else if (field.autocomplete){
+                    if (data[field.name+'.label'] && "object"!=typeof(data[field.name+'.label'])){
+                        data[field.name+'.label'] = {id:data[field.name].id, label:data[field.name+'.label']};
+                    }
+                }
+
+                if (field.type == 'password'){
+                    field.notnull = false;
+                }
+
+                if (field.customOptions && field.customOptions.file != undefined) {
+                    $scope.fileName = data[field.name];
+                }
+
+            }
+            $scope.data = data;
+        }
 
         if ($scope.headersReady) {
             $scope.fetchData($stateParams.id);
@@ -392,7 +395,7 @@
             tab.id = id ? id : null;
             tab.parentID = $scope.data.id;
 
-            fwModalService.createCRUDModal(tab, null, "CRUDEditDetailController", null, $scope);
+            fwModalService.createCRUDModal(tab, data, "CRUDEditDetailController", null, $scope);
         };
 
         $scope.deleteDetail = function (route, row) {
