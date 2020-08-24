@@ -43,6 +43,9 @@
     <input ng-model-options="{fieldInfo: field}" name="{{field.name}}" type="text" id="{{field.name}}" fw-dynamic
       ng-required="field.notnull" ng-model="data[field.name]" size="{{field.length}}" ng-disabled="field.disabled"
       class="main-input form-control" autocomplete="off" />
+      <ul class="parsley-errors-list filled" ng-if="field.error">
+        <li class="parsley-required">{{field.error}}</li>
+      </ul>
   </div>
 
   <!-- Colorpicker -->
