@@ -24,14 +24,12 @@
                         var _headers = angular.copy(headers);
                         _headers.parentScope = parentScope;
 
-                        if( typeof(_headers.get)!=="function" ){
-                            _headers.get = function(name){
-                                for (var _x in _headers.fields) {
-                                    var field = _headers.fields[_x];
-                
-                                    if (field.name == name) {
-                                        return field;
-                                    }
+                        _headers.get = function(name){
+                            for (var _x in _headers.fields) {
+                                var field = _headers.fields[_x];
+            
+                                if (field.name == name) {
+                                    return field;
                                 }
                             }
                         }
