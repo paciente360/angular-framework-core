@@ -285,7 +285,10 @@
                     }
                    
                     $scope.$emit('create:grid', $scope);
-                    $scope.refreshTable();
+                    if (!headers.isReport){
+                        $scope.refreshTable();
+                    }
+                    
 
                 }
 
