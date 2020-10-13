@@ -182,8 +182,10 @@
                     }
 
                     if(typeof $scope.searchRecords !== "function"){
+                        $scope.searching = true;
                         $scope.resource.customGET(route, queries).then(function(response) {
                             $timeout(function(){
+                                $scope.searching = false;
                                 $scope.tableData = response;
                                 $scope.tableData.currentPage = $scope.currentPage;
                             })
