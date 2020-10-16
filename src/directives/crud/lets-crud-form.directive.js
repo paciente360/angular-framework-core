@@ -11,29 +11,6 @@
             replace: false,
             link: function (scope, $el) {
 
-                /* Dropzone */
-                //Set options for dropzone
-                for (var y in scope.headers.fields) {
-                    var field = scope.headers.fields[y];
-                    if (field.customOptions.file) {
-                        scope.dzOptions = {
-                            url: appSettings.API_URL + 'upload/' + field.customOptions.file.container + '/upload',
-                            acceptedFiles: field.customOptions.file.acceptedFiles,
-                            maxFilesize: '25',
-                            maxFiles: '1',
-                            uploadMultiple: false,
-                            addRemoveLinks: true,
-                        };
-                    }
-                }
-                //Apply methods for dropzone
-                scope.dzMethods = {};
-                scope.removeNewFile = function () {
-                    scope.dzMethods.removeFile(scope.newFile); //We got $scope.newFile from 'addedfile' event callback
-                }
-                /* Dropzone */
-
-
                 jQuery($el).on('click', '.button-new', function () {
                     var detail = jQuery(this).attr('detail');
                     var origin = jQuery(this).attr('origin');

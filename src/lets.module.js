@@ -17,7 +17,6 @@
         'ngSanitize',
         'colorpicker-dr',
         'ckeditor',
-        'thatisuday.dropzone',
         'swangular',
         'colorpicker.module',
         'angularjs-dropdown-multiselect'

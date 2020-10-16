@@ -4,81 +4,86 @@
     angular.module('letsAngular')
         .directive('fwUpload', fwUpload);
 
-    fwUpload.$inject = ['$timeout'];
+    fwUpload.$inject = ['$timeout', 'appSettings'];
 
-    function fwUpload($timeout) {
+    function fwUpload($timeout, appSettings) {
         return {
             restrict: 'A',
             scope: true,
-            link: function ($scope, $rootScope, element) {
+            link: function ($scope, element) {
 
-                $scope.defaultProgress = 0;
-                $scope.alreadySent = false;
-                var controll = true;
+                $scope.f = {};
+
+                var _input = element.find('input[type="hidden"]');
+
+                var STORAGE_URL = appSettings.STORAGE_URL;
+                if ($scope.field.customOptions.file.container != undefined) {
+                    STORAGE_URL +=$scope.field.customOptions.file.container+"/";
+                }
 
                 $scope.$on('setProgressFile', function () {
-                    if ($scope.data[$scope.field.name] != undefined && $scope.data[$scope.field.name] != null && ($scope.fileName && $scope.fileName != 'fileName')) {
-                        $scope.defaultProgress = 100;
-                        $scope.alreadySent = true;
+                    if ($scope.data[$scope.field.name]) {
+                        $scope.f = {
+                            name:$scope.data[$scope.field.name],
+                            progress:100,
+                            alreadySent:true
+                        };
+
+                        $scope.f.fileURL = STORAGE_URL+$scope.f.name;
                     }
                 });
 
-                $scope.pushName = function () {
-                    $timeout(function () {
-                        if (document.getElementsByClassName('dz-filename')[0] && controll) {
-                            controll = false;
-                            document.getElementsByClassName('dropzone')[0].style.width = '192px';
-                            if (document.getElementsByClassName('file-preview')[0]) {
-                                document.getElementsByClassName('file-preview')[0].style.display = 'none';
-                            }
-                            document.getElementsByName('temp_filename')[0].value = document.getElementsByClassName('dz-filename')[0].firstElementChild.innerText;
-                            var _input = element.find('input[type="hidden"]');
-                            _input.controller('ngModel').$setViewValue(document.getElementsByName('temp_filename')[0].value);
-                        }
-                    });
-                };
-
-                $scope.remove = function () {
-                    $scope.alreadySent = false;
-                    var _input = element.find('input[type="hidden"]');
-                    document.getElementsByName('temp_filename')[0].value = null;
+                $scope.removeFile = function(){
+                    $scope.f = {};
                     _input.controller('ngModel').$setViewValue(null);
-                };
+                }
 
                 $scope.upload = function (file, errFiles) {
-                    $scope.f = file;
-                    $scope.errFile = errFiles && errFiles[0];
+
+                    if(errFiles.length > 0 ){
+                        $scope.errFile = errFiles && errFiles[0];
+                        errFiles.forEach(function(err){
+                            if (err.$error=="pattern"){
+                                $scope.field.error = "O formato do arquivo não é permitido."; 
+                            }
+                        });
+                    }
+
                     if (file) {
 
-                        file.upload = $scope._upload($scope.field, file);
-                        file.upload.then(function (response, err) {
+                        $scope.field.error = null;
+                        $scope.f.name = file.name
+                        $scope.f.uploading = true;
+                        
+                        $scope._upload($scope.field, file).then(function (response, err) {
                             $scope.$emit('upload-complete', response);
-                            $timeout(function () {
-                                file.result = response.data;
-                                if (element.$$element) {
-                                    var _input = element.$$element.find('input[type="hidden"]');
-                                } else {
-                                    var _input = element.find('input[type="hidden"]');
-                                }
-
-                                file.newName = response.data.result.files.file[0].name;
-
-                                _input.controller('ngModel').$setViewValue(file.newName);
-
-                            });
-                        }, function (response) {
                             
+                            $timeout(function () {
+                                $scope.f.alreadySent = true;
+                                $scope.f.uploading = false;
+                                $scope.f.name = response.data.result.files.file[0].name;
+                                $scope.f.fileURL = STORAGE_URL+$scope.f.name;
+                                _input.controller('ngModel').$setViewValue($scope.f.name);
+                            });
+
+
+                        }, function (response) {
                             if (response.status > 0) {
                                 $scope.errorMsg = response.status + ': ' + response.data;
                             }
-                                $scope.$emit('upload-error', response);
+                            $scope.$emit('upload-error', response);
 
                         }, function (evt) {
-                            file.progress = Math.min(100, parseInt(100.0 *
-                                evt.loaded / evt.total));
+                            $timeout(function(){
+                                $scope.f.progress = Math.min(100, parseInt(100.0 *evt.loaded / evt.total));
+                            })
                         })
                     }
                 };
+
+                $scope.dropFile = function($file, errFiles){
+                    $scope.upload($file, errFiles)
+                }
 
             }
         }
