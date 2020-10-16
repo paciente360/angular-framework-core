@@ -139,7 +139,10 @@
 					align-items: center;
 					justify-content: center;
 				">
-				<img ng-if="field.customOptions.file.preview && f.fileURL" style="height:100%; border-radius: 5px;" ng-src="{{ trustSrc(f.fileURL) }}">
+				<img
+					ng-if="field.customOptions.file.preview && f.fileURL"
+					style="max-height:100%; max-width:100%; border-radius: 5px;"
+					ng-src="{{ trustSrc(f.fileURL) }}">
 
 				<div
 					class="drag-box"
