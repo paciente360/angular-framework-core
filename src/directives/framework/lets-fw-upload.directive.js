@@ -4,9 +4,9 @@
     angular.module('letsAngular')
         .directive('fwUpload', fwUpload);
 
-    fwUpload.$inject = ['$timeout', 'appSettings'];
+    fwUpload.$inject = ['$timeout', 'appSettings', '$sce'];
 
-    function fwUpload($timeout, appSettings) {
+    function fwUpload($timeout, appSettings, $sce) {
         return {
             restrict: 'A',
             scope: true,
@@ -20,6 +20,10 @@
                 if ($scope.field.customOptions.file.container != undefined) {
                     STORAGE_URL +=$scope.field.customOptions.file.container+"/";
                 }
+
+                $scope.trustSrc = function (src) {
+                    return $sce.trustAsResourceUrl(src);
+                };
 
                 $scope.$on('setProgressFile', function () {
                     if ($scope.data[$scope.field.name]) {
