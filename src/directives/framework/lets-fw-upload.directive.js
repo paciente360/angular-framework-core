@@ -21,6 +21,10 @@
                     STORAGE_URL +=$scope.field.customOptions.file.container+"/";
                 }
 
+                $scope.isFileImage = function(filename){
+                    return !!filename.match(/.(jpg|jpeg|png|gif)$/i)
+                }
+
                 $scope.trustSrc = function (src) {
                     return $sce.trustAsResourceUrl(src);
                 };
@@ -30,9 +34,9 @@
                         $scope.f = {
                             name:$scope.data[$scope.field.name],
                             progress:100,
-                            alreadySent:true
+                            alreadySent:true,
+                            isImage:$scope.isFileImage($scope.data[$scope.field.name])
                         };
-
                         $scope.f.fileURL = STORAGE_URL+$scope.f.name;
                     }
                 });
@@ -68,6 +72,7 @@
                                 $scope.f.uploading = false;
                                 $scope.f.name = response.data.result.files.file[0].name;
                                 $scope.f.fileURL = STORAGE_URL+$scope.f.name;
+                                $scope.f.isImage = $scope.isFileImage($scope.f.name)
                                 _input.controller('ngModel').$setViewValue($scope.f.name);
                             });
 

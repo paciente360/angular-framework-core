@@ -140,7 +140,7 @@
 					justify-content: center;
 				">
 				<img
-					ng-if="field.customOptions.file.preview && f.fileURL"
+					ng-if="field.customOptions.file.preview && f.fileURL && f.isImage"
 					style="max-height:100%; max-width:100%; border-radius: 5px;"
 					ng-src="{{ trustSrc(f.fileURL) }}">
 
@@ -154,13 +154,13 @@
 					ngf-select="upload($file, $invalidFiles)">Arraste e solte o arquivo aqui.
 				</div>
 
-				<div ng-if="field.customOptions.file.dad && f.alreadySent && !field.customOptions.file.preview">
+				<div ng-if="field.customOptions.file.dad && f.alreadySent && (!field.customOptions.file.preview || !f.isImage)">
 					<i class="fa fa-file-text-o" style="font-size:85px"></i>
 				</div>
 
 			</div>
 			<div style="display: flex;">
-				<div class="progress">
+				<div class="progress" style="margin-bottom: 0px;">
 					<div
 						class="progress-bar"
 						role="progressbar"

@@ -50,17 +50,16 @@
                     $scope.parseData(data);
                     
                     $timeout(function(){
+                        $scope.$emit(_events.edit);
                         $scope.$broadcast('setProgressFile');
                     });
-
-                    $scope.$emit(_events.edit);
+                    
                 });
             } else {
-
                 $timeout(function () {
                     $scope.$emit(_events.new);
+                    $scope.$broadcast('setProgressFile');
                 }, 50);
-
             }
         };
 
