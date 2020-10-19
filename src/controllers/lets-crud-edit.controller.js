@@ -117,10 +117,10 @@
                 _url += field.customOptions.file.url;
             }else 
                 if (field.customOptions.file.url == undefined && field.customOptions.file.container != undefined) {
-                _url += 'upload/' + field.customOptions.file.container + '/upload'
+                _url += 'upload/' + encodeURIComponent(field.customOptions.file.container) + '/upload'
             }else 
                 if (field.customOptions.file.url != undefined && field.customOptions.file.container != undefined) {
-                _url += 'upload/' + field.customOptions.file.container + '/' + field.customOptions.file.url
+                _url += 'upload/' + encodeURIComponent(field.customOptions.file.container) + '/' + field.customOptions.file.url
             }
 
             return Upload.upload({
@@ -131,7 +131,7 @@
 
         $scope.download = function (field, id) {
             if (field.customOptions.file.container != undefined) {
-                var url = $rootScope.appSettings.API_URL + 'upload/' + field.customOptions.file.container + '/download/' + $scope.data[field.name];
+                var url = $rootScope.appSettings.API_URL + 'upload/' + encodeURIComponent(field.customOptions.file.container) + '/download/' + $scope.data[field.name];
             } else {
                 var url = ($rootScope.appSettings.API_URL + $scope.module + '/download/' + field.name + '/' + id);
             }

@@ -63,6 +63,7 @@
                             $scope.$emit('upload-complete', response);
                             
                             $timeout(function () {
+                                $scope.f.progress = 100;
                                 $scope.f.alreadySent = true;
                                 $scope.f.uploading = false;
                                 $scope.f.name = response.data.result.files.file[0].name;
@@ -72,14 +73,20 @@
 
 
                         }, function (response) {
+                            console.log(response);
                             if (response.status > 0) {
                                 $scope.errorMsg = response.status + ': ' + response.data;
                             }
                             $scope.$emit('upload-error', response);
 
+                            $timeout(function(){
+                                $scope.field.error = "Ocorreu um erro ao enviar o arquivo.";
+                                $scope.f = {};
+                            })
+
                         }, function (evt) {
                             $timeout(function(){
-                                $scope.f.progress = Math.min(100, parseInt(100.0 *evt.loaded / evt.total));
+                                $scope.f.progress = Math.min(90, parseInt(100.0 *evt.loaded / evt.total));
                             })
                         })
                     }
