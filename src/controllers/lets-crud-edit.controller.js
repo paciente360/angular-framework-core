@@ -222,7 +222,7 @@
                 }
 
                 // File
-                if (field.customOptions && field.customOptions.file && field.notnull && !_data[field.name]) {
+                if (field.customOptions && field.customOptions.file && field.editable && field.notnull && !_data[field.name]) {
                     field.error='Este campo é obrigatório.';
                     $this.crudForm.$valid = false;
                 }
