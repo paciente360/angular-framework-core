@@ -17,7 +17,7 @@
             </a>
         </div>
 
-        <form ng-submit="filterTable()">
+        <form ng-submit="filterTable(this)" role="form" filter-form name="filterForm" novalidate autocomplete="off">
             <div class="busca row" ng-if="!hideInputSearch">
                 <div class="form-group col-sm-5" style="margin-bottom: 10px;">
                     <div class="fw-input-group input-group">

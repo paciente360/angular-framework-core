@@ -17,7 +17,7 @@
                 var headers = $scope.settings.headers;
                 $scope.tab = $scope.settings.tab;
                 $scope.filterdata = {};
-                $scope.tableData = {total_count:0, total_entries:0, currentpage:1};
+                $scope.tableData = {total_count:0, total_entries:0, currentpage:1, data:[]};
                 $scope.currentPage = 1;
                 $scope.perPage = headers.perPage || 15;
 
@@ -233,7 +233,12 @@
                     _scope.newDetail(headers);
                 }
 
-                $scope.filterTable = function(){
+                $scope.filterTable = function($this){
+
+                    if (!$this.filterForm.$valid) {
+                        return false;
+                    }
+
                     $scope.currentPage = 1;
                     $scope.refreshTable(true);
                 }
@@ -332,7 +337,6 @@
 
             },
             link: function (scope, $el) {
-
                 scope.headers = scope.settings.headers;
                 scope._fields = angular.copy(scope.headers.fields);
                 scope.fieldsFilter = [];
@@ -344,7 +348,7 @@
                     if (!field.filter)continue;
 
                     field.disabled = false;
-                    field.notnull = false;
+                    field.notnull = field.filter ? field.filter.required : false;
                     field.name = field.name;
 
                     if (field.customOptions.file){
@@ -399,6 +403,22 @@
                 if( $scope.field.toString && typeof($scope.field.toString)=="function" ){
                     $el.append($scope.field.toString($scope.data, $scope.getscope()))
                 }
+            }
+        }
+    }
+
+    module.directive('filterForm', filterForm);
+    filterForm.$inject = [];
+    function filterForm() {
+        return {
+            replace: false,
+            link: function (scope, $el) {
+                $($el).parsley({
+                    priorityEnabled: false,
+                    errorsContainer: function (el) {
+                        return el.$element.closest(".input-container");
+                    }
+                });
             }
         }
     }
