@@ -68,7 +68,7 @@
                             {{field.label}}
                         </span>
                     </th>
-                    <th class="editable actions" ng-if="headers.settings.edit || headers.settings.delete">
+                    <th class="editable actions" ng-if="headers.settings.edit || headers.settings.delete || headers.actions">
                         {{'letsfw.actions'|locale}}
                     </th>
                 </tr>
@@ -79,7 +79,7 @@
                         {{parseRecord(data,field)}}
                         <div ng-if="field.type=='custom'" data="data" field="field" getscope="getscope" fw-custom-field></div>
                     </td>
-                    <td class="text-right btn-column" ng-if="headers.settings.edit || headers.settings.delete">
+                    <td class="text-right btn-column" ng-if="headers.settings.edit || headers.settings.delete || headers.actions">
                         <div class="btn-group" role="group">
                             <button ng-repeat="act in headers.actions" ng-click="this[act.function](data)" type="button" class="btn btn-default" title="{{act.label}}">
                                 <span class="{{act.class}}"></span>
