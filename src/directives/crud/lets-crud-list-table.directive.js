@@ -194,6 +194,7 @@
                                 $scope.searching = false;
                                 $scope.tableData = response;
                                 $scope.tableData.currentPage = $scope.currentPage;
+                                $scope.$emit('refreshTable');
                             })
                         },function() {
                             $scope.tableData = {};
