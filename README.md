@@ -5,9 +5,9 @@ This repository was organized within the [AngularJS 1.4.1](https://docs.angularj
 
 Author: Lets Comunica
 
-E-mail: fabio@letscomunica.com.br
+E-mail: marlon@letscomunica.com.br
 
-**LAST VERSION: 0.0.20**
+**LAST VERSION: 1.0.0**
 
 Installation
 =====
@@ -15,7 +15,7 @@ Installation
 Install in you angular project:
 
 ```bash
-  npm install --save git+ssh://git@bitbucket.org/letscomunicadev/angular-framework-core.git#v0.0.20
+  npm install --save https://github.com/letsfullstack/angular-framework-core.git#v1.0.0
 ```
 
 Functionalities
@@ -37,7 +37,7 @@ Functionalities
     "label": "fieldLabel",
     "editable": true,
     "viewable": true,
-    -> "autocomplete": true,
+    "autocomplete": true,
     "quickAdd": [],
     "autocomplete_dependencies": [],
     "customOptions": []
@@ -57,27 +57,27 @@ Functionalities
     "label": "fieldLabel",
     "editable": true,
     "viewable": true,
-    -> "autocomplete": true,
+    "autocomplete": true,
     "quickAdd": [],
     "autocomplete_dependencies": [],
     "customOptions": {
-      -> "autocomplete_table": {
-      |   "table_name": "medicamentos",
-      |   "table_columns": [
-      |     {
-      |       "name": "nome_apresentacao",
-      |       "label": "Descrição do Produto"
-      |     },
-      |     {
-      |       "name": "tipo.label",
-      |       "label": "Tipo"
-      |     },
-      |     {
-      |       "name": "tarja.label",
-      |       "label": "Tarja"
-      |     }
-      |   ]
-      -> }
+    "autocomplete_table": {
+         "table_name": "medicamentos",
+         "table_columns": [
+           {
+             "name": "nome_apresentacao",
+             "label": "Descrição do Produto"
+           },
+           {
+             "name": "tipo.label",
+             "label": "Tipo"
+           },
+           {
+             "name": "tarja.label",
+             "label": "Tarja"
+           }
+         ]
+      }
     }
   }
   ```
@@ -88,7 +88,7 @@ Functionalities
   ```javascript
   {
     "name": "fieldName",
-    -> "type": "boolean",
+    "type": "boolean",
     "notnull": true,
     "length": null,
     "precision": 10,
@@ -98,9 +98,38 @@ Functionalities
     "autocomplete": false,
     "quickAdd": [],
     "autocomplete_dependencies": [],
-    "customOptions": []
+    "customOptions": [
+        "statusTrueText": "Yes",
+        "statusFalseText": "No",
+        "default": true
+    ]
   }
   ```
+
+## Help Info
+
+  Just set the *help* key as *field string* and you are good to go:
+  ```javascript
+  {
+    "name": "fieldName",
+    "type": "boolean",
+    "help":"This field is very important!",
+    "notnull": true,
+    "length": null,
+    "precision": 10,
+    "label": "fieldLabel",
+    "editable": true,
+    "viewable": true,
+    "autocomplete": false,
+    "quickAdd": [],
+    "autocomplete_dependencies": [],
+    "customOptions": [
+        "statusTrueText": "Yes",
+        "statusFalseText": "No",
+        "default": true
+    ]
+  }
+
 ## CNPJ
   Masked input for CNPJ.
 
@@ -108,7 +137,7 @@ Functionalities
   ```javascript
   {
     "name": "fieldName",
-    -> "type": "string",
+    "type": "string",
     "notnull": false,
     "length": 100,
     "precision": 10,
@@ -119,7 +148,7 @@ Functionalities
     "quickAdd": [],
     "autocomplete_dependencies": [],
     "customOptions": {
-      -> "cnpj": true
+      "cnpj": true
     }
   }
   ```
@@ -130,7 +159,7 @@ Functionalities
   ```javascript
   {
     "name": "fieldName",
-    -> "type": "string",
+    "type": "string",
     "notnull": false,
     "length": 100,
     "precision": 10,
@@ -141,7 +170,7 @@ Functionalities
     "quickAdd": [],
     "autocomplete_dependencies": [],
     "customOptions": {
-      -> "cpf": true
+       "cpf": true
     }
   }
   ```
@@ -152,7 +181,7 @@ Functionalities
   ```javascript
   {
     "name": "fieldName",
-    -> "type": "string",
+    "type": "string",
     "notnull": true,
     "length": null,
     "precision": 10,
@@ -163,7 +192,7 @@ Functionalities
     "quickAdd": [],
     "autocomplete_dependencies": [],
     "customOptions": {
-      -> "documento": true
+      "documento": true
     }
   }
   ```
@@ -174,7 +203,7 @@ Functionalities
   ```javascript
   {
     "name": "fieldName",
-    -> "type": "text",
+    "type": "text",
     "notnull": true,
     "length": null,
     "precision": 10,
@@ -185,7 +214,7 @@ Functionalities
     "quickAdd": false,
     "autocomplete_dependencies": [],
     "customOptions": {
-      -> "rich":true
+      "rich":true
     }
   }
   ```
@@ -196,7 +225,7 @@ Functionalities
   ```javascript
   {
     "name": "fieldName",
-    -> "type": "float",
+    "type": "float",
     "notnull": true,
     "length": null,
     "precision": 10,
@@ -207,7 +236,7 @@ Functionalities
     "quickAdd": [],
     "autocomplete_dependencies": [],
     "customOptions": {
-      -> "currency": true,
+      "currency": true,
     }
   }
   ```
@@ -218,7 +247,7 @@ Functionalities
   ```javascript
   {
     "name": "fieldName",
-    -> "type": "custom",
+    "type": "custom",
     "notnull": false,
     "length": null,
     "precision": null,
@@ -229,17 +258,17 @@ Functionalities
     "quickAdd": [],
     "autocomplete_dependencies": [],
     "customOptions": [],
-    -> "toString": function (model) {
-    |    var btn = $('<button class="btn btn-default" onclick=""><span class="glyphicon glyphicon-copy"></span></button>');
-    |    var messageWindow;
-    |    var corpo = model.attributes.corpo;
-    |    
-    |    btn.click(function () {
-    |        messageWindow = window.open("", "messageWindow", "width=600, height=400");
-    |        messageWindow.document.write("<pre>" + corpo + "</pre>");
-    |    });
-    |    return btn;
-    -> }
+    "toString": function (data) {
+        var btn = $('<button class="btn btn-default" onclick=""><span class="glyphicon glyphicon-copy"></span></button>');
+        var messageWindow;
+        var corpo = data.corpo;
+        
+        btn.click(function () {
+            messageWindow = window.open("", "messageWindow", "width=600, height=400");
+            messageWindow.document.write("<pre>" + corpo + "</pre>");
+        });
+        return btn;
+    }
   }
   ```
 ## Date
@@ -249,7 +278,7 @@ Functionalities
   ```javascript
   {
     "name": "fieldName",
-    -> "type": "date",
+    "type": "date",
     "notnull": true,
     "length": null,
     "precision": 10,
@@ -269,7 +298,7 @@ Functionalities
   ```javascript
   {
     "name": "lan_anexo",
-    -> "type": "string",
+    "type": "string",
     "notnull": true,
     "length": null,
     "precision": 10,
@@ -280,11 +309,12 @@ Functionalities
     "quickAdd": [],
     "autocomplete_dependencies": [],
     "customOptions": {
-      -> "dad": true,
-      |  "file": {
-      |    "container": "anexos",
-      |    "acceptedFiles": ".pdf"
-      -> }
+        "file":{
+            "container":"exames",
+            "preview":true,
+            "dad":true,
+            "acceptedFiles":["image/*"]
+        }
     }
   }
   ```
@@ -293,7 +323,7 @@ Functionalities
   ```javascript
   {
     "name": "fieldName",
-    -> "type": "string",
+    "type": "string",
     "notnull": true,
     "length": 100,
     "precision": 10,
@@ -304,7 +334,7 @@ Functionalities
     "quickAdd": [],
     "autocomplete_dependencies": [],
     "customOptions": {
-      -> "email": true
+      "email": true
     }
   }
   ```
@@ -315,7 +345,7 @@ Functionalities
   ```javascript
   {
     "name": "fieldName",
-    -> "type": "float",
+    "type": "float",
     "notnull": true,
     "length": null,
     "precision": 10,
@@ -335,32 +365,32 @@ Functionalities
   ```javascript
   {
     "name": "fieldName",
-    -> "type": "number",
+    "type": "number",
     "notnull": true,
     "length": null,
     "precision": 10,
     "label": "fieldName",
     "editable": true,
     "viewable": true,
-    -> "autocomplete": true,
+    "autocomplete": true,
     "quickAdd": [],
     "autocomplete_dependencies": [],
     "customOptions": {
-        -> "list":[
-        |    {"id":1, "label":"Janeiro"},
-        |    {"id":2, "label":"Fevereiro"},
-        |    {"id":3, "label":"Março"},
-        |    {"id":4, "label":"Abril"},
-        |    {"id":5, "label":"Maio"},
-        |    {"id":6, "label":"Junho"},
-        |    {"id":7, "label":"Julho"},
-        |    {"id":8, "label":"Agosto"},
-        |    {"id":9, "label":"Setembro"},
-        |    {"id":10, "label":"Outubro"},
-        |    {"id":11, "label":"Novembro"},
-        |    {"id":12, "label":"Dezembro"},
-        |  ],
-        -> "select":true
+        "list":[
+            {"id":1, "label":"Janeiro"},
+            {"id":2, "label":"Fevereiro"},
+            {"id":3, "label":"Março"},
+            {"id":4, "label":"Abril"},
+            {"id":5, "label":"Maio"},
+            {"id":6, "label":"Junho"},
+            {"id":7, "label":"Julho"},
+            {"id":8, "label":"Agosto"},
+            {"id":9, "label":"Setembro"},
+            {"id":10, "label":"Outubro"},
+            {"id":11, "label":"Novembro"},
+            {"id":12, "label":"Dezembro"},
+        ],
+        "select":true
     }
   }
   ```
@@ -371,7 +401,7 @@ Functionalities
   ```javascript
   {
     "name": "fieldName",
-    -> "type": "number",
+    "type": "number",
     "notnull": true,
     "length": null,
     "precision": 10,
@@ -391,7 +421,7 @@ Functionalities
   ```javascript
   {
     "name": "fieldName",
-    -> "type": "number",
+    "type": "number",
     "notnull": true,
     "length": null,
     "precision": 10,
@@ -402,10 +432,10 @@ Functionalities
     "quickAdd": [],
     "autocomplete_dependencies": [],
     "customOptions": {
-        -> "range": {
-        |    "min": 0,
-        |    "max": 10000
-        -> }
+        "range": {
+           "min": 0,
+           "max": 10000
+        }
     }
   }
   ```
@@ -416,7 +446,7 @@ Functionalities
   ```javascript
   {
     "name": "fieldName",
-    -> "type": "password",
+    "type": "password",
     "notnull": true,
     "length": null,
     "precision": 10,
@@ -436,7 +466,7 @@ Functionalities
   ```javascript
   {
     "name": "cor",
-    -> "type": "simplecolor",
+    "type": "simplecolor",
     "notnull": false,
     "length": null,
     "precision": 10,
@@ -447,7 +477,7 @@ Functionalities
     "quickAdd": [],
     "autocomplete_dependencies": [],
     "customOptions": {
-      -> colors: ['green', 'yellow', 'orange', 'red']
+      colors: ['green', 'yellow', 'orange', 'red']
     }
   }
   ```
@@ -456,7 +486,7 @@ Functionalities
   ```javascript
   {
     "name": "fieldName",
-    -> "type": "string",
+    "type": "string",
     "notnull": true,
     "length": null,
     "precision": 10,
@@ -469,14 +499,12 @@ Functionalities
     "customOptions": []
   }
   ```
-## Tags
-  I really didn't understand this functionality, fell free to discover and write about it.
 ## Textarea
   Just set the *type* key as *text* and you are good to go:
   ```javascript
   {
     "name": "fieldName",
-    -> "type": "text",
+    "type": "text",
     "notnull": true,
     "length": null,
     "precision": 10,
@@ -496,7 +524,7 @@ Functionalities
   ```javascript
   {
     "name": "fieldName",
-    -> "type": "time",
+    "type": "time",
     "notnull": true,
     "length": null,
     "precision": 10,
@@ -516,7 +544,7 @@ Functionalities
   ```javascript
   {
     "name": "lan_anexo",
-    -> "type": "string",
+    "type": "string",
     "notnull": true,
     "length": null,
     "precision": 10,
@@ -527,9 +555,9 @@ Functionalities
     "quickAdd": [],
     "autocomplete_dependencies": [],
     "customOptions": {
-      -> "file": {
-      |    "container": "anexos"
-      -> }
+      "file": {
+          "container": "anexos"
+      }
     }
   }
   ```
@@ -539,7 +567,7 @@ Updates
 
 Made a modification or added a new feature? Test it at least in one project before submiting a version. It still needs unit testing and CI with projects. After everything seems perfectly up-to-date, don't forget to UPDATE THE README file and only then run the following steps:
 
-1\. Commit and push your updates using Let's Bitbucket credentials
+1\. Commit and push your updates using Let's Github credentials
 
 2\. Change and commit a new tag version (always check and update the last version here and in package.json):
 
@@ -556,7 +584,7 @@ $ git push origin vX.X.X  # Version needs to be the same from commit
 4\. Run npm installation with the newest version:
 
 ```bash
-  npm install --save git+ssh://git@bitbucket.org/letscomunicadev/angular-framework-core.git#vX.X.X
+  bower install --save https://github.com/letsfullstack/angular-framework-core.git#vX.X.X
 ```
 
 Todo
@@ -575,3 +603,7 @@ History
 **v0.0.20**
 
 [09/06/18] Started repository
+
+**v1.0.0**
+
+[30/11/2020] Update Documentation
