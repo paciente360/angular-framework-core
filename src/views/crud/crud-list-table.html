@@ -29,7 +29,7 @@
                                 <i class="fa fa-times" ng-if="showBuscaAvancada" style="font-size:10px; position: absolute; bottom: 6px;"></i>
                             </button>
                         </span>
-                        <button type="submit" style="width: 0px; opacity: 0"></button>
+                        <button class="btn-hide" type="submit" style="width: 0px; opacity: 0"></button>
                     </div>
                 </div>
                 <div class="clearfix"></div>
@@ -40,7 +40,7 @@
                     <label for="{{field.name}}" class="control-label" style="font-size:12px; margin-bottom: 0px;font-weight: 600">{{field.label}}</label>
                     <fw-input fw-data="filterdata"></fw-input>
                 </div>
-                <div class="form-group col-sm-2">
+                <div class="form-group col-sm-2 btn-submit">
                     <label class="control-label" style="font-size:12px; margin-bottom: 0px;">&nbsp;</label>
                     <div>
                         <button type="submit" class="btn btn-primary"><span class="icon fa fa-search"></span>{{'letsfw.search'|locale}}</button>

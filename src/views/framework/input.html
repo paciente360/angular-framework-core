@@ -48,7 +48,7 @@
 		ng-if="field.type == 'string' && (!field.customOptions.file && !field.customOptions.email && !field.autocomplete)">
 		<input ng-model-options="{fieldInfo: field}" name="{{field.name}}" type="text" id="{{field.name}}" fw-dynamic
 			ng-required="field.notnull" ng-model="data[field.name]" size="{{field.length}}" ng-disabled="field.disabled"
-			class="main-input form-control" autocomplete="off" />
+			class="main-input form-control" placeholder="{{field.placeholder}}" autocomplete="off" />
 		<ul class="parsley-errors-list filled" ng-if="field.error">
 			<li class="parsley-required">{{field.error}}</li>
 		</ul>
