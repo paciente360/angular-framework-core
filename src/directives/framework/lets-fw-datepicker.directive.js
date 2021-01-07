@@ -19,7 +19,7 @@
                 var wrapper = angular.element(
                     '<div class="input-group">' +
                     '<span class="input-group-btn">' +
-                    '<button type="button" class="btn btn-default" ng-click="' + controllerName + '.openPopup($event)"><i class="glyphicon glyphicon-calendar"></i></button>' +
+                    '<button type="button" class="btn btn-default bcalendar" ng-click="' + controllerName + '.openPopup($event)"><i class="glyphicon glyphicon-calendar"></i></button>' +
                     '</span>' +
                     '</div>');
 
@@ -84,9 +84,10 @@
                     });
 
 
-                    // element.find('input').focus(function (e) {
-                    //     scope.vm.openPopup(e);
-                    // });
+                    element.find('input').click(function (e) {
+                        element.find('button.bcalendar').click()
+                        // scope.vm.openPopup(e);
+                    });
 
                     scope.datepickerOptions = options;
 
