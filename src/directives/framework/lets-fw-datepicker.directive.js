@@ -19,7 +19,7 @@
                 var wrapper = angular.element(
                     '<div class="input-group">' +
                     '<span class="input-group-btn">' +
-                    '<button type="button" class="btn btn-default bcalendar" ng-click="' + controllerName + '.openPopup($event)"><i class="glyphicon glyphicon-calendar"></i></button>' +
+                    '<button type="button" class="btn btn-default bcalendar" ng-disabled="field.disabled" ng-click="' + controllerName + '.openPopup($event)"><i class="glyphicon glyphicon-calendar"></i></button>' +
                     '</span>' +
                     '</div>');
 
