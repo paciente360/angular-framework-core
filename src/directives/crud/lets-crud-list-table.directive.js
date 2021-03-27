@@ -177,6 +177,10 @@
                         str.push("by="+$scope.sort.order);
                         queries.order = $scope.sort.order;
                     }
+                    
+                    if(headers.updateLocation===false){
+                        updateLocation = false;
+                    }
 
                     if (updateLocation && !$scope.tab){
                         $state.transitionTo($state.$current.name, {filter: str.join("&")}, {
