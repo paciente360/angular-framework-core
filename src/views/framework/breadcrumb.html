@@ -1,10 +1,12 @@
 <div class="col-sm-9 col-lg-10">
-    <ol class="breadcrumb">
-      <li ><a ui-sref="app.dashboard">Home</a></li>
-      <li class="active">
-        <a ng-click="goToList()">{{headers.label}}
-          </a>
-      </li>
-    </ol>
-  </div>
-  
+	<ol class="breadcrumb">
+		<li><a ui-sref="app.dashboard">Home</a></li>
+		<li class="active">
+			<a ng-click="goToList()">{{headers.label}}
+			</a>
+		</li>
+	</ol>
+	<div class="subtitle">
+		{{headers.subtitle}}
+	</div>
+</div>
