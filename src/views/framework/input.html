@@ -146,7 +146,7 @@
 
 				<div
 					class="drag-box"
-					ng-if="field.customOptions.file.dad && !f.alreadySent"
+					ng-if="field.customOptions.file.dad && !f.alreadySent && !field.disabled"
 					ngf-drop="dropFile($file, $invalidFiles)"
 					style="width: 100%; height: 100%; display:flex; justify-content: center; align-items: center;"
 					accept="{{ field.customOptions.file.acceptedFiles ? field.customOptions.file.acceptedFiles.join(',')  : 'all'}}"
@@ -185,7 +185,7 @@
 				
 				<span class="input-group-btn" style="width: auto;">
 					<button
-						ng-disabled="f.uploading"
+						ng-disabled="f.uploading || field.disabled"
 						ng-if="!f.alreadySent || field.customOptions.only_upload == true"
 						type="file"
 						ngf-accept="'{{ field.customOptions.file.acceptedFiles ? field.customOptions.file.acceptedFiles.join(',')  : 'all'}}'"
@@ -198,7 +198,7 @@
 					</button>
 
 					<button
-						ng-if="f.alreadySent && !field.customOptions.only_upload"
+						ng-if="f.alreadySent && !field.customOptions.only_upload && !field.disabled"
 						ng-click="removeFile()"
 						type="button"
 						class="btn btn-default">
@@ -239,11 +239,27 @@
 	<!-- Boolean -->
 	<div ng-if="field.type == 'boolean'">
 		<label for="{{field.name}}">
-			<toggle id="{{field.name}}" ng-model-options="{fieldInfo: field}" ng-model="data[field.name]"
-				name="{{field.name}}" on="{{field.customOptions.statusTrueText}}"
-				off="{{field.customOptions.statusFalseText}}" size="btn-sm" ng-if="!field.disabled"></toggle>
-			<span ng-if="field.disabled">{{$parent.data[field.name] ? field.customOptions.statusTrueText :
-        field.customOptions.statusFalseText}}</span>
+			<toggle
+				id="{{field.name}}"
+				ng-model-options="{fieldInfo: field}"
+				ng-model="data[field.name]"
+				name="{{field.name}}"
+				on="{{field.customOptions.statusTrueText}}"
+				off="{{field.customOptions.statusFalseText}}"
+				size="btn-sm"
+				ng-if="!field.disabled">
+			</toggle>
+
+			<div ng-if="field.disabled">
+				<div class="toggle btn btn-default btn-sm" ng-class="{'off':!$parent.data[field.name]}" style="width: 118px; height: 32px;">
+					<div class="toggle-group">
+						<label class="btn disabled btn-primary btn-sm toggle-on">{{field.customOptions.statusTrueText}}</label>
+						<label class="btn disabled active btn-default btn-sm toggle-off">{{field.customOptions.statusFalseText}}</label>
+						<span class="btn btn-default btn-sm toggle-handle"></span>
+					</div>
+				</div>
+			</div>
+			
 		</label>
 	</div>
 
