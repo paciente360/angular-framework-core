@@ -15,9 +15,27 @@
         }
         
         $scope.submit = function () {
-            if (this.crudForm.$valid) {
-                $modalInstance.close($scope.data);
+
+            // Validade Form
+            if (!this.crudForm.$valid) {
+                return false;
             }
+
+            function nextBefore(){
+                $modalInstance.close($scope.data);
+
+                function nextAfter(){}
+                $scope.$emit('after save', nextAfter, $scope.data);
+                if (!$scope.$$listeners["after save"]){
+                    nextAfter();
+                }
+            }
+
+            $scope.$emit('before save', nextBefore);
+            if (!$scope.$$listeners["before save"]){
+                nextBefore();
+            }
+
         };
 
         $rootScope.$on('cancel-modal', function (event, res) {
