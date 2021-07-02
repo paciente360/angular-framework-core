@@ -12,7 +12,6 @@
         'ui.event',
         'ngFileUpload',
         'moment-filter',
-        'checklist-model',
         'ui.toggle',
         'ngSanitize',
         'colorpicker-dr',
