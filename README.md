@@ -1,21 +1,40 @@
-Lets Comunica Angular Framework Core
+Angular Framework Core
 =============
 
-This repository was organized within the [AngularJS 1.4.1](https://docs.angularjs.org/api) framework. This repo covers all the core functionalities that our company front-end projects basically needs.
+- [Instalação](#instalação)
+- [Headers](#headers)
+  - [Settings](#settings)
+  - [Fields](#fields)
+  - [Tabs](#tabs)
+- [Modules](#modules)
+  - [Controllers](#controllers)
+    - [AutoCompleteController](#autocompletecontroller) 
+      - [Events](#crudcontroller-events)  
+        - [autocomplete-select](#autocomplete-select)
+    - [CRUDController](#crudcontroller)
+      - [Events](#crudcontroller-events)
+        - [Create grid](#create-grid)
+    - [CRUDEditController](#crudeditcontroller)
+      - [Include HTML](#include-html)
+        - [Before Form](#before-form)
+        - [After Form](#after-form) 
+      - [Events](#crudeditcontroller-events)
+        - [Open modal tab](#open-modal-tab)
+        - [Create grid tab](#create-grid-tab)
+        - [Data new](#data-new)
+        - [Data loaded](#data-loaded)
+        - [Data new detail](#data-new-detail)
+        - [Data loaded detail](#data-loaded-detail)
+        - [Before save](#before-save)
+        - [After save](#after-save)
+        - [Error save](#error-save)
+        - [Refresh table](#refresh-table)
 
-Author: Lets Comunica
 
-E-mail: marlon@letscomunica.com.br
-
-**LAST VERSION: 1.0.0**
-
-Installation
-=====
-
-Install in you angular project:
+## Instalação
 
 ```bash
-  npm install --save https://github.com/letsfullstack/angular-framework-core.git#v1.0.0
+  bower install --save https://github.com/paciente360/angular-framework-core.git#1.0.1
 ```
 
 Functionalities
@@ -41,44 +60,6 @@ Functionalities
     "quickAdd": [],
     "autocomplete_dependencies": [],
     "customOptions": []
-  }
-  ```
-## Autocomplete Table
-  Same of autocomplete but with tables.
-
-  Set the autocomplete key as true and use *autocomplete_table* on customOptions. It expects 'table_name' and 'table_columns' as keys:
-  ```javascript
-  {
-    "name": "fieldName",
-    "type": "string",
-    "notnull": true,
-    "length": null,
-    "precision": 10,
-    "label": "fieldLabel",
-    "editable": true,
-    "viewable": true,
-    "autocomplete": true,
-    "quickAdd": [],
-    "autocomplete_dependencies": [],
-    "customOptions": {
-    "autocomplete_table": {
-         "table_name": "medicamentos",
-         "table_columns": [
-           {
-             "name": "nome_apresentacao",
-             "label": "Descrição do Produto"
-           },
-           {
-             "name": "tipo.label",
-             "label": "Tipo"
-           },
-           {
-             "name": "tarja.label",
-             "label": "Tarja"
-           }
-         ]
-      }
-    }
   }
   ```
 ## Boolean
@@ -129,6 +110,7 @@ Functionalities
         "default": true
     ]
   }
+  ```
 
 ## CNPJ
   Masked input for CNPJ.
@@ -459,28 +441,6 @@ Functionalities
     "customOptions": []
   }
   ```
-## Simplecolor
-  A simple color picker.
-
-  Set the *type* key as *simplecolor* and fill *colors* array with the desired colors:
-  ```javascript
-  {
-    "name": "cor",
-    "type": "simplecolor",
-    "notnull": false,
-    "length": null,
-    "precision": 10,
-    "label": "Sinalização",
-    "editable": true,
-    "viewable": false,
-    "autocomplete": false,
-    "quickAdd": [],
-    "autocomplete_dependencies": [],
-    "customOptions": {
-      colors: ['green', 'yellow', 'orange', 'red']
-    }
-  }
-  ```
 ## String
   Just set the *type* key as *string* and you are good to go:
   ```javascript
@@ -561,49 +521,3 @@ Functionalities
     }
   }
   ```
-
-Updates
-=====
-
-Made a modification or added a new feature? Test it at least in one project before submiting a version. It still needs unit testing and CI with projects. After everything seems perfectly up-to-date, don't forget to UPDATE THE README file and only then run the following steps:
-
-1\. Commit and push your updates using Let's Github credentials
-
-2\. Change and commit a new tag version (always check and update the last version here and in package.json):
-
-```bash
-$ git tag -a vX.X.X -m "version_message"
-```
-
-3\. Push the new tag version to remote repository:
-
-```bash
-$ git push origin vX.X.X  # Version needs to be the same from commit
-```
-
-4\. Run npm installation with the newest version:
-
-```bash
-  bower install --save https://github.com/letsfullstack/angular-framework-core.git#vX.X.X
-```
-
-Todo
-----------
-1\. Convert ng-includes from URL images to directives (in order to access templates from inside this module)
-
-2\. Start gulp automation to render all src files to single lets-angular-framework-core.module.js in a minified version
-
-3\. Separate input types in different directives
-
-4\. Isolate scope to vm and change all scope parents and childs access
-
-History
-----------
-
-**v0.0.20**
-
-[09/06/18] Started repository
-
-**v1.0.0**
-
-[30/11/2020] Update Documentation
