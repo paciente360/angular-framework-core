@@ -49,11 +49,33 @@
                 $scope.upload = function (file, errFiles) {
 
                     if(errFiles.length > 0 ){
+                        console.log(errFiles);
+                        
                         $scope.errFile = errFiles && errFiles[0];
                         errFiles.forEach(function(err){
                             if (err.$error=="pattern"){
-                                $scope.field.error = "O formato do arquivo não é permitido."; 
+                                $scope.field.error = "O formato do arquivo não é permitido.";
+                                
+                            }else if (err.$error=="minSize"){
+                                $scope.field.error = "O tamanho do arquivo é menor que o permitido. ("+err.$errorParam+")"; 
+                            
+                            }else if (err.$error=="maxSize"){
+                                $scope.field.error = "O tamanho do arquivo é maior que o permitido. ("+err.$errorParam+")"; 
+
+                            }else if (err.$error=="minWidth"){
+                                $scope.field.error = "A largura do arquivo é menor que o tamanho permitido. ("+err.$errorParam+"px)"; 
+
+                            }else if (err.$error=="maxWidth"){
+                                $scope.field.error = "A largura do arquivo é maior que o tamanho permitido. ("+err.$errorParam+"px)"; 
+                            
+
+                            }else if (err.$error=="minHeight"){
+                                $scope.field.error = "A altura do arquivo é menor que o tamanho permitido. ("+err.$errorParam+"px)"; 
+
+                            }else if (err.$error=="maxHeight"){
+                                $scope.field.error = "A altura do arquivo é maior que o tamanho permitido. ("+err.$errorParam+"px)"; 
                             }
+
                         });
                     }
 
