@@ -151,6 +151,8 @@
 					style="width: 100%; height: 100%; display:flex; justify-content: center; align-items: center;"
 					accept="{{ field.customOptions.file.acceptedFiles ? field.customOptions.file.acceptedFiles.join(',')  : 'all'}}"
 					ngf-pattern="'{{ field.customOptions.file.acceptedFiles ? field.customOptions.file.acceptedFiles.join(',')  : ''}}'"
+					ngf-validate="{{field.customOptions.file.validate}}"
+					ngf-resize="{{field.customOptions.file.resize}}"
 					ngf-select="upload($file, $invalidFiles)">Arraste e solte o arquivo aqui.
 				</div>
 
@@ -190,6 +192,8 @@
 						type="file"
 						ngf-accept="'{{ field.customOptions.file.acceptedFiles ? field.customOptions.file.acceptedFiles.join(',')  : 'all'}}'"
 						ngf-pattern="'{{ field.customOptions.file.acceptedFiles ? field.customOptions.file.acceptedFiles.join(',')  : ''}}'"
+						ngf-validate="{{field.customOptions.file.validate}}"
+						ngf-resize="{{field.customOptions.file.resize}}"
 						ngf-select="upload($file, $invalidFiles)"
 						class="btn btn-default">
 						<i ng-class="f.uploading ? 'fa-circle-o-notch fa-spin' : 'fa-folder-open-o'" class="fa"></i>
