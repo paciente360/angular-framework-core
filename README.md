@@ -303,18 +303,18 @@ Possiveis parâmetros de configuração que podem ser fornecidos para headers.js
 
 				// Custom
 				{
-                    "name": "cadastrado",
-                    "type": "custom", // Tipo do campo (string)
-                    "notnull": false,
-                    "label": "Cadastrado em",
-                    "editable": false,
-                    "viewable": true,
-                    "toString": function(data){ // Função executada para exibição do campos, o retorno pode ser string ou um html
-                        if(data && data.createdAt){
-                            return moment(data.createdAt).format('DD/MM/YYYY HH:mm');
-                        }
-                    }
-                }
+         "name": "cadastrado",
+          "type": "custom", // Tipo do campo (string)
+          "notnull": false,
+          "label": "Cadastrado em",
+          "editable": false,
+          "viewable": true,
+          "toString": function(data){ // Função executada para exibição do campos, o retorno pode ser string ou um html
+              if(data && data.createdAt){
+                  return moment(data.createdAt).format('DD/MM/YYYY HH:mm');
+              }
+          }
+        }
 			],
 
 			// Quando true, é obrigatório a propriedade "tab" no field onde o valor será: ['fixed' ou index da aba criada no main_tabs]
@@ -392,9 +392,9 @@ Possiveis parâmetros e eventos utlizados nos controladores
 		$scope.$on('create:grid',function(evt, scope){
 			// Função definida no headers
 			scope.clonar = function(data){
-                console.log(data); // Dados da linha especifica
-            }
-        });
+            console.log(data); // Dados da linha especifica
+        }
+    });
 
 	});
 
@@ -485,14 +485,14 @@ Possiveis parâmetros e eventos utlizados nos controladores
 				// Rota principal | Ex: app.carros
 				main: {
 					enable: false, // Ativa ou desabilita a rota
-                    controller: 'CarroMainController' // Nome do controlador
+          controller: 'CarroMainController' // Nome do controlador
 					templateUrl: 'app/modules/carros/carros-main.html', // Template utilizado na rota
-                },
+        },
 
 				// Rota de consulta | Ex: app.carros.list
 				list: {
-                    controller: 'CarroListController'
-                },
+          controller: 'CarroListController'
+        },
 
 				// Rota edição | Ex: app.carros.edit
 				edit: {
