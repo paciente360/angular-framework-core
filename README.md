@@ -177,7 +177,10 @@ Possiveis parâmetros de configuração que podem ser fornecidos para headers.js
           "length": null,
           "label": "Conteudo",
           "editable": false,
-          "viewable": false
+          "viewable": false,
+          "customOptions": {
+            "rows": 5 // Define a altura do input
+          }
         },
 
         // Ckeditor
