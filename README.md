@@ -57,7 +57,7 @@ Possiveis parâmetros de configuração que podem ser fornecidos para headers.js
           "name": "id", // Nome do campo no backend
           "type": "number", // Tipo do campo (number)
           "size": 2, // Tamanho do input no formulário de cadastro
-          "filter": { "size": 2, "customClass": "class-input", "require":false }, // Exibe o campo nos filtros / Tamanho do input / Add Nova classe
+          "filter": { "size": 2, "customClass": "class-input", "required":false }, // Exibe o campo nos filtros / Tamanho do input / Add Nova classe
           "notnull": true, // Seta de o campo é obrigatório
           "label": "ID", // Nome legivel do campo
           "editable": false, // Exibe na tela de cadastro
