@@ -20,17 +20,20 @@
                 list: {
                     enable: true,
                     templateUrl: 'lets/views/crud/crud-list.html',
-                    controller: 'CRUDController'
+                    controller: 'CRUDController',
+                    resolve: {}
                 },
                 edit: {
                     enable: true,
                     templateUrl: 'lets/views/crud/crud-edit.html',
-                    controller: 'CRUDEditController'
+                    controller: 'CRUDEditController',
+                    resolve: {}
                 },
                 new: {
                     enable: true,
                     templateUrl: 'lets/views/crud/crud-edit.html',
-                    controller: 'CRUDEditController'
+                    controller: 'CRUDEditController',
+                    resolve: {}
                 }
             };
 
@@ -43,12 +46,12 @@
                     templateUrl: options.main.templateUrl,
                     controller: options.main.controller,
                     resolve: {
-                    id: ['$stateParams', function ($stateParams) {
-                        return $stateParams.id;
-                    }],
-                    module: function () {
-                        return settings.modelName;
-                    }
+                        id: ['$stateParams', function ($stateParams) {
+                            return $stateParams.id;
+                        }],
+                        module: function () {
+                            return settings.modelName;
+                        }
                     }
                 });
             }
@@ -57,21 +60,24 @@
                 this.state('app.'+settings.route+'.list', {
                     url: '?filter',
                     templateUrl: options.list.templateUrl,
-                    controller: options.list.controller
+                    controller: options.list.controller,
+                    resolve: options.list.resolve
                 });
             }
             if (options.new.enable) {
                 this.state('app.'+settings.route+'.new', {
                     url: '/new?filter',
                     templateUrl: options.new.templateUrl,
-                    controller: options.new.controller
+                    controller: options.new.controller,
+                    resolve: options.list.resolve
                 });
             }
             if (options.edit.enable) {
                 this.state('app.'+settings.route+'.edit', {
                     url: '/:id/edit?filter',
                     templateUrl: options.edit.templateUrl,
-                    controller: options.edit.controller
+                    controller: options.edit.controller,
+                    resolve: options.list.resolve
                 });
             }
         }
