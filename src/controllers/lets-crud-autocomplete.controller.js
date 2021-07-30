@@ -52,8 +52,10 @@
 			// Callback Continue
 			var callback = function (options) {
 
+				var isAdd = !Array.isArray(field.quickAdd) && typeof(field.quickAdd)=="object";
+
 				var exs = options.length>0;
-				if (options.length==0){
+				if (options.length==0 && !isAdd){
 					options.unshift({ id: null, label: locale.translate('letsfw.no_record_found') });
 				}
 
@@ -66,8 +68,9 @@
 					}
 				}
 
-				if (field.quickAdd === true && val != '[blank]') {
-					options.push({ id: -1, label: 'Adicionar novo: ' + val });
+				if (isAdd && val != '[blank]' && !exs) {
+					var _lbl = "<p><i class='fa fa-plus'></i> "+(field.quickAdd.label || "Cadastrar")+"</p>"+decodeURIComponent(val);
+					options.push({ id:null, label: _lbl, quickAdd:true, value:decodeURIComponent(val)});
 				}
 
 				deferred.resolve(options);
@@ -127,6 +130,10 @@
             } else {
                 this.data = _data;
             }
+
+			if ($item.quickAdd){
+				return $scope.$emit('autocomplete-quickAdd-' + this.field.name, {scope:$scope, value:$item.value });
+			}
 
 			$scope.$emit('autocomplete-select-' + this.field.name, {scope:$scope, value:$item });
 

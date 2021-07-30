@@ -353,6 +353,7 @@
                     if (!field.filter)continue;
 
                     field.disabled = false;
+                    field.quickAdd = false;
                     field.notnull = field.filter ? field.filter.required : false;
                     field.name = field.name;
 
