@@ -12,9 +12,9 @@
                 "es":"Guardar"
             },
             "cancel":{
-                "pt-br":"Cancelar",
-                "en":"Cancel",
-                "es":"Cancelar"
+                "pt-br":"Voltar",
+                "en":"Return",
+                "es":"Regresar"
             },
             "ok":{
                 "pt-br":"Ok",
