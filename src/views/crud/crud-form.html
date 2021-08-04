@@ -59,10 +59,10 @@
     <div class="form-actions">
         <div class="row">
             <div class="col-sm-offset-4 col-sm-7">
-                <button ng-if="!headers.disabled" type="submit" class="btn btn-big btn-primary" ng-class="{'disabled': loading_http_request}">
-                    <span class="icon fa fa-floppy-o"></span>{{'letsfw.save'|locale}}</button>
                 <button type="button" class="btn btn-big btn-inverse" ng-click="cancel()">
                     <span class="icon fa fa-arrow-left"></span>{{'letsfw.cancel'|locale}}</button>
+                <button ng-if="!headers.disabled" type="submit" class="btn btn-big btn-primary" ng-class="{'disabled': loading_http_request}">
+                    <span class="icon fa fa-floppy-o"></span>{{'letsfw.save'|locale}}</button>
             </div>
         </div>
     </div>
