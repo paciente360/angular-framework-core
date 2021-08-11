@@ -47,8 +47,8 @@
                     parentScope:parentScope
                 },
                 size: 'lg',
-                backdrop: 'static',
-                keyboard: false,
+                backdrop: headers.backdrop ? true : 'static',
+                keyboard: !!headers.backdrop,
                 windowClass: headers.modal_id ? 'modal-'+headers.modal_id : ''
             });
         };
