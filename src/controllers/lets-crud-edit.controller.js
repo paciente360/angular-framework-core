@@ -212,6 +212,10 @@
             var $_scope = $this;
             var _data = $_scope.data;
             
+            if ($this.crudForm.loading_http_request || $_scope.loading_http_request) {
+                return false;
+            }
+            $this.crudForm.loading_http_request = true;
 
             _.each($_scope.headers.fields, function (field, key) {
                 field.error = undefined;
@@ -260,10 +264,10 @@
             
             function nextBefore(error_) {
                 
-                $_scope.loading_http_request = true;
+                $_scope.loading_http_request = $this.crudForm.loading_http_request = true;
 
                 if(error_) {
-                    $_scope.loading_http_request = false;
+                    $_scope.loading_http_request = $this.crudForm.loading_http_request = false;
                     ngToast.warning( error_.message ? error_.message : "Confira seu formulário");
                     return false;
                 }
@@ -296,8 +300,6 @@
                 }
 
                 response.then(function (resp) {
-                    $_scope.loading_http_request = false;
-
                     function nextAfter(){
                         if (detail){
                             $rootScope.$broadcast('refreshGRID');
@@ -312,7 +314,7 @@
 
                 }, function errorCallback(error) {
                     var messages = [];
-                    $_scope.loading_http_request = false;
+                    $_scope.loading_http_request = $this.crudForm.loading_http_request = false;
                     
                     function findLabel(name) {
                         for (var _x in $_scope.headers.fields) {
