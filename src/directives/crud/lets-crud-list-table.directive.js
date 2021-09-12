@@ -90,11 +90,12 @@
                             }
                         }
                     }else if (field.type == 'float' && field.customOptions && field.customOptions.currency) {
-                        var rawData = parseFloat(record[field.name]);                                
-                        var rawData = rawData.toFixed(2).split('.');
-                        rawData[0] = "R$ " + rawData[0].split(/(?=(?:...)*$)/).join('.');
-                        return rawData.join(',');
-                        
+                        if (record[field.name]){
+                            var rawData = parseFloat(record[field.name]);                                
+                            var rawData = rawData.toFixed(2).split('.');
+                            rawData[0] = "R$ " + rawData[0].split(/(?=(?:...)*$)/).join('.');
+                            return rawData.join(',');
+                        }
                     }else{
                         if (record[field.name]!==null && record[field.name]!==undefined){
                             return record[field.name];
