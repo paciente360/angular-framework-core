@@ -297,7 +297,7 @@ Possiveis parâmetros de configuração que podem ser fornecidos para headers.js
               "preview": true, // Exibe um preview da imagem carregada
               "dad": true, // Seta o campos como drag and drop
               "resize": { width: 100, height: 100, centerCrop: true },
-              "validade": { size: { max: '20MB', min: '10B' }, height: { max: 12000 }, width: { max: 12000 } },
+              "validate": { size: { max: '20MB', min: '10B' }, height: { max: 12000 }, width: { max: 12000 } },
               "acceptedFiles": ["image/*"]
               // https://github.com/danialfarid/ng-file-upload/blob/master/README.md#full-reference
             }
