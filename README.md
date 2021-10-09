@@ -8,7 +8,7 @@ Angular Framework Core
 # Instalação
 
 ```bash
-  bower install --save https://github.com/paciente360/angular-framework-core.git#1.0.2
+  bower install --save https://github.com/paciente360/angular-framework-core.git#1.0.5
 ```
 
 # Headers

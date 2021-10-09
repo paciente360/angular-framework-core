@@ -72,6 +72,9 @@
                             else if (field.customOptions.timestamp) {
                                 return moment(record[field.name]).format('L LTS');
                             }
+                            else if (field.customOptions.format) {
+                                return moment(record[field.name]).format(field.customOptions.format);
+                            }
                             else {
                                 return moment(record[field.name]).format('L');
                             }
@@ -140,13 +143,9 @@
                                    queries["filter["+field.name+"]"] = $scope.getDateFormated($scope.filterdata[field.name])
                                 }
 
-                                if(field.autocomplete && !field.customOptions.multiselect){
+                                if(field.autocomplete){
                                     queries["filter["+field.name+"_label]"] = $scope.filterdata[field.name+".label"].label;
                                     str.push(field.name+"_label="+queries["filter["+field.name+"_label]"]);
-                                }
-
-                                if (field.autocomplete && field.customOptions.multiselect){
-                                   queries["filter["+field.name+"]"] = $scope.filterdata[field.name];
                                 }
 
                                 str.push(field.name+"="+queries["filter["+field.name+"]"]);
@@ -220,18 +219,24 @@
                 };
 
                 $scope.delete = function (row) {
-                    var _confirm = window.confirm(locale.translate('letsfw.message_delete'));
-                    if (_confirm) {
-                        if($scope.tab){
-                            var _scope = $scope.settings.getscope();
-                            _scope.deleteDetail($scope.settings.url, row);
-
-                        }else{
-                            $scope.resource.customDELETE(row.id).then(function () {
-                                $scope.refreshTable();
-                            });
+                    $window.customConfirm(
+                        locale.translate('letsfw.message_delete'),
+                        locale.translate('letsfw.ok'),
+                        locale.translate('letsfw.cancelar'),
+                        function(_confirm){
+                            if(_confirm){
+                                if($scope.tab){
+                                    var _scope = $scope.settings.getscope();
+                                    _scope.deleteDetail($scope.settings.url, row);
+        
+                                }else{
+                                    $scope.resource.customDELETE(row.id).then(function () {
+                                        $scope.refreshTable();
+                                    });
+                                }
+                            }
                         }
-                    }
+                    );
                 };
 
                 $scope.newDetail = function(){
@@ -362,11 +367,7 @@
                         delete field.customOptions.file;
                     }
 
-                    if(field.customOptions && field.customOptions.multiselect){
-                        field.type = "multiselect"
-                        field.autocomplete = false;
-
-                    }else if (field.type=="text"){
+                    if (field.type=="text"){
                         field.type = "string";
 
                     }else if (field.type=="boolean"){

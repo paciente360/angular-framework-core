@@ -1,6 +1,6 @@
 {
   "name": "lets-angular-framework-core",
-  "version": "1.0.2",
+  "version": "1.0.5",
   "description": "Core Module for Lets Angular Framework Dependencies",
   "authors": [
     "Lets Comunica"
@@ -42,14 +42,11 @@
     "angular-moment-filter": "*",
     "moment-duration-format": "^2.2.1",
     "angular-bootstrap-toggle": "^0.1.3",
-    "swangular": "^1.4.3",
-    "angular-bootstrap-colorpicker": "^3.0.32",
-    "angularjs-dropdown-multiselect": "^1.11.8"
+    "swangular": "^1.4.3"
   },
   "devDependencies": {},
   "main": [
-    "./dist/lets.min.js",
-    "./dist/lets.min.css"
+    "./dist/lets.min.js"
   ],
   "ignore": [],
   "keywords": [

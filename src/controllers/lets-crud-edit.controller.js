@@ -3,7 +3,7 @@
 
     var module = angular.module('letsAngular');
 
-    module.controller('CRUDEditController', function ($scope, $controller, Restangular, $stateParams, $timeout, module, $state, $rootScope, ngToast, $http, Upload, fwModalService, $window, locale) {
+    module.controller('CRUDEditController', function ($scope, $controller, Restangular, $stateParams, $timeout, module, $state, $rootScope, ngToast, $http, Upload, fwModalService, $window, swangular, locale) {
         $controller('AutoCompleteController', {$scope:$scope});
 
         $scope.data = {};
@@ -284,6 +284,8 @@
                         }
                     });
                 }
+
+                delete $scope.data.createdAt;
                 
                 if (detail){
                     if (!$scope.data.id) {
@@ -489,10 +491,34 @@
         };
 
         $scope.deleteDetailData = function (detail_data, detail_key) {
-            if (window.confirm(locale.translate('letsfw.message_delete'))) {
-                this.data[detail_key].splice(this.data[detail_key].indexOf(detail_data), 1);
-            }
+            var $this = this;
+            $window.customConfirm(
+                locale.translate('letsfw.message_delete'),
+                locale.translate('letsfw.ok'),
+                locale.translate('letsfw.cancelar'),
+                function(_confirm){
+                    if(_confirm){
+                        $this.data[detail_key].splice(this.data[detail_key].indexOf(detail_data), 1);
+                    }
+                }
+            );
         };
+
+        $window.customConfirm = function(msg, _true, _false, cb){
+            swangular.confirm(null,{
+                html:msg,
+                title:"",
+                type: 'warning',
+                showCancelButton:true,
+                confirmButtonText: _true,
+                cancelButtonText: _false,
+                reverseButtons: true,
+            }).then(function(result){
+                if ("function" == typeof cb){
+                    cb(!!result.value)
+                }
+            });
+        }
 
     });
 

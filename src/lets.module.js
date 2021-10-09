@@ -14,11 +14,8 @@
         'moment-filter',
         'ui.toggle',
         'ngSanitize',
-        'colorpicker-dr',
         'ckeditor',
-        'swangular',
-        'colorpicker.module',
-        'angularjs-dropdown-multiselect'
+        'swangular'
     ]);
 
     // ----------------------------

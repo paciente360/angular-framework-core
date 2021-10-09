@@ -54,22 +54,6 @@
 		</ul>
 	</div>
 
-	<!-- Colorpicker -->
-	<div
-		ng-if="field.type == 'colorpicker' && (!field.customOptions.file && !field.customOptions.email && !field.autocomplete)">
-		<input ng-model-options="{fieldInfo: field}" name="{{field.name}}" type="text" id="{{field.name}}" fw-dynamic
-			ng-required="field.notnull" ng-model="data[field.name]" size="{{field.length}}" ng-disabled="field.disabled"
-			class="main-input form-control" autocomplete="off" colorpicker />
-	</div>
-
-	<!-- Simplecolor -->
-	<div ng-if="field.type == 'simplecolor'">
-		<input ng-model-options="{fieldInfo: field}" color-picker color-me="true" name="{{field.name}}" type="text"
-			id="{{field.name}}" set-colors="{{field.customOptions.colors}}" fw-dynamic ng-required="field.notnull"
-			ng-model="data[field.name]" size="{{field.length}}" ng-disabled="field.disabled"
-			class="main-input form-control" autocomplete="off" />
-	</div>
-
 	<!-- Tags -->
 	<div ng-if="field.type == 'tags'">
 		<fw-tags ng-model-options="{fieldInfo: field}" fw-tags tags="data[field.name]" name="{{field.name}}"></fw-tags>
@@ -278,36 +262,8 @@
 		</div>
 	</div>
 
-	<!-- Multiselect -->
-	<div ng-if="field.type == 'multiselect'">
-		<!-- <label for="corretor">{{field.label}}</label> -->
-		<div class="fw-multiselect-content">
-			<!--  -->
-			<div data-element="" id="{{field.name}}" name="{{field.name}}" ng-dropdown-multiselect="" fw-multi-select
-				data-reference="{{field.name}}" class="ng-dropdown-multiselect" ng-click="onInitMulti($event, field)"
-				events="{'onSelectionChanged':changedMultiSelect,'onItemSelect':onItemSelect,'onItemDeselect':onItemDeselect}"
-				translation-texts="{'buttonDefaultText': 'Selecione ...',
-        'dynamicButtonTextSuffix':'selecionado(s)'}" options="msdata" extra-settings="{scrollableHeight: '200px',
-        scrollable: true,
-        buttonDefaultText: 'Tipos de {field.label}',
-        enableSearch: true,
-        styleActive: true,
-        showCheckAll: false,
-        showUncheckAll: false,
-        selectedToTop: true,
-        buttonClasses: 'btn btn-default fw-multiselect-button'}" selected-model="msmodel" ng-model="data[msmodel]">
-			</div>
-			<span class="input-group-btn" ng-click="openDropdownByButton(field.name)">
-				<button type="button" class="btn btn-default">
-					<i class="glyphicon glyphicon-menu-down"></i>
-				</button>
-			</span>
-		</div>
-	</div>
-
-
 	<!--Autocomplete-->
-	<div ng-if="field.autocomplete && !field.customOptions.autocomplete_table">
+	<div ng-if="field.autocomplete">
 		<div fw-auto-complete="" class="fw-input-group fw-auto-complete input-group">
 			<input id="{{field.name}}" ng-model-options="{fieldInfo: field}" fw-auto-complete
 				typeahead-on-select="autocompleteSelect($item, $model, $label)" aria-autocomplete="none"
@@ -330,59 +286,6 @@
 		<ul class="parsley-errors-list filled" ng-if="field.error">
 			<li class="parsley-required">{{field.error}}</li>
 		</ul>
-	</div>
-
-	<!--Autocomplete Table-->
-	<div ng-if="field.autocomplete && field.customOptions.autocomplete_table">
-		<div fw-auto-complete="" class="fw-input-group fw-auto-complete input-group">
-			<input style="display:none" id="{{field.name}}" ng-model-options="{fieldInfo: field}" fw-auto-complete
-				typeahead-on-select="autocompleteSelect($item, $model, $label)" aria-autocomplete="none"
-				autocomplete="off" typeahead-min-length="0"
-				typeahead="row as row.label for row in autocomplete(field, $viewValue)" type="text" class="form-control"
-				name="{{field.name}}" ng-required="field.notnull" ng-model="$parent.data[field.name + '.label']"
-				size="{{field.length}}" placeholder="{{field.label}}" ng-disabled="field.disabled" />
-		</div>
-		<div fw-auto-complete-table="" data-name="{{field.name}}">
-			<div class="fw-input-group fw-auto-complete input-group">
-				<input type="text" id="input-ac-table" ng-model="$parent.data[field.name + '.label']"
-					ng-model-options="{fieldInfo: field, debounce: 500}" class="form-control" autocomplete="off"
-					ng-change="updateAutocompleteTable(field.customOptions.autocomplete_table.table_name,field.customOptions.autocomplete_table.table_columns[0].name, this)"
-					ng-focus="autocompleteTableFocus(field.customOptions.autocomplete_table.table_name)"
-					ng-blur="autocompleteTableLostFocus()" ng-disabled="field.disabled">
-				<span class="input-group-btn">
-					<button type="button" class="btn btn-default">
-						<i class="glyphicon"
-							ng-class="{'glyphicon-search': field.customOptions.select == undefined, 'glyphicon-menu-down': field.customOptions.select == true}"></i>
-					</button>
-				</span>
-			</div>
-			<!--Table-->
-			<div ng-if="field.customOptions.autocomplete_table != undefined" ng-show="tableVisibily"
-				ng-model-options="{fieldInfo: field}">
-				<div class="table-container">
-					<table id="myTable" class="table table-striped">
-						<thead>
-							<tr>
-								<th ng-repeat="column in field.customOptions.autocomplete_table.table_columns">
-									{{column.label}}
-								</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr ng-repeat="data in autocompleteTableData2" id="{{data.id}}"
-								ng-mousedown="tableSelected($event,field.name,data)">
-								<!-- <td>{{autocompleteTableData[0]}}</td> -->
-								<!--             <td>{{field.customOptions.autocomplete_table.table_name}}</td> -->
-								<td ng-repeat="column in field.customOptions.autocomplete_table.table_columns">
-									{{data[column.name]}}
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
-			<!--Autocomplete Table-->
-		</div>
 	</div>
 
 </div>

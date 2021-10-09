@@ -51,24 +51,7 @@ module.exports = function(options) {
       
   });
 
-  gulp.task('styles', function () {
-    
-    var sassOptions = {
-      style: 'expanded',
-      precision: 10
-    };
-
-    return gulp.src([
-      options.src + '/src/plugins/lets-colorpicker/angular-colorpicker-dr.scss'
-    ])
-    .pipe($.sass(sassOptions)).on('error', options.errorHandler('Sass'))
-    .pipe($.csso())
-    .pipe(concat('lets.min.css'))
-    .pipe(gulp.dest(options.dist + '/'))
-
-  });
-
-  gulp.task('full', ['scripts', 'partials', 'styles'], function() {
+  gulp.task('full', ['scripts', 'partials'], function() {
     return gulp.src([
         options.tmp + '/lets-core.js',
         options.tmp + '/lets-tpls.js'

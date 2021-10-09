@@ -16,6 +16,11 @@
                 "en":"Return",
                 "es":"Regresar"
             },
+            "cancelar":{
+                "pt-br":"Cancelar",
+                "en":"Cancel",
+                "es":"Cancelar"
+            },
             "ok":{
                 "pt-br":"Ok",
                 "en":"OK",

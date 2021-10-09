@@ -42,10 +42,6 @@
                         if (field.customOptions.file){
                             delete field.customOptions.file;
                         }
-                        if(field.customOptions.multiselect){
-                            field.type = "multiselect"
-                            field.autocomplete = false
-                        }    
                         if (field.type=="text"){
                             field.type = "string";
                         }
@@ -278,13 +274,10 @@
                                     filterData[field.name] = scope.getDateFormated(filterData[field.name])
                                 }
 
-                                if(field.autocomplete && !field.customOptions.multiselect){
+                                if(field.autocomplete){
                                     filterData[field.name+"_label"] = scope.data[field.name+".label"].label;
                                 }
 
-                                if (field.autocomplete && field.customOptions.multiselect){
-                                    filterData[field.name] = scope.data[field.name];
-                                }
                             }
                         });
                         scope.data.q = null;
