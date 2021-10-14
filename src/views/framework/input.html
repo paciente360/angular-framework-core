@@ -214,7 +214,7 @@
 		<textarea ng-model-options="{fieldInfo: field}" id="{{field.name}}" fw-dynamic ng-required="field.notnull"
 			ng-model="data[field.name]" ng-disabled="field.disabled"
 			placeholder="{{field.customOptions.placeholder ? field.customOptions.placeholder : ''}}"
-			class="main-input form-control" rows="{{field.customOptions.rows}}"></textarea>
+			class="main-input form-control" rows="{{field.customOptions.rows}}" maxlength="{{field.customOptions.length}}"></textarea>
 	</div>
 
 	<!-- Ckeditor -->
