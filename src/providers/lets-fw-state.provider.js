@@ -69,7 +69,7 @@
                     url: '/new?filter',
                     templateUrl: options.new.templateUrl,
                     controller: options.new.controller,
-                    resolve: options.list.resolve
+                    resolve: options.new.resolve
                 });
             }
             if (options.edit.enable) {
@@ -77,7 +77,7 @@
                     url: '/:id/edit?filter',
                     templateUrl: options.edit.templateUrl,
                     controller: options.edit.controller,
-                    resolve: options.list.resolve
+                    resolve: options.edit.resolve
                 });
             }
         }
