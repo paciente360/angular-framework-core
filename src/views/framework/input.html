@@ -210,11 +210,17 @@
 	</div>
 
 	<!-- Textarea -->
-	<div ng-if="field.type == 'text' && !field.customOptions.rich">
+	<div ng-if="field.type == 'text' && !field.customOptions.rich && !field.customOptions.maxlength">
 		<textarea ng-model-options="{fieldInfo: field}" id="{{field.name}}" fw-dynamic ng-required="field.notnull"
 			ng-model="data[field.name]" ng-disabled="field.disabled"
 			placeholder="{{field.customOptions.placeholder ? field.customOptions.placeholder : ''}}"
-			class="main-input form-control" rows="{{field.customOptions.rows}}" maxlength="{{field.customOptions.length}}"></textarea>
+			class="main-input form-control" rows="{{field.customOptions.rows}}"></textarea>
+	</div>
+	<div ng-if="field.type == 'text' && !field.customOptions.rich && field.customOptions.maxlength">
+		<textarea ng-model-options="{fieldInfo: field}" id="{{field.name}}" fw-dynamic ng-required="field.notnull"
+			ng-model="data[field.name]" ng-disabled="field.disabled"
+			placeholder="{{field.customOptions.placeholder ? field.customOptions.placeholder : ''}}"
+			class="main-input form-control" rows="{{field.customOptions.rows}}" maxlength="{{field.customOptions.maxlength}}"></textarea>
 	</div>
 
 	<!-- Ckeditor -->
@@ -226,7 +232,7 @@
 
 	<!-- Boolean -->
 	<div ng-if="field.type == 'boolean'">
-		<label for="{{field.name}}">
+		<label for="{{field.name}}" style="width: 100%;">
 			<toggle
 				id="{{field.name}}"
 				ng-model-options="{fieldInfo: field}"
