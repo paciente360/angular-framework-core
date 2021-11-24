@@ -290,6 +290,9 @@
                 if (detail){
                     if (!$scope.data.id) {
                         var _id = $scope.headers.parentID || $stateParams.id;
+                        if ($scope.headers.quickAdd){
+                            _id = undefined;
+                        }
                         var response = $scope.resource.customPOST($scope.data, _id);
                         var typeSave = "new";
                     } else {
