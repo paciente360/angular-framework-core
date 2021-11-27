@@ -93,7 +93,7 @@
                             }
                         }
                     }else if (field.type == 'float' && field.customOptions && field.customOptions.currency) {
-                        if (record[field.name]){
+                        if (record[field.name]!==null && record[field.name]!==undefined){
                             var rawData = parseFloat(record[field.name]);                                
                             var rawData = rawData.toFixed(2).split('.');
                             rawData[0] = "R$ " + rawData[0].split(/(?=(?:...)*$)/).join('.');
