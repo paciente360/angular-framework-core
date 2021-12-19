@@ -81,7 +81,26 @@
     }
 
     appConfig.$inject = ['$stateProvider', '$httpProvider'];
-    function appConfig($stateProvider, $httpProvider) {
+    function appConfig($stateProvider, $httpProvider) { };
 
-    };
+    module.run(function($window, swangular){
+        $window.customConfirm = function(msg, _true, _false, cb){
+            swangular.confirm(null,{
+                html:msg,
+                title:"",
+                type: 'warning',
+                showCancelButton:true,
+                confirmButtonText: _true,
+                cancelButtonText: _false,
+                reverseButtons: true,
+            }).then(function(result){
+                if ("function" == typeof cb){
+                    cb(!!result.value)
+                }
+            });
+        }
+    })
+
+
 })();
+

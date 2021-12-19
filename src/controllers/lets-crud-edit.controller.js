@@ -3,7 +3,7 @@
 
     var module = angular.module('letsAngular');
 
-    module.controller('CRUDEditController', function ($scope, $controller, Restangular, $stateParams, $timeout, module, $state, $rootScope, ngToast, $http, Upload, fwModalService, $window, swangular, locale) {
+    module.controller('CRUDEditController', function ($scope, $controller, Restangular, $stateParams, $timeout, module, $state, $rootScope, ngToast, $http, Upload, fwModalService, $window, locale) {
         $controller('AutoCompleteController', {$scope:$scope});
 
         $scope.data = {};
@@ -506,22 +506,6 @@
                 }
             );
         };
-
-        $window.customConfirm = function(msg, _true, _false, cb){
-            swangular.confirm(null,{
-                html:msg,
-                title:"",
-                type: 'warning',
-                showCancelButton:true,
-                confirmButtonText: _true,
-                cancelButtonText: _false,
-                reverseButtons: true,
-            }).then(function(result){
-                if ("function" == typeof cb){
-                    cb(!!result.value)
-                }
-            });
-        }
 
     });
 
