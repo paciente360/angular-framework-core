@@ -36,14 +36,11 @@
         </tab>
 
         <tab ng-if="!detail.hide" ng-repeat="(detail_key, detail) in headers.tabs_session" heading="{{detail.label}}">
-            <fieldset>
-                <ng-include src="'lets/views/crud/crud-detail-list.html'"></ng-include>
-                <div ng-if="(!detail.settings) || (detail.settings && detail.settings.add)" class="pull-right">
-                    <button type="button" class="btn btn-primary button-new" origin="tabs_session" detail="{{detail_key}}" form-modal="{{detail.modal ? true : false}}">
-                        <span class="icon fa fa-plus"></span>{{'letsfw.new_record'|locale}}
-                    </button>
-                </div>
-            </fieldset>
+            <div>
+                <section grid="{{detail_key}}">
+                    <ng-include src="'lets/views/crud/crud-detail-list.html'"></ng-include>
+                </section>
+            </div>
         </tab>
 
         <tab ng-if="data.id != null && !tab.hide" ng-repeat="(tab_name, tab) in headers.tabs" heading="{{tab.label}}">

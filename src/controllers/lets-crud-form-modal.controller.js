@@ -21,11 +21,17 @@
                 return false;
             }
 
+            if($scope.data._edit){
+                var typeSave = "edit";
+            }else{
+                var typeSave = "new";
+            }
+
             function nextBefore(){
                 $modalInstance.close($scope.data);
 
                 function nextAfter(){}
-                $scope.$emit('after save', nextAfter, $scope.data);
+                $scope.$emit('after save', nextAfter, $scope.data, typeSave);
                 if (!$scope.$$listeners["after save"]){
                     nextAfter();
                 }

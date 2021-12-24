@@ -486,6 +486,8 @@
                 headers.route = $scope.headers.route+"/details/"+detail;
             }
 
+            detail_data._edit = true;
+
             fwModalService.createCRUDModal(headers, detail_data, null, null, $scope)
             .then(function (response) {
                 $scope.data[detail][ $scope.data[detail].indexOf(detail_data)] = response;
@@ -501,7 +503,7 @@
                 locale.translate('letsfw.cancelar'),
                 function(_confirm){
                     if(_confirm){
-                        $this.data[detail_key].splice(this.data[detail_key].indexOf(detail_data), 1);
+                        $this.data[detail_key].splice($this.data[detail_key].indexOf(detail_data), 1);
                     }
                 }
             );
