@@ -14,10 +14,11 @@
             $modalInstance.dismiss('cancel');
         }
         
-        $scope.submit = function () {
+        $scope.submit = function ($this) {
+            var _data = $scope.data;
 
             // Validade Form
-            if (!this.crudForm.$valid) {
+            if (!$this.crudForm.$valid) {
                 return false;
             }
 
@@ -25,6 +26,27 @@
                 var typeSave = "edit";
             }else{
                 var typeSave = "new";
+            }
+
+            _.each($scope.headers.fields, function (field, key) {
+                field.error = undefined;
+
+                // Number null
+                if(!_data[field.name] && _data[field.name] != 0 && !field.notnull && field.type === 'number'){
+                    _data[field.name] = null;
+                }
+
+                // Invalid Autocomplete
+                if (field.autocomplete && _data[field.name+".label"] && "object"!==typeof(_data[field.name+".label"]) ){
+                    field.error="Campo inválido, selecione novamente.";
+                    $this.crudForm.$valid = false;
+                }
+
+            });
+
+            // Validade Form
+            if (!$this.crudForm.$valid) {
+                return false;
             }
 
             function nextBefore(){
