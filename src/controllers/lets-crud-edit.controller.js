@@ -56,6 +56,7 @@
                     
                 });
             } else {
+                $scope.parseData($scope.data);
                 $timeout(function () {
                     $scope.$emit(_events.new);
                     $scope.$broadcast('setProgressFile');
