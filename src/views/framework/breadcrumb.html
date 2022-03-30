@@ -2,7 +2,7 @@
 	<ol class="breadcrumb">
 		<li><a ui-sref="app.dashboard">Home</a></li>
 		<li class="active">
-			<a ng-click="goToList()">{{headers.label}}
+			<a ng-click="goToList()">{{headers.label}} <span ng-if="headers.show_id && idData"> - {{idData}}</span>
 			</a>
 		</li>
 	</ol>
