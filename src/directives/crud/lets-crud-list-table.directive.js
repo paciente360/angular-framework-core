@@ -76,7 +76,7 @@
                                 return moment(record[field.name]).format(field.customOptions.format);
                             }
                             else {
-                                return moment(record[field.name]).format('L');
+                                return moment(record[field.name].replace('Z','')).format('L');
                             }
                         }
                     }else if (field.autocomplete == true) {
