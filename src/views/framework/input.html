@@ -232,7 +232,7 @@
 
 	<!-- Boolean -->
 	<div ng-if="field.type == 'boolean'">
-		<label for="{{field.name}}" style="width: 100%;">
+		<label for="{{field.name}}" style="width: 100%; max-width: 150px;">
 			<toggle
 				id="{{field.name}}"
 				ng-model-options="{fieldInfo: field}"
@@ -245,7 +245,7 @@
 			</toggle>
 
 			<div ng-if="field.disabled">
-				<div class="toggle btn btn-default btn-sm" ng-class="{'off':!$parent.data[field.name]}" style="width: 118px; height: 32px;">
+				<div class="toggle btn btn-default btn-sm" ng-class="{'off':!$parent.data[field.name]}" style="width: 100%; height: 32px;">
 					<div class="toggle-group">
 						<label class="btn disabled btn-primary btn-sm toggle-on">{{field.customOptions.statusTrueText}}</label>
 						<label class="btn disabled active btn-default btn-sm toggle-off">{{field.customOptions.statusFalseText}}</label>
