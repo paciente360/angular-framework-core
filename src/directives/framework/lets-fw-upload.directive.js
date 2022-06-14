@@ -25,6 +25,10 @@
                     return !!filename.match(/.(jpg|jpeg|png|gif)$/i)
                 }
 
+                $scope.isFileVideo = function(filename){
+                    return !!filename.match(/.(mp4|avi|webm|wmv|m4v|mpg)$/i)
+                }
+
                 $scope.trustSrc = function (src) {
                     return $sce.trustAsResourceUrl(src);
                 };
@@ -35,7 +39,8 @@
                             name:$scope.data[$scope.field.name],
                             progress:100,
                             alreadySent:true,
-                            isImage:$scope.isFileImage($scope.data[$scope.field.name])
+                            isImage:$scope.isFileImage($scope.data[$scope.field.name]),
+                            isVideo:$scope.isFileVideo($scope.data[$scope.field.name])
                         };
                         $scope.f.fileURL = STORAGE_URL+$scope.f.name;
                     }
@@ -95,6 +100,8 @@
                                 $scope.f.name = response.data.result.files.file[0].name;
                                 $scope.f.fileURL = STORAGE_URL+$scope.f.name;
                                 $scope.f.isImage = $scope.isFileImage($scope.f.name)
+                                $scope.f.isVideo = $scope.isFileVideo($scope.f.name)
+
                                 _input.controller('ngModel').$setViewValue($scope.f.name);
                             });
 

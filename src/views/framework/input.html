@@ -128,6 +128,13 @@
 					style="max-height:100%; max-width:100%; border-radius: 5px;"
 					ng-src="{{ trustSrc(f.fileURL) }}">
 
+				<video
+					ng-if="field.customOptions.file.preview && f.fileURL && f.isVideo"
+					style="height:100%; width:100%;"
+					controls
+					ng-src="{{ trustSrc(f.fileURL) }}"
+				></video>
+
 				<div
 					class="drag-box"
 					ng-if="field.customOptions.file.dad && !f.alreadySent && !field.disabled"
@@ -140,7 +147,7 @@
 					ngf-select="upload($file, $invalidFiles)">Arraste e solte o arquivo aqui.
 				</div>
 
-				<div ng-if="field.customOptions.file.dad && f.alreadySent && (!field.customOptions.file.preview || !f.isImage)">
+				<div ng-if="field.customOptions.file.dad && f.alreadySent && (!field.customOptions.file.preview || (!f.isImage && !f.isVideo))">
 					<i class="fa fa-file-text-o" style="font-size:85px"></i>
 				</div>
 
