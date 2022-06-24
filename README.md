@@ -27,6 +27,7 @@ Possiveis parâmetros de configuração que podem ser fornecidos para headers.js
 
   function cfg(headersProvider) {
     var _headers = {
+      "show_id":true, // Exibe o id do registro na tela de cadastro
       "label": "Carros",	// Nome exibido na tela de consulta
       "label_row": "Carro", // Nome exibido no formulário de cadastro
       "route": "carros", // Rota a ser chamada no backend
@@ -360,9 +361,13 @@ Possiveis parâmetros de configuração que podem ser fornecidos para headers.js
       // Botoẽs de acões na tela de consulta
       "actions": {
         "clonar": {
+          "disabled": false,  // Ativa ou desabilita a ação
           "label": "Clonar", // Nome do botão
           "class": "fa fa-clone", // icone do botão
-          "function": "clonar" // Função criada no scope
+          "function": "clonar", // Função criada no scope
+          "disableItem":function(data){ // Desabilita o botão de acordo com a função
+						return !data.status
+					}
         }
       }
     }
