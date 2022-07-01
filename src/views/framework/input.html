@@ -9,12 +9,12 @@
 				lang="pt-BR" ng-model-options="{fieldInfo: field}" type="text" id="{{field.name}}" string-to-number
 				fw-dynamic ng-required="field.notnull" ng-model="data[field.name]" size="{{field.length}}"
 				ng-disabled="field.disabled" class="main-input form-control" autocomplete="off"
-				min="{{field.customOptions.min}}" />
+				min="{{field.customOptions.min}}" placeholder="{{field.placeholder}}" />
 
 			<input ng-if="!field.customOptions.min" step="0.5" lang="pt-BR" ng-model-options="{fieldInfo: field}"
 				type="text" id="{{field.name}}" string-to-number fw-dynamic ng-required="field.notnull"
 				ng-model="data[field.name]" size="{{field.length}}" ng-disabled="field.disabled"
-				class="main-input form-control" autocomplete="off" />
+				class="main-input form-control" autocomplete="off" placeholder="{{field.placeholder}}" />
 
 		</div>
 	</div>
@@ -24,7 +24,7 @@
 		<input step="0.5" data-parsley-type="number" lang="pt-BR" ng-model-options="{fieldInfo: field}" type="text"
 			id="{{field.name}}" string-to-number fw-dynamic ng-required="field.notnull" ng-model="data[field.name]"
 			size="{{field.length}}" ng-disabled="field.disabled" class="main-input form-control" autocomplete="off"
-			min="{{field.customOptions.min}}" />
+			min="{{field.customOptions.min}}" placeholder="{{field.placeholder}}" />
 	</div>
 
 	<!-- Number or Integer -->
@@ -32,7 +32,7 @@
 		ng-if="(field.type == 'number' || field.type == 'integer' || field.type == 'bigint') && !field.autocomplete && !field.customOptions.range">
 		<input ng-model-options="{fieldInfo: field}" type="text" id="{{field.name}}" string-to-number numbers-only
 			fw-dynamic ng-required="field.notnull" ng-model="data[field.name]" size="{{field.length}}"
-			ng-disabled="field.disabled" class="main-input form-control" autocomplete="off" />
+			ng-disabled="field.disabled" class="main-input form-control" autocomplete="off" placeholder="{{field.placeholder}}" />
 	</div>
 
 	<!-- Number or Integer with range-->
@@ -40,7 +40,7 @@
 		ng-if="(field.type == 'number' || field.type == 'integer' || field.type == 'bigint') && !field.autocomplete && field.customOptions.range">
 		<input ng-model-options="{fieldInfo: field}" type="number" id="{{field.name}}" ng-required="{{field.notnull}}"
 			ng-model="data[field.name]" ng-disabled="field.disabled" class="main-input form-control" autocomplete="off"
-			min="{{field.customOptions.range.min}}" max="{{field.customOptions.range.max}}" />
+			min="{{field.customOptions.range.min}}" max="{{field.customOptions.range.max}}" placeholder="{{field.placeholder}}" />
 	</div>
 
 	<!-- String -->
@@ -63,7 +63,7 @@
 	<div ng-if="field.type == 'password'">
 		<input ng-model-options="{fieldInfo: field}" type="password" id="{{field.name}}" fw-dynamic
 			ng-required="field.notnull" ng-model="data[field.name]" ng-disabled="field.disabled"
-			class="main-input form-control" autocomplete="off" />
+			class="main-input form-control" autocomplete="off" placeholder="{{field.placeholder}}" />
 		<ul class="parsley-errors-list filled" ng-if="field.error">
 			<li class="parsley-required">{{field.error}}</li>
 		</ul>
@@ -73,7 +73,7 @@
 	<div ng-if="field.type == 'string' && field.customOptions.email">
 		<input ng-model-options="{fieldInfo: field}" type="email" id="{{field.name}}" string-to-number fw-dynamic
 			ng-required="field.notnull" ng-model="data[field.name]" ng-disabled="field.disabled"
-			class="main-input form-control" autocomplete="off" />
+			class="main-input form-control" autocomplete="off" placeholder="{{field.placeholder}}" />
 	</div>
 
 	<!-- Custom -->
@@ -283,7 +283,7 @@
 				autocomplete="off" typeahead-min-length="0"
 				typeahead="row as row.label for row in autocomplete(field, $viewValue)" type="text" class="form-control"
 				name="{{field.name}}" ng-required="field.notnull" ng-model="$parent.data[field.name + '.label']"
-				size="{{field.length}}" placeholder="{{field.label}}" ng-disabled="field.disabled"
+				size="{{field.length}}" placeholder="{{field.placeholder || field.label}}" ng-disabled="field.disabled"
 				ng-readonly="field.customOptions.select == true"
 				ng-class="{'fieldSelect': field.customOptions.select == true}" />
 			<span ng-show="!field.disabled && $parent.data[field.name]"
