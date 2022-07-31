@@ -1,12 +1,14 @@
-<div class="row">
+<div style="display: flex; justify-content: space-between;">
     <crud-breadcrumb></crud-breadcrumb>
-      <div class="col-sm-3 col-lg-2 text-right" ng-if="headers.settings.add" style="margin-bottom: 10px;">
-          <a class="btn btn-primary btn-block btn-new" ng-click="goNew()"><span class="icon fa fa-plus"></span>{{'letsfw.new_record'|locale}}</a>
-      </div>
-</div>
-<div class="row d-flex"  style="justify-content: flex-end;">
-    <div class="col-sm-3 col-lg-2 text-right"  ng-if="headers.settings.export" style="margin-bottom: 10px;">
-        <a class="btn btn-primary outline-btn btn-block btn-new" ng-disabled="export_btn_is_disable" ng-click="export()"><span class="icon fa fa-share"></span>Exportar Dados</a>
+    <div ng-if="headers.settings.export" style="margin-right:20px;">
+        <a class="btn btn-inverse list" ng-disabled="export_btn_is_disable" ng-click="export()">
+            <span class="icon fa fa-share"></span>Exportar Dados
+        </a>
+    </div>
+    <div ng-if="headers.settings.add">
+        <a class="btn btn-primary btn-new" ng-click="goNew()">
+            <span class="icon fa fa-plus"></span>{{'letsfw.new_record'|locale}}
+        </a>
     </div>
 </div>
 
