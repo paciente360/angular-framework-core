@@ -33,6 +33,17 @@
                     }
                 }
 
+                if( typeof(headers.getLabel)!=="function" ){
+                    headers.getLabel = function(field, value){
+                        var arrList = headers.get(field).customOptions.list;
+                        var lbl=""; 
+                        (arrList||[]).forEach(function(item){
+                            if (item.id==value) lbl= item.label;
+                        });
+                        return lbl;
+                    }
+                }
+
                 if ($scope.tab){
                     $scope.resource = Restangular.all($scope.settings.url);
                     if (!headers.settings){
