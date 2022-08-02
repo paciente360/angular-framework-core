@@ -55,6 +55,15 @@
                 }
             }
 
+            this.headers[name].getLabel = function(field, value){
+                var arrList = this.get(field).customOptions.list;
+                var lbl=""; 
+                (arrList||[]).forEach(function(item){
+                    if (item.id==value) lbl= item.label;
+                });
+                return lbl;
+            }
+
             if(this.headers[name].tabs){
                 for (var _x in this.headers[name].tabs) {
                     this.headers[name].tabs[_x].get = function(name){
