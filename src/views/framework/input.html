@@ -232,7 +232,7 @@
 
 	<!-- Ckeditor -->
 	<div ng-if="field.type == 'text' && field.customOptions.rich">
-		<textarea ckeditor="{'language':'pt-br'}" ng-model-options="{fieldInfo: field}" id="{{field.name}}" fw-dynamic
+		<textarea ckeditor="{type:field.customOptions.rich}" ng-model-options="{fieldInfo: field}" id="{{field.name}}" fw-dynamic
 			ng-required="field.notnull" ng-model="data[field.name]" class="main-input form-control"
 			ng-disabled="field.disabled" ng-readonly="field.disabled"></textarea>
 	</div>

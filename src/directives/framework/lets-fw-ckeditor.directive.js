@@ -83,10 +83,52 @@
    */
 
   function ckeditorController($scope, $element, $attrs, $parse, $q) {
-    var config = $parse($attrs.ckeditor)($scope) || {};
+    var attrs = $parse($attrs.ckeditor)($scope) || {};
     var editorElement = $element[0];
     var instance;
     var readyDeferred = $q.defer(); // a deferred to be resolved when the editor is ready
+    
+    var _toolbar = "Full";
+    if (attrs.type.toString().toLowerCase()=='basic'){
+      _toolbar = "Basic";
+    }else if (attrs.type.toString().toLowerCase()=='standard'){
+      _toolbar = "Standard";
+    }
+
+    var config = {
+      language:'pt-br',
+      toolbar:_toolbar,
+      forcePasteAsPlainText:true,
+      pasteFromWordRemoveStyles:true,
+      pasteFromWordRemoveFontStyles:true,
+      toolbar_Basic:[
+        { name: 'basicstyles', items: [ 'Bold', 'Italic', 'Underline', 'Strike', '-'] },
+        { name: 'paragraph', items: [ 'NumberedList', 'BulletedList', '-' ] },
+        { name: 'editing', items: [ 'Find'] },
+        { name: 'clipboard', items: [ 'Cut', 'Copy', '-', 'Undo', 'Redo' ] },
+      ],
+      toolbar_Standard:[
+        { name: 'document', items: [ 'Source', '-'] },
+        { name: 'basicstyles', items: [ 'Bold', 'Italic', 'Underline', 'Strike', '-'] },
+        { name: 'paragraph', items: [ 'NumberedList', 'BulletedList', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-'  ] },
+        { name: 'editing', items: [ 'Find'] },
+        { name: 'clipboard', items: [ 'Cut', 'Copy','-', 'Undo', 'Redo' ] },
+        { name: 'links', items: [ 'Link', 'Unlink' ] },
+        { name: 'insert', items: [ 'Image','Table', 'HorizontalRule' ] },
+      ],
+      toolbar_Full:[
+        { name: 'document', items: [ 'Source'] },
+        { name: 'basicstyles', items: [ 'Bold', 'Italic', 'Underline', 'Strike', '-'] },
+        { name: 'paragraph', items: [ 'NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl' ] },
+        { name: 'clipboard', items: [ 'Cut', 'Copy', 'Paste', '-', 'Undo', 'Redo' ] },
+        { name: 'editing', items: [ 'Find' ] },
+        { name: 'links', items: [ 'Link', 'Unlink'] },
+        { name: 'insert', items: [ 'Image','Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'Iframe' ] },
+        { name: 'styles', items: [ 'Styles', 'Format', 'FontSize' ] },
+        { name: 'colors', items: [ 'TextColor', 'BGColor' ] },
+        { name: 'tools', items: [ 'Maximize', 'ShowBlocks' ] }
+      ]
+    }
 
     // Create editor instance.
     if (editorElement.hasAttribute('contenteditable') &&

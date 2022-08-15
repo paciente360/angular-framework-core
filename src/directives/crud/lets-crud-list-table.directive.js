@@ -371,8 +371,9 @@
 
                     field.disabled = false;
                     field.quickAdd = false;
-                    field.notnull = field.filter ? field.filter.required : false;
+                    field.notnull = field.filter.required ? true : false;
                     field.name = field.name;
+                    field.placeholder = field.filter.placeholder ? field.filter.placeholder : "";
 
                     if (field.customOptions.file){
                         delete field.customOptions.file;
