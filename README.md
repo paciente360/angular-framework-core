@@ -229,7 +229,7 @@ Possiveis parâmetros de configuração que podem ser fornecidos para headers.js
           "label": "Mês",
           "editable": true,
           "viewable": true,
-          "autocomple": true, // Seta o campo como autocomplete
+          "autocomplete": true, // Seta o campo como autocomplete
           "customOptions": {
             "select": true, // Seta como input select
             "list": [ // Array de objetos com id e label
