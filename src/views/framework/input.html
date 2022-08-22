@@ -231,10 +231,23 @@
 	</div>
 
 	<!-- Ckeditor -->
-	<div ng-if="field.type == 'text' && field.customOptions.rich">
-		<textarea ckeditor="{type:field.customOptions.rich}" ng-model-options="{fieldInfo: field}" id="{{field.name}}" fw-dynamic
-			ng-required="field.notnull" ng-model="data[field.name]" class="main-input form-control"
-			ng-disabled="field.disabled" ng-readonly="field.disabled"></textarea>
+	<div ng-if="field.type == 'text' && field.customOptions.rich" ng-class="{'ckeditor-disabled':field.disabled}">
+		<style>
+			.ckeditor-disabled .cke_top, .ckeditor-disabled .cke_path{display: none;}
+			.ckeditor-disabled .cke_bottom{background:unset; border: unset;}
+		</style>
+		
+		<textarea
+			ckeditor="{type:field.customOptions.rich}"
+			ng-model-options="{fieldInfo: field}"
+			id="{{field.name}}"
+			fw-dynamic
+			ng-required="field.notnull"
+			ng-model="data[field.name]"
+			class="main-input form-control"
+			ng-disabled="field.disabled"
+			ng-readonly="field.disabled">
+		</textarea>
 	</div>
 
 	<!-- Boolean -->

@@ -44,6 +44,7 @@
           ['dataReady', 'change', 'blur', 'saveSnapshot'].forEach(function (event) {
             controller.onCKEvent(event, function syncView() {
               ngModelController.$setViewValue(controller.instance.getData() || '');
+              $(element).val(controller.instance.getData()).trigger('keyup')
             });
           });
 
