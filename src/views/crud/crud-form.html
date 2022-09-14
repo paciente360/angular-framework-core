@@ -52,6 +52,9 @@
             </div>
         </tab>
 
+        <tab disabled="true" ng-if="headers.show_tabs_new && !data.id && !tab.hide" ng-repeat="(tab_name, tab) in headers.tabs" heading="{{tab.label}}">
+        </tab>
+
     </tabset>
     <div class="form-actions">
         <div class="row">
