@@ -15,7 +15,7 @@
         <table class="table detail-table table-striped no-margin mb-sm">
             <thead>
                 <tr>
-                    <th ng-repeat="field in detail.fields | filter: {viewable: true}" ng-if="detail.modal===true">{{field.label}}</th>
+                    <th class="{{field.name}} {{field.customClass}}" ng-repeat="field in detail.fields | filter: {viewable: true}" ng-if="detail.modal===true">{{field.label}}</th>
                     <th ng-repeat="field in detail.fields | filter: {editable: true}" ng-if="!detail.modal">{{field.label}}</th>
                     <th ng-if="detail.settings  === undefined|| (detail.settings.edit || detail.settings.delete)"  class="editable actions">{{'letsfw.actions'|locale}}</th>
                 </tr>
@@ -23,7 +23,7 @@
             <tbody>
                 <tr ng-repeat="detail_data in data[detail_key]" ng-class="{'new': detail_data.new != undefined}">
                     
-                    <td ng-repeat="field in detail.fields | filter: {viewable: true}" ng-if="detail.modal===true">
+                    <td class="{{field.name}} {{field.customClass}}" ng-repeat="field in detail.fields | filter: {viewable: true}" ng-if="detail.modal===true">
                         <fw-detail-data ng-if="detail.modal"></fw-detail-data>
                     </td>
 
@@ -33,10 +33,10 @@
 
                     <td ng-if="detail.settings  === undefined|| (detail.settings.edit || detail.settings.delete)" class="text-right btn-column">                
                         <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-edit btn-default" ng-if="detail.settings  === undefined || (detail.modal===true && detail.settings.edit)" ng-click="editDetailData('tabs_session', detail_key, detail_data)">
+                            <button type="button" class="btn btn-edit btn-default" ng-if="detail.settings  === undefined || (detail.modal===true && detail.settings.edit)" ng-click="editDetailData('tabs_session', detail_key, detail_data)" title="{{'letsfw.editar'|locale}}">
                                 <span class="glyphicon glyphicon-pencil"></span>
                             </button>
-                            <button type="button" class="btn btn-delete btn-default" ng-if="detail.settings  === undefined || detail.settings.delete " ng-click="deleteDetailData(detail_data, detail_key)">
+                            <button type="button" class="btn btn-delete btn-default" ng-if="detail.settings  === undefined || detail.settings.delete " ng-click="deleteDetailData(detail_data, detail_key)" title="{{'letsfw.excluir'|locale}}">
                                 <span class="glyphicon glyphicon-remove"></span>
                             </button>
                         </div>
