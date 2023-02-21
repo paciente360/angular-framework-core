@@ -29,9 +29,9 @@
             </fieldset>
         </tab>
 
-        <tab ng-if="headers.main_tabs != undefined" ng-repeat="tab in headers.main_tabs" heading="{{tab}}">
+        <tab ng-if="headers.main_tabs != undefined" ng-repeat="tab in headers.main_tabs" heading="{{tab.label || tab}}">
             <fieldset>
-               <ng-include src="'lets/views/crud/crud-form-input.html'" ng-init="auto_layout=headers.auto_layout; fields=headers.fields; filter={tab: $index, editable: true}"></ng-include>
+               <ng-include src="'lets/views/crud/crud-form-input.html'" ng-init="auto_layout=headers.auto_layout; fields=headers.fields; filter={tab:(tab.id || $index), editable: true}"></ng-include>
             </fieldset>
         </tab>
 
