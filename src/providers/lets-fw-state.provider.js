@@ -39,8 +39,10 @@
 
             var options = angular.merge(_options, settings.options);
 
+            const mod = settings.module || 'app';
+
             if (options.main.enable) {
-                this.state('app.'+settings.route, {
+                this.state(mod+'.'+settings.route, {
                     abstract: true,
                     url: '/'+settings.route,
                     templateUrl: options.main.templateUrl,
@@ -57,7 +59,7 @@
             }
             
             if (options.list.enable) {
-                this.state('app.'+settings.route+'.list', {
+                this.state(mod+'.'+settings.route+'.list', {
                     url: '?filter',
                     templateUrl: options.list.templateUrl,
                     controller: options.list.controller,
@@ -65,7 +67,7 @@
                 });
             }
             if (options.new.enable) {
-                this.state('app.'+settings.route+'.new', {
+                this.state(mod+'.'+settings.route+'.new', {
                     url: '/new?filter',
                     templateUrl: options.new.templateUrl,
                     controller: options.new.controller,
@@ -73,7 +75,7 @@
                 });
             }
             if (options.edit.enable) {
-                this.state('app.'+settings.route+'.edit', {
+                this.state(mod+'.'+settings.route+'.edit', {
                     url: '/:id/edit?filter',
                     templateUrl: options.edit.templateUrl,
                     controller: options.edit.controller,
