@@ -64,13 +64,16 @@
                         scope.data[scope.field.name] = angular.copy(options.initDate);
                     }
 
-                    var format = 'dd/MM/yyyy';
-
                     if (scope.field.customOptions.monthpicker !== undefined) {
                         options.datepickerMode = "'month'";
                         options.minMode = 'month';
-
-                        format = 'MM/yyyy';
+                        var format = 'MM/yyyy';
+                        element.find('input').attr('placeholder', 'MM/YYYY');
+                        element.find('input').attr('data-date-format', 'MM/YYYY');
+                    }else{
+                        var format = 'dd/MM/yyyy';
+                        element.find('input').attr('placeholder', 'DD/MM/YYYY');
+                        element.find('input').attr('data-date-format', 'DD/MM/YYYY');
                     }
 
                     element.find('input').attr('datepicker-popup', format);
@@ -82,7 +85,6 @@
                             scope.field.error = false;
                         }
                     });
-
 
                     element.find('input').click(function (e) {
                         element.find('button.bcalendar').click()

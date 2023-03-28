@@ -83,10 +83,23 @@
 
 	<!-- Date -->
 	<div ng-if="field.type == 'date'">
-		<input ng-model-options="{fieldInfo: field, allowInvalid: true}" type="text" fw-date-picker="true" fw-dynamic
-			ng-required="field.notnull" id="{{field.name}}" name="{{field.name}}" ng-model="$parent.data[field.name]"
-			class="form-control" data-date-format="DD/MM/YYYY" placeholder="DD/MM/YYYY" ng-disabled="field.disabled"
-			autocomplete="off" />
+		<input
+			type="text"
+			fw-dynamic
+			ng-model-options="{fieldInfo: field, allowInvalid: true}"
+			fw-date-picker="true"
+			min-date="field.customOptions.minDate"
+			max-date="field.customOptions.maxDate"
+			max-mode="field.customOptions.maxMode||'year'"
+			ng-required="field.notnull"
+			id="{{field.name}}"
+			name="{{field.name}}"
+			ng-model="$parent.data[field.name]"
+			class="form-control"
+			ng-readonly="field.customOptions.readonly"
+			ng-disabled="field.disabled"
+			autocomplete="off"
+		/>
 
 		<ul class="parsley-errors-list filled" ng-if="field.error">
 			<li ng-if="field.error===true" class="parsley-required">A data informada é inválida.</li>
