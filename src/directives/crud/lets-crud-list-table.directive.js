@@ -416,12 +416,13 @@
         return {
             scope: {
                 data: '=',
+                idx:'=',
                 field: '=',
                 getscope:'='
             },
             link: function ($scope, $el) {
                 if( $scope.field.toString && typeof($scope.field.toString)=="function" ){
-                    $el.append($scope.field.toString($scope.data, $scope.getscope()))
+                    $el.append($scope.field.toString($scope.data, $scope.getscope(), $scope.idx))
                 }
             }
         }

@@ -74,10 +74,10 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="data in tableData.data">
+                <tr ng-repeat="(idx, data) in tableData.data">
                     <td class="{{field.name}} {{field.customClass}}" ng-repeat="field in headers.fields | filter: {viewable: true}">
                         {{parseRecord(data,field)}}
-                        <div ng-if="field.type=='custom'" data="data" field="field" getscope="getscope" fw-custom-field></div>
+                        <div ng-if="field.type=='custom'" data="data" idx="idx" field="field" getscope="getscope" fw-custom-field></div>
                     </td>
                     <td class="text-right btn-column" ng-if="headers.settings.edit || headers.settings.delete || headers.actions">
                         <div class="btn-group" role="group">
