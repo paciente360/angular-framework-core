@@ -7,7 +7,7 @@
     </div>
     <div ng-if="headers.settings.add">
         <a class="btn btn-primary btn-new" ng-click="goNew()">
-            <span class="icon fa fa-plus"></span>{{'letsfw.new_record'|locale}}
+            <span class="icon fa fa-plus"></span>{{headers.buttons.add ? headers.buttons.add : ('letsfw.new_record'|locale)}}
         </a>
     </div>
 </div>
