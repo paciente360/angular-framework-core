@@ -85,44 +85,55 @@
                     }
 
                     if (file) {
-
-                        $scope.field.error = null;
-                        $scope.f.name = file.name
-                        $scope.f.uploading = true;
-                        
-                        $scope._upload($scope.field, file).then(function (response, err) {
-                            $scope.$emit('upload-complete', response);
+                        function nextBefore(){
+                            $scope.field.error = null;
+                            $scope.f.name = file.name
+                            $scope.f.uploading = true;
                             
-                            $timeout(function () {
-                                $scope.f.progress = 100;
-                                $scope.f.alreadySent = true;
-                                $scope.f.uploading = false;
-                                $scope.f.name = response.data.result.files.file[0].name;
-                                $scope.f.fileURL = STORAGE_URL+$scope.f.name;
-                                $scope.f.isImage = $scope.isFileImage($scope.f.name)
-                                $scope.f.isVideo = $scope.isFileVideo($scope.f.name)
+                            $scope._upload($scope.field, file).then(function (response, err) {
+                                $scope.$emit('upload-complete', response);
+                                
+                                $timeout(function () {
+                                    $scope.f.progress = 100;
+                                    $scope.f.alreadySent = true;
+                                    $scope.f.uploading = false;
+                                    $scope.f.name = response.data.result.files.file[0].name;
+                                    $scope.f.fileURL = STORAGE_URL+$scope.f.name;
+                                    $scope.f.isImage = $scope.isFileImage($scope.f.name)
+                                    $scope.f.isVideo = $scope.isFileVideo($scope.f.name)
 
-                                _input.controller('ngModel').$setViewValue($scope.f.name);
-                            });
+                                    _input.controller('ngModel').$setViewValue($scope.f.name);
+                                });
 
 
-                        }, function (response) {
-                            console.log(response);
-                            if (response.status > 0) {
-                                $scope.errorMsg = response.status + ': ' + response.data;
+                            }, function (response) {
+                                console.log(response);
+                                if (response.status > 0) {
+                                    $scope.errorMsg = response.status + ': ' + response.data;
+                                }
+                                $scope.$emit('upload-error', response);
+
+                                $timeout(function(){
+                                    $scope.field.error = "Ocorreu um erro ao enviar o arquivo.";
+                                    $scope.f = {};
+                                })
+
+                            }, function (evt) {
+                                $timeout(function(){
+                                    $scope.f.progress = Math.min(90, parseInt(100.0 *evt.loaded / evt.total));
+                                })
+                            })
+                        }
+
+                        if ("function" == typeof $scope.getscope){
+                            var _scope = $scope.getscope()
+                            _scope.$emit('before upload '+$scope.field.name, file, nextBefore);
+                            if (!_scope.$$listeners["before upload "+$scope.field.name]){
+                                nextBefore();
                             }
-                            $scope.$emit('upload-error', response);
-
-                            $timeout(function(){
-                                $scope.field.error = "Ocorreu um erro ao enviar o arquivo.";
-                                $scope.f = {};
-                            })
-
-                        }, function (evt) {
-                            $timeout(function(){
-                                $scope.f.progress = Math.min(90, parseInt(100.0 *evt.loaded / evt.total));
-                            })
-                        })
+                        }else{
+                            nextBefore();
+                        }
                     }
                 };
 
