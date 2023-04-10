@@ -85,12 +85,12 @@
                     }
 
                     if (file) {
-                        function nextBefore(){
+                        function nextBefore(newFile){
                             $scope.field.error = null;
                             $scope.f.name = file.name
                             $scope.f.uploading = true;
                             
-                            $scope._upload($scope.field, file).then(function (response, err) {
+                            $scope._upload($scope.field, newFile).then(function (response, err) {
                                 $scope.$emit('upload-complete', response);
                                 
                                 $timeout(function () {
@@ -129,10 +129,10 @@
                             var _scope = $scope.getscope()
                             _scope.$emit('before upload '+$scope.field.name, file, nextBefore);
                             if (!_scope.$$listeners["before upload "+$scope.field.name]){
-                                nextBefore();
+                                nextBefore(file);
                             }
                         }else{
-                            nextBefore();
+                            nextBefore(file);
                         }
                     }
                 };
