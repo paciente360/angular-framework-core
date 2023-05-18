@@ -45,7 +45,7 @@
 
         <tab ng-if="data.id != null && !tab.hide" ng-repeat="(tab_name, tab) in headers.tabs" heading="{{tab.label}}">
             <div ng-if="tab.fields && !tab.templateUrl">
-                <section grid="{{tab_name}}" crud-list-table settings="{headers:tab, tab:true, url:(headers.route_detail ? headers.route_detail : tab.custom_route ? tab.custom_route : headers.route)+'/details/'+data.id+'/'+tab_name, getscope:getscope, tab_name:tab_name}"></section>
+                <section grid="{{tab_name}}" crud-list-table settings="{headers:tab, tab:true, url:(headers.route_detail ? headers.route_detail : tab.custom_route ? tab.custom_route : headers.route)+'/details/'+ (tab.fk_id ? data[tab.fk_id] :  data.id) +'/'+tab_name, getscope:getscope, tab_name:tab_name}"></section>
             </div>
             <div ng-if="tab.templateUrl">
                 <ng-include src="tab.templateUrl"></ng-include>

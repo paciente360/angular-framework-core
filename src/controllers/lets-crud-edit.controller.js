@@ -419,11 +419,15 @@
                 tab.fixedRoute = tab.route;
             }
 
-            var _route = $scope.headers.route_detail ? $scope.headers.route_detail : $scope.headers.route;
+            var _route = $scope.headers.route_detail 
+                    ? $scope.headers.route_detail 
+                    : tab.custom_route 
+                        ? tab.custom_route
+                        : $scope.headers.route;
             
             tab.route = (id ? route : _route+tab.fixedRoute);
             tab.id = id ? id : null;
-            tab.parentID = $scope.data.id;
+            tab.parentID = tab.fk_id ? $scope.data[tab.fk_id] : $scope.data.id;
 
             fwModalService.createCRUDModal(tab, data, "CRUDEditDetailController", null, $scope);
         };
