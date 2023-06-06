@@ -76,6 +76,8 @@
 
                     } else if (scope.field.customOptions.cep != undefined) {
 
+                        $el.mask('99999-999');
+
                         $el.blur(function () {
 
                             if (!this.value){
