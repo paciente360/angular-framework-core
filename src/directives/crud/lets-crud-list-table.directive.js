@@ -128,6 +128,10 @@
                     var route = (!headers.pagerGeneral ? 'pager' : 'pagerGeneral');
                     var queries = {page:$scope.currentPage, per_page:$scope.perPage};
 
+                    if (headers.route_pager){
+                        route = headers.route_pager;
+                    }
+
                     if ($scope.tab){
                         queries.scope = headers.filterScope;
                     }else if (headers.settings && headers.settings.filterScope){
