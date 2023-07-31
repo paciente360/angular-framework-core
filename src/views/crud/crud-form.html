@@ -21,6 +21,7 @@
                     <strong ng-if="headers.label_row">{{headers.label_row}}</strong>
                     <strong ng-if="!headers.label_row">{{'letsfw.main_information'|locale}}</strong>
                 </legend>
+                <div class="subtitle legendForm" ng-bind-html="headers.subtitle"></div>
                 <ng-include ng-if="beforeForm != undefined" src="beforeForm"></ng-include>
                 
                 <ng-include src="'lets/views/crud/crud-form-input.html'" ng-init="auto_layout=headers.auto_layout; fields=headers.fields; filter={editable: true}"></ng-include>
@@ -60,11 +61,16 @@
         <div class="row">
             <div class="col-sm-offset-4 col-sm-7">
                 <button type="button" class="btn btn-big btn-inverse" ng-click="cancel()">
-                    <span class="icon fa fa-arrow-left"></span>{{'letsfw.cancel'|locale}}</button>
+                    <span ng-if="!headers.buttons.cancel" class="icon fa fa-arrow-left"></span><span ng-if="!headers.buttons.cancel">{{'letsfw.cancel'|locale}}</span>
+                    <span ng-if="headers.buttons.cancel.icon" class="icon fa {{headers.buttons.cancel.icon}}"></span><span ng-if="headers.buttons.cancel">{{headers.buttons.cancel.text}}</span>
+                </button>
+                
                 <button ng-if="!headers.disabled" type="submit" class="btn btn-big btn-primary" ng-class="{'disabled': loading_http_request}">
-                    <span class="icon fa fa-floppy-o" ng-show="!loading_http_request"></span>
+                    <span ng-if="!headers.buttons.submit" class="icon fa fa-floppy-o" ng-show="!loading_http_request"></span>
+                    <span ng-if="headers.buttons.submit.icon" class="icon fa {{headers.buttons.cancel.icon}}" ng-show="!loading_http_request"></span>
                     <i class="fa fa-spinner fa-spin" ng-show="loading_http_request"></i>
-                    {{'letsfw.save'|locale}}
+                    <span ng-if="!headers.buttons.submit">{{'letsfw.save'|locale}}</span>
+                    <span ng-if="headers.buttons.submit">{{headers.buttons.submit.text}}</span>
                 </button>
             </div>
         </div>
