@@ -21,7 +21,7 @@
             <div class="busca row" ng-if="!hideInputSearch">
                 <div class="form-group col-sm-5" style="margin-bottom: 10px;">
                     <div class="fw-input-group input-group">
-                        <input autocomplete="off" type="text" class="form-control" name="q" ng-model="filterdata['q']" ng-disabled="showBuscaAvancada" placeholder="{{'letsfw.search_by'|locale}}..."/>
+                        <input autocomplete="off" enterkeyhint="search" type="search" class="form-control" name="q" ng-model="filterdata['q']" ng-disabled="showBuscaAvancada" placeholder="{{'letsfw.search_by'|locale}}..."/>
                         <span class="input-group-btn" ng-if="fieldsFilter.length > 0">
                             <button type="button" class="btn btn-default" title="{{'letsfw.search_advanced'|locale}}" ng-click="openBuscaAvancada()">
                                 <i class="fa fa-filter" ng-if="!showBuscaAvancada"></i>
