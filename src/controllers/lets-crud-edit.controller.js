@@ -228,13 +228,7 @@
                 if(!_data[field.name] && _data[field.name] != 0 && !field.notnull && field.type === 'number'){
                     _data[field.name] = null;
                 }
-
-                // File
-                if (field.customOptions && field.customOptions.file && field.editable && field.notnull && !_data[field.name]) {
-                    field.error='Este campo é obrigatório.';
-                    $this.crudForm.$valid = false;
-                }
-
+                
                 // Confirm Password
                 if (field.type == 'password' && field.name.indexOf('confirm') != 0) {
                     if (_data['confirm_'+field.name] != _data[field.name]) {

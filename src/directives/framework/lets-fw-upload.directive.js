@@ -14,7 +14,7 @@
 
                 $scope.f = {};
 
-                var _input = element.find('input[type="hidden"]');
+                var _input = element.find('input[hidden]');
 
                 var STORAGE_URL = appSettings.STORAGE_URL;
                 if ($scope.field.customOptions.file.container != undefined) {
@@ -49,6 +49,8 @@
                 $scope.removeFile = function(){
                     $scope.f = {};
                     _input.controller('ngModel').$setViewValue(null);
+                    _input.controller('ngModel').$render();
+                    _input.trigger('keyup')
                 }
 
                 $scope.upload = function (file, errFiles) {
@@ -103,6 +105,8 @@
                                     $scope.f.isVideo = $scope.isFileVideo($scope.f.name)
 
                                     _input.controller('ngModel').$setViewValue($scope.f.name);
+                                    _input.controller('ngModel').$render();
+                                    _input.trigger('keyup')
                                 });
 
 

@@ -180,8 +180,9 @@
 				</div>
 
 				<input
+					hidden
 					ng-model-options="{fieldInfo: field}"
-					type="hidden"
+					type="text"
 					name="{{field.name}}"
 					ng-model="$parent.data[field.name]"
 					id="{{field.name}}"
