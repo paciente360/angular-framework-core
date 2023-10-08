@@ -33,7 +33,9 @@
 
         <tab ng-if="headers.main_tabs != undefined" ng-repeat="tab in headers.main_tabs" heading="{{tab.label || tab}}" disable="tab.disabled || false">
             <fieldset>
+                <ng-include ng-if="tab.beforeForm != undefined" src="tab.beforeForm"></ng-include>
                <ng-include src="'lets/views/crud/crud-form-input.html'" ng-init="auto_layout=headers.auto_layout; fields=headers.fields; filter={tab:(tab.id || $index), editable: true}"></ng-include>
+               <ng-include ng-if="tab.afterForm != undefined" src="tab.afterForm"></ng-include>
             </fieldset>
         </tab>
 
