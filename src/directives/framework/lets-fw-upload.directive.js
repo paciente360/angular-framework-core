@@ -145,6 +145,13 @@
                     $scope.upload($file, errFiles)
                 }
 
+                $scope.previewFile = function(field){
+                    $.fancybox.open({
+                        buttons : ['close'],
+                        src: STORAGE_URL+$scope.data[field.name]
+                    });
+                }
+
             }
         }
     }

@@ -1,6 +1,6 @@
 {
   "name": "angular-framework-core",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "description": "Core Module for Lets Angular Framework",
   "dependencies": {
     "angular": "1.4.1",

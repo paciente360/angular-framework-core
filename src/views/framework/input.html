@@ -221,6 +221,14 @@
 						class="btn btn-default">
 						<i class="fa fa-download"></i> Baixar
 					</button>
+
+					<button
+						ng-if="f.alreadySent && field.customOptions.file.showButtonPreview"
+						ng-click="previewFile(field)"
+						type="button"
+						class="btn btn-default">
+						<i class="fa fa-eye"></i> Visualizar
+					</button>
 					
 				</span>
 			</div>
