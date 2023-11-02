@@ -5,7 +5,7 @@
                 <strong ng-if="headers.label_row">{{headers.label_row}}</strong>
                 <strong ng-if="!headers.label_row">{{'letsfw.main_information'|locale}}</strong>
             </legend>
-            <div class="subtitle legendForm" ng-bind-html="headers.subtitle"></div>
+            <div class="subtitle legendForm" ng-bind-html="headers.subtitle" ng-if="headers.isModal"></div>
             <ng-include ng-if="beforeForm != undefined" src="beforeForm"></ng-include>
             
             <ng-include src="'lets/views/crud/crud-form-input.html'" ng-init="auto_layout=headers.auto_layout; fields=headers.fields; filter={tab: 'fixed', editable: true}"></ng-include>
@@ -22,7 +22,7 @@
                     <strong ng-if="headers.label_row">{{headers.label_row}}</strong>
                     <strong ng-if="!headers.label_row">{{'letsfw.main_information'|locale}}</strong>
                 </legend>
-                <div class="subtitle legendForm" ng-bind-html="headers.subtitle"></div>
+                <div class="subtitle legendForm" ng-bind-html="headers.subtitle" ng-if="headers.isModal"></div>
                 <ng-include ng-if="beforeForm != undefined" src="beforeForm"></ng-include>
                 
                 <ng-include src="'lets/views/crud/crud-form-input.html'" ng-init="auto_layout=headers.auto_layout; fields=headers.fields; filter={editable: true}"></ng-include>

@@ -23,6 +23,7 @@
                     headers: function() { 
                         var _headers = angular.copy(headers);
                         _headers.parentScope = parentScope;
+                        _headers.isModal = true;
 
                         _headers.get = function(name){
                             for (var _x in _headers.fields) {
