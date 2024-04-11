@@ -69,8 +69,13 @@
                 var field = $scope.headers.fields[y];
                 
                 if (field.type == 'date' && (data[field.name] != undefined && data[field.name] != null)) {
-                    var dt = new Date(data[field.name].replace('Z',''));
-                    data[field.name] = dt;
+                    
+                    try {
+                        var dt = new Date(data[field.name].replace('Z',''));
+                        data[field.name] = dt;
+                    } catch (error) {
+                    }
+                    
                 }
 
                 if (field.customOptions && field.customOptions.list!=undefined) {
