@@ -70,7 +70,7 @@
                 
                 <button ng-if="!headers.disabled" type="submit" class="btn btn-big btn-primary" ng-class="{'disabled': loading_http_request}">
                     <span ng-if="!headers.buttons.submit" class="icon fa fa-floppy-o" ng-show="!loading_http_request"></span>
-                    <span ng-if="headers.buttons.submit.icon" class="icon fa {{headers.buttons.cancel.icon}}" ng-show="!loading_http_request"></span>
+                    <span ng-if="headers.buttons.submit.icon" class="icon fa {{headers.buttons.submit.icon}}" ng-show="!loading_http_request"></span>
                     <i class="fa fa-spinner fa-spin" ng-show="loading_http_request"></i>
                     <span ng-if="!headers.buttons.submit">{{'letsfw.save'|locale}}</span>
                     <span ng-if="headers.buttons.submit">{{headers.buttons.submit.text}}</span>
