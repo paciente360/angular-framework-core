@@ -122,7 +122,11 @@
             //     ctx.args.container = ctx.args.container.replace(/__/g,'/');
             //     next();
             // });
-            var _container = field.customOptions.file.container.replace(/\//g,'__');
+            var _container = undefined;
+
+            if(field.customOptions.file.container != undefined && field.customOptions.file.url != null){
+                _container = field.customOptions.file.container.replace(/\//g,'__');
+            }
 
             if(field.customOptions.file.url != undefined && field.customOptions.file.container == undefined){
                 _url += field.customOptions.file.url;
