@@ -122,11 +122,7 @@
             //     ctx.args.container = ctx.args.container.replace(/__/g,'/');
             //     next();
             // });
-            var _container = undefined;
-
-            if(field.customOptions.file.container != undefined && field.customOptions.file.url != null){
-                _container = field.customOptions.file.container.replace(/\//g,'__');
-            }
+            var _container = field.customOptions.file.container.replace(/\//g,'__');
 
             if(field.customOptions.file.url != undefined && field.customOptions.file.container == undefined){
                 _url += field.customOptions.file.url;
@@ -145,19 +141,13 @@
         }
 
         $scope.download = function (field, id) {
-
-            var _container = undefined;
-
-            if(field.customOptions.file.container != undefined && field.customOptions.file.url != null){
-                _container = field.customOptions.file.container.replace(/\//g,'__');
-            }else if (field.customOptions.file.container == undefined && field.customOptions.file.url != null){
-                _url += field.customOptions.file.url;
-            }else if (field.customOptions.file.container != undefined) {
+            if (field.customOptions.file.container != undefined) {
                 // Quando utilizar sub-container implementar hook beforeRemote('download') no backend
                 // Storage.beforeRemote('download', function(ctx,  modelInstance, next) {
                 //     ctx.args.container = S3_BUCKET+"/"+ctx.args.container.replace(/__/g,'/');
                 //     next();
                 // });
+                var _container = field.customOptions.file.container.replace(/\//g,'__');
                 var url = $rootScope.appSettings.API_URL + 'upload/' + _container + '/download/' + $scope.data[field.name];
             } else {
                 var url = ($rootScope.appSettings.API_URL + $scope.module + '/download/' + field.name + '/' + id);
