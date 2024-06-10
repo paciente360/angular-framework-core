@@ -101,14 +101,7 @@
                                     $scope.f.uploading = false;
                                     $scope.f.id = response.data.result.files.file[0].id;
                                     $scope.f.name = response.data.result.files.file[0].name;
-
-                                    if(response.data.result.files.file[0].url != null){
-                                        $scope.f.fileURL = response.data.result.files.file[0].url
-                                        console.log($scope.f.fileURL)
-                                    }else{
-                                        $scope.f.fileURL = STORAGE_URL+$scope.f.name;
-                                    }
-                                    console.log($scope.f.fileURL)
+                                    $scope.f.fileURL = STORAGE_URL+$scope.f.name;
                                     $scope.f.isImage = $scope.isFileImage($scope.f.name)
                                     $scope.f.isVideo = $scope.isFileVideo($scope.f.name)
 
