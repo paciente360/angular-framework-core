@@ -133,7 +133,7 @@
                 if (field.customOptions.file.url != undefined && field.customOptions.file.container != undefined) {
                 _url += 'upload/' + _container + '/' + field.customOptions.file.url
             }
-
+            console.log("field.customOptions", field.customOptions)
             if(field.customOptions.file.urlCustom != undefined && field.customOptions.file.urlCustom){
                 _url = $rootScope.appSettings.API_URL + field.customOptions.file.url;
             }
