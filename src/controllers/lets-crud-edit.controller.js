@@ -134,6 +134,10 @@
                 _url += 'upload/' + _container + '/' + field.customOptions.file.url
             }
 
+            if(field.customOptions.file.urlCustom != undefined && field.customOptions.file.urlCustom){
+                _url = $rootScope.appSettings.API_URL + field.customOptions.file.url;
+            }
+
             return Upload.upload({
                 url: _url,
                 data: { file: file }
