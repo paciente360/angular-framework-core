@@ -99,6 +99,7 @@
                                     $scope.f.progress = 100;
                                     $scope.f.alreadySent = true;
                                     $scope.f.uploading = false;
+                                    $scope.f.id = response.data.result.files.file[0].id;
                                     $scope.f.name = response.data.result.files.file[0].name;
                                     $scope.f.fileURL = STORAGE_URL+$scope.f.name;
                                     $scope.f.isImage = $scope.isFileImage($scope.f.name)
