@@ -104,7 +104,6 @@
                                     $scope.f.fileURL = STORAGE_URL+$scope.f.name;
                                     $scope.f.isImage = $scope.isFileImage($scope.f.name)
                                     $scope.f.isVideo = $scope.isFileVideo($scope.f.name)
-                                    console.log(response.data)
                                     _input.controller('ngModel').$setViewValue($scope.f.name);
                                     _input.controller('ngModel').$render();
                                     _input.trigger('keyup')
