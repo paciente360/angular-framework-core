@@ -46,7 +46,7 @@
 
 
 			if (val.length == 0 || field.customOptions.select == true) {
-				val = '[blank]';
+				val = '%5Bblank%5D';
 			}
 
 			// Callback Continue
@@ -68,7 +68,7 @@
 					}
 				}
 
-				if (isAdd && val != '[blank]' && !exs) {
+				if (isAdd && val != '%5Bblank%5D' && !exs) {
 					var _lbl = "<p><i class='fa fa-plus'></i> "+(field.quickAdd.label || "Cadastrar")+"</p>"+decodeURIComponent(val);
 					options.push({ id:null, label: _lbl, quickAdd:true, value:decodeURIComponent(val)});
 				}
