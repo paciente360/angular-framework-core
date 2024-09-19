@@ -69,8 +69,13 @@
                 var field = $scope.headers.fields[y];
                 
                 if (field.type == 'date' && (data[field.name] != undefined && data[field.name] != null)) {
-                    var dt = new Date(data[field.name].replace('Z',''));
-                    data[field.name] = dt;
+                    
+                    try {
+                        var dt = new Date(data[field.name].replace('Z',''));
+                        data[field.name] = dt;
+                    } catch (error) {
+                    }
+                    
                 }
 
                 if (field.customOptions && field.customOptions.list!=undefined) {
@@ -127,6 +132,10 @@
             }else 
                 if (field.customOptions.file.url != undefined && field.customOptions.file.container != undefined) {
                 _url += 'upload/' + _container + '/' + field.customOptions.file.url
+            }
+           
+            if(field.customOptions.file.urlCustom != undefined && field.customOptions.file.urlCustom == true){
+                _url = $rootScope.appSettings.API_URL + field.customOptions.file.url;
             }
 
             return Upload.upload({
@@ -228,13 +237,7 @@
                 if(!_data[field.name] && _data[field.name] != 0 && !field.notnull && field.type === 'number'){
                     _data[field.name] = null;
                 }
-
-                // File
-                if (field.customOptions && field.customOptions.file && field.editable && field.notnull && !_data[field.name]) {
-                    field.error='Este campo é obrigatório.';
-                    $this.crudForm.$valid = false;
-                }
-
+                
                 // Confirm Password
                 if (field.type == 'password' && field.name.indexOf('confirm') != 0) {
                     if (_data['confirm_'+field.name] != _data[field.name]) {

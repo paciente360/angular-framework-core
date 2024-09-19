@@ -5,7 +5,7 @@
                 <strong ng-if="headers.label_row">{{headers.label_row}}</strong>
                 <strong ng-if="!headers.label_row">{{'letsfw.main_information'|locale}}</strong>
             </legend>
-            <div class="subtitle legendForm" ng-bind-html="headers.subtitle"></div>
+            <div class="subtitle legendForm" ng-bind-html="headers.subtitle" ng-if="headers.isModal"></div>
             <ng-include ng-if="beforeForm != undefined" src="beforeForm"></ng-include>
             
             <ng-include src="'lets/views/crud/crud-form-input.html'" ng-init="auto_layout=headers.auto_layout; fields=headers.fields; filter={tab: 'fixed', editable: true}"></ng-include>
@@ -22,7 +22,7 @@
                     <strong ng-if="headers.label_row">{{headers.label_row}}</strong>
                     <strong ng-if="!headers.label_row">{{'letsfw.main_information'|locale}}</strong>
                 </legend>
-                <div class="subtitle legendForm" ng-bind-html="headers.subtitle"></div>
+                <div class="subtitle legendForm" ng-bind-html="headers.subtitle" ng-if="headers.isModal"></div>
                 <ng-include ng-if="beforeForm != undefined" src="beforeForm"></ng-include>
                 
                 <ng-include src="'lets/views/crud/crud-form-input.html'" ng-init="auto_layout=headers.auto_layout; fields=headers.fields; filter={editable: true}"></ng-include>
@@ -32,8 +32,10 @@
         </tab>
 
         <tab ng-if="headers.main_tabs != undefined" ng-repeat="tab in headers.main_tabs" heading="{{tab.label || tab}}" disable="tab.disabled || false">
-            <fieldset>
+            <fieldset tabname="{{tab.id || $index}}">
+                <ng-include ng-if="tab.beforeForm != undefined" src="tab.beforeForm"></ng-include>
                <ng-include src="'lets/views/crud/crud-form-input.html'" ng-init="auto_layout=headers.auto_layout; fields=headers.fields; filter={tab:(tab.id || $index), editable: true}"></ng-include>
+               <ng-include ng-if="tab.afterForm != undefined" src="tab.afterForm"></ng-include>
             </fieldset>
         </tab>
 
@@ -68,7 +70,7 @@
                 
                 <button ng-if="!headers.disabled" type="submit" class="btn btn-big btn-primary" ng-class="{'disabled': loading_http_request}">
                     <span ng-if="!headers.buttons.submit" class="icon fa fa-floppy-o" ng-show="!loading_http_request"></span>
-                    <span ng-if="headers.buttons.submit.icon" class="icon fa {{headers.buttons.cancel.icon}}" ng-show="!loading_http_request"></span>
+                    <span ng-if="headers.buttons.submit.icon" class="icon fa {{headers.buttons.submit.icon}}" ng-show="!loading_http_request"></span>
                     <i class="fa fa-spinner fa-spin" ng-show="loading_http_request"></i>
                     <span ng-if="!headers.buttons.submit">{{'letsfw.save'|locale}}</span>
                     <span ng-if="headers.buttons.submit">{{headers.buttons.submit.text}}</span>

@@ -81,13 +81,13 @@
                     </td>
                     <td class="text-right btn-column" ng-if="headers.settings.edit || headers.settings.delete || headers.actions">
                         <div class="btn-group" role="group">
-                            <button ng-if="!act.disabled" ng-disabled="act.disableItem(data)" ng-repeat="act in headers.actions" ng-click="this[act.function](data)" type="button" class="btn btn-default" title="{{act.label}}">
+                            <button ng-if="!act.disabled" ng-disabled="act.disableItem(data)" ng-repeat="act in headers.actions" ng-click="this[act.function](data); $event.stopPropagation();" type="button" class="btn btn-default" title="{{act.label}}">
                                 <span class="{{act.class}}"></span>
                             </button>
-                            <button ng-if="headers.settings.edit" ng-click="edit(data)" type="button" class="btn btn-default btn-edit" title="{{'letsfw.editar'|locale}}">
+                            <button ng-if="headers.settings.edit" ng-click="edit(data); $event.stopPropagation();" type="button" class="btn btn-default btn-edit" title="{{'letsfw.editar'|locale}}">
                                 <span class="glyphicon glyphicon-pencil"></span>
                             </button>
-                            <button ng-if="headers.settings.delete" ng-click="delete(data)" type="button" class="btn btn-default btn-delete" title="{{'letsfw.excluir'|locale}}">
+                            <button ng-if="headers.settings.delete" ng-click="delete(data); $event.stopPropagation();" type="button" class="btn btn-default btn-delete" title="{{'letsfw.excluir'|locale}}">
                                 <span class="glyphicon glyphicon-remove"></span>
                             </button>
                         </div>
