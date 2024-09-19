@@ -42,6 +42,14 @@
                 window.ParsleyValidator.setLocale('es');
                 moment.locale('es');
     
+            }else if (this.locale=="fr"){
+                window.ParsleyValidator.setLocale('fr');
+                moment.locale('fr');
+    
+            }else if (this.locale=="ru"){
+                window.ParsleyValidator.setLocale('ru');
+                moment.locale('ru');
+    
             }
 
             if ("function"==typeof(this.onSetLocale)){
