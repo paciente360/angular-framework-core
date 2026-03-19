@@ -50,6 +50,10 @@
                 window.ParsleyValidator.setLocale('ru');
                 moment.locale('ru');
     
+            }else if (this.locale=="de"){
+                window.ParsleyValidator.setLocale('de');
+                moment.locale('de');
+    
             }
 
             if ("function"==typeof(this.onSetLocale)){
